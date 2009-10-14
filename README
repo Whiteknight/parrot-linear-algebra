@@ -1,0 +1,28 @@
+parrot-linear-algebra
+
+A linear algebra library package for Parrot
+
+The initial goals of this package are to receive and make independent the
+bindings for CBLAS and CLAPACK that were originally developed for the Matrixy
+compiler project
+
+OLD: http://code.google.com/p/matrixy
+NEW: http://github.com/Whiteknight/matrixy
+
+Development on this projece will proceed in several phases, and has multiple
+goals, which may be attacked in concert:
+
+1) Create proper bindings for CBLAS and CLAPACK library routines, including
+   translational wrappers to convert Parrot data types into matrices used
+   by these libraries
+2) Create a proper build system that can find and link to the CBLAS and
+   CLAPACK libraries. Possibly even download and build them from source
+3) Create a 2-D numerical matrix PMC type that can be used to provide
+   low-level access to library routines with minimal conversion
+4) Creation of any additonal bindings or wrappers that may be useful to
+   high-level language projects
+
+CREDITS
+Original versions were developed as part of the Matrixy project by Blairuk.
+
+
