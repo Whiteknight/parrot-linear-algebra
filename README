@@ -22,6 +22,11 @@ goals, which may be attacked in concert:
 4) Creation of any additonal bindings or wrappers that may be useful to
    high-level language projects
 
+STATUS
+Currently, this package is in an extreme state of disrepair because it is
+being separated from the Matrixy project. Nothing works, nothing builds, and
+this is expected.
+
 CREDITS
 Original versions were developed as part of the Matrixy project by Blairuk.
 
