@@ -1,0 +1,9 @@
+arch = computer;
+
+libpath = sprintf("extern/lib/%s/cblas", arch);
+signatures = [ ...
+    '["f2c_dgemm","itt333pp3p3pp3",{"6":{"type":"fadr"},"7":{"type":"fadr"},"9":{"type":"fadr"},"11":{"type":"fadr"},"12":{"type":"fadr","out":1}}]' ...
+    ;'["f2c_zgemm","itt333pp3p3pp3",{"6":{"type":"fadc"},"7":{"type":"fadc"},"9":{"type":"fadc"},"11":{"type":"fadc"},"12":{"type":"fadc","out":1}}]' ...
+    ];
+loadlibrary(libpath, signatures, 'CBLAS');
+
