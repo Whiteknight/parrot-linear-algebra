@@ -1,0 +1,30 @@
+=head1 ROADMAP
+
+=head2 General Plans
+
+=over 4
+
+=item* Create a basic, dense, 2D Matrix PMC type that contains bindings for
+CBLAS routines.
+
+This includes basic VTABLEs (add, subtract, multiply, divide, etc). Add METHODs
+for other interesting routines. Find a good way to do multi-level indices.
+
+=item* Create proper PIR bindings for CBLAS and CLAPACK library routines.
+
+This includes translational wrappers to convert Parrot data types into matrices
+used by these libraries
+
+=item* Create a proper build system.
+
+Should be able to detect and link to multiple implementations of BLAS, including
+CBLAS, GSL, ATLAS, etc. Should be able to link to CLAPACK, and maybe other
+implementations of LAPACK as well. Maybe should be able to download and build
+those libraries from source.
+
+=item* Creation of any additonal bindings or wrappers that may be useful to
+high-level language projects
+
+=back
+
+=cut
