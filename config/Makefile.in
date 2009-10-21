@@ -14,9 +14,6 @@ PARROT        = @bindir@/parrot@exe@
 NQP           = $(PARROT) $(LIB_DIR)/languages/nqp/nqp.pbc
 PBC_TO_EXE    = @bindir@/pbc_to_exe
 
-#IF(darwin):# MACOSX_DEPLOYMENT_TARGET must be defined for OS X compilation/linking
-#IF(darwin):export MACOSX_DEPLOYMENT_TARGET = @osx_version@
-
 PARROT_DYNEXT = $(LIB_DIR)/dynext
 PERL6GRAMMAR  = $(LIB_DIR)/library/PGE/Perl6Grammar.pbc
 PCT           = $(LIB_DIR)/PCT.pbc
