@@ -15,11 +15,13 @@
 #define INDEX_MAX(a, b) (((a) >= (b))?(a):(b))
 
 void
-resize_matrix(PARROT_INTERP, PMC * self, INTVAL new_x, INTVAL new_y)
+resize_matrix(PARROT_INTERP, PMC * self, INTVAL x, INTVAL y)
 {
     Parrot_NumMatrix2D_attributes * const attrs = PARROT_NUMMATRIX2D(self);
     const INTVAL old_x = attrs->x;
     const INTVAL old_y = attrs->y;
+    const INTVAL new_x = INDEX_MAX(old_x, x);
+    const INTVAL new_y = INDEX_MAX(old_y, y);
     const INTVAL newsize = new_x * new_y;
     FLOATVAL * new_s = (FLOATVAL *)calloc(newsize * sizeof (FLOATVAL));
     FLOATVAL * old_s = attrs->storage;
@@ -33,6 +35,8 @@ resize_matrix(PARROT_INTERP, PMC * self, INTVAL new_x, INTVAL new_y)
         }
     }
     attrs->storage = new_s;
+    attrs->x = new_x;
+    attrs->y = new_y;
     free(old_s);
 }
 
@@ -64,7 +68,7 @@ pmclass NumMatrix2D auto_attrs {
         x_size = attrs->x;
         y_size = attrs->y;
         GET_INDICES_FROM_KEY(INTERP, key, x, y);
-        if (x >= x_size || y >= y_size)
+        if (x >= x_size || y >= y_size) {
             resize_matrix(INTERP, SELF, x, y);
         ITEM_XY_ROWMAJOR(attrs->storage, x_size, y_size, x, y) = value;
     }
