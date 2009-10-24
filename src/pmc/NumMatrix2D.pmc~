@@ -11,6 +11,14 @@
 #define ITEM_XY_COLMAJOR(s, x_max, y_max, x, y) \
     (s)[((y_max) * (y)) + (x)]
 
+#define INDEX_MIN(a, b) (((a) <= (b))?(a):(b))
+#define INDEX_MAX(a, b) (((a) >= (b))?(a):(b))
+
+void
+resize_matrix(PARROT_INTERP, PMC * self, INTVAL x, INTVAL y)
+{
+
+
 pmclass NumMatrix2D auto_attrs {
     ATTR FLOATVAL * storage;
     ATTR INTVAL x;
@@ -21,15 +29,24 @@ pmclass NumMatrix2D auto_attrs {
     }
 
     VTABLE FLOATVAL get_number_keyed(PMC * key) {
-        INTVAL x, y;
+        INTVAL x, y, x_size, y_size;
         Parrot_NumMatrix2D_Attributes * const attrs = PARROT_NUM_MATRIX
+        x_size = attrs->x;
+        y_size = attrs->y;
         GET_INDICES_FROM_KEY(INTERP, key, x, y);
-        return ITEM_XY_ROWMAJOR(attrs->storage, attrs->x, attrs->y, x, y);
+        if (x >= x_size || y >= y_size)
+            Parrot_ex_throw_from_c_args(INTERP, ...);
+        return ITEM_XY_ROWMAJOR(attrs->storage, x_size, y_size, x, y);
     }
 
     VTABLE void set_number_keyed(PMC * key, FLOATVAL value) {
-        INTVAL x, y;
+        INTVAL x, y, x_size, y_size;
         Parrot_NumMatrix2D_Attributes * const attrs = PARROT_NUM_MATRIX
+        x_size = attrs->x;
+        y_size = attrs->y;
         GET_INDICES_FROM_KEY(INTERP, key, x, y);
-        ITEM_XY_ROWMAJOR(attrs->storage, attrs->x, attrs->y, x, y) = value;
+        if (x >= x_size || y >= y_size)
+            resize_matrix(INTERP, SELF, x, y);
+        ITEM_XY_ROWMAJOR(attrs->storage, x_size, y_size, x, y) = value;
     }
+}
