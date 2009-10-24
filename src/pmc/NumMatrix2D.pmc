@@ -122,7 +122,16 @@ pmclass NumMatrix2D dynpmc auto_attrs {
     }
 
     METHOD resize(INTVAL new_x, INTVAL new_y) {
-      resize_matrix(INTERP, SELF, new_x, new_y);
+        resize_matrix(INTERP, SELF, new_x, new_y);
+    }
+
+    METHOD swap_column(INTVAL col_A, INTVAL col_b) {
+    }
+
+    METHOD swap_row(INTVAL row_a, INTVAL row_b) {
+    }
+
+    METHOD transpose() {
     }
 }
 
