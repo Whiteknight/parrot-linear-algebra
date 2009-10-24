@@ -53,7 +53,8 @@ pmclass NumMatrix2D auto_attrs {
         y_size = attrs->y;
         GET_INDICES_FROM_KEY(INTERP, key, x, y);
         if (x >= x_size || y >= y_size)
-            Parrot_ex_throw_from_c_args(INTERP, ...);
+            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                "NumMatrix2d: indices out of bounds");
         return ITEM_XY_ROWMAJOR(attrs->storage, x_size, y_size, x, y);
     }
 
