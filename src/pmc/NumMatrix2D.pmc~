@@ -1,0 +1,35 @@
+#define GET_INDICES_FROM_KEY(i, k, x, y) \
+    do { \
+        (x) = VTABLE_get_integer((i), (k)); \
+        (k) = VTABLE_shift_pmc((i), (k)); \
+        (y) = VTABLE_get_integer((i), (k)); \
+    } while(0);
+
+#define ITEM_XY_ROWMAJOR(s, x_max, y_max, x, y) \
+    (s)[((x_max) * (x)) + (y)]
+
+#define ITEM_XY_COLMAJOR(s, x_max, y_max, x, y) \
+    (s)[((y_max) * (y)) + (x)]
+
+pmclass NumMatrix2D auto_attrs {
+    ATTR FLOATVAL * storage;
+    ATTR INTVAL x;
+    ATTR INTVAL y;
+
+    VTABLE void init() {
+        /* The allocator should zero out the fields automatically */
+    }
+
+    VTABLE FLOATVAL get_number_keyed(PMC * key) {
+        INTVAL x, y;
+        Parrot_NumMatrix2D_Attributes * const attrs = PARROT_NUM_MATRIX
+        GET_INDICES_FROM_KEY(INTERP, key, x, y);
+        return ITEM_XY_ROWMAJOR(attrs->storage, attrs->x, attrs->y, x, y);
+    }
+
+    VTABLE void set_number_keyed(PMC * key, FLOATVAL value) {
+        INTVAL x, y;
+        Parrot_NumMatrix2D_Attributes * const attrs = PARROT_NUM_MATRIX
+        GET_INDICES_FROM_KEY(INTERP, key, x, y);
+        ITEM_XY_ROWMAJOR(attrs->storage, attrs->x, attrs->y, x, y) = value;
+    }
