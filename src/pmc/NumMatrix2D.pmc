@@ -44,7 +44,7 @@ resize_matrix(PARROT_INTERP, PMC * self, INTVAL x, INTVAL y)
 }
 
 
-pmclass NumMatrix2D auto_attrs {
+pmclass NumMatrix2D dynpmc auto_attrs {
     ATTR FLOATVAL * storage;
     ATTR INTVAL x;
     ATTR INTVAL y;
@@ -55,7 +55,7 @@ pmclass NumMatrix2D auto_attrs {
 
     VTABLE FLOATVAL get_number_keyed(PMC * key) {
         INTVAL x, y, x_size, y_size;
-        Parrot_NumMatrix2D_Attributes * const attrs = PARROT_NUM_MATRIX
+        Parrot_NumMatrix2D_Attributes * const attrs = PARROT_NUM_MATRIX(SELF);
         x_size = attrs->x;
         y_size = attrs->y;
         GET_INDICES_FROM_KEY(INTERP, key, x, y);
@@ -67,7 +67,7 @@ pmclass NumMatrix2D auto_attrs {
 
     VTABLE void set_number_keyed(PMC * key, FLOATVAL value) {
         INTVAL x, y, x_size, y_size;
-        Parrot_NumMatrix2D_Attributes * const attrs = PARROT_NUM_MATRIX
+        Parrot_NumMatrix2D_Attributes * const attrs = PARROT_NUM_MATRIX(SELF);
         x_size = attrs->x;
         y_size = attrs->y;
         GET_INDICES_FROM_KEY(INTERP, key, x, y);
