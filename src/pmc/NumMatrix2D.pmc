@@ -5,6 +5,12 @@
         (y) = VTABLE_get_integer((i), (k)); \
     } while(0);
 
+#define INDEX_XY_ROWMAJOR(x_max, y_max, x, y) \
+    (((x_max) * (x)) + (y))
+
+#define INDEX_XY_COLMAJOR(x_max, y_max, x, y) \
+    (((y_max) * (y)) + (x))
+
 #define ITEM_XY_ROWMAJOR(s, x_max, y_max, x, y) \
     (s)[((x_max) * (x)) + (y)]
 
@@ -26,7 +32,7 @@ resize_matrix(PARROT_INTERP, PMC * self, INTVAL x, INTVAL y)
     const INTVAL new_x = INDEX_MAX(old_x, x);
     const INTVAL new_y = INDEX_MAX(old_y, y);
     const INTVAL newsize = new_x * new_y;
-    FLOATVAL * new_s = (FLOATVAL *)calloc(newsize * sizeof (FLOATVAL));
+    FLOATVAL * new_s = (FLOATVAL *)mem_sys_allocate_zeroed(newsize * sizeof (FLOATVAL));
     FLOATVAL * old_s = attrs->storage;
     const INTVAL min_x = INDEX_MIN(old_x, new_x);
     const INTVAL min_y = INDEX_MIN(old_y, new_y);
@@ -50,12 +56,22 @@ pmclass NumMatrix2D dynpmc auto_attrs {
     ATTR INTVAL y;
 
     VTABLE void init() {
-        /* The allocator should zero out the fields automatically */
+      Parrot_NumMatrix2D_attributes * const attrs =
+        mem_allocate_zeroed_typed(Parrot_NumMatrix2D_attributes);
+
+      attrs->x       = 0;
+      attrs->y       = 0;
+      attrs->storage = NULL;
+
+      PMC_data(SELF) = attrs;
+
+      PObj_custom_destroy_SET(SELF);
     }
 
     VTABLE FLOATVAL get_number_keyed(PMC * key) {
         INTVAL x, y, x_size, y_size;
-        Parrot_NumMatrix2D_Attributes * const attrs = PARROT_NUM_MATRIX(SELF);
+        Parrot_NumMatrix2D_attributes * const attrs
+          = (Parrot_NumMatrix2D_attributes *) PARROT_NUMMATRIX2D(SELF);
         x_size = attrs->x;
         y_size = attrs->y;
         GET_INDICES_FROM_KEY(INTERP, key, x, y);
@@ -67,12 +83,46 @@ pmclass NumMatrix2D dynpmc auto_attrs {
 
     VTABLE void set_number_keyed(PMC * key, FLOATVAL value) {
         INTVAL x, y, x_size, y_size;
-        Parrot_NumMatrix2D_Attributes * const attrs = PARROT_NUM_MATRIX(SELF);
+        Parrot_NumMatrix2D_attributes * const attrs
+          = (Parrot_NumMatrix2D_attributes *) PARROT_NUMMATRIX2D(SELF);
         x_size = attrs->x;
         y_size = attrs->y;
         GET_INDICES_FROM_KEY(INTERP, key, x, y);
         if (x >= x_size || y >= y_size) {
             resize_matrix(INTERP, SELF, x, y);
+        }
         ITEM_XY_ROWMAJOR(attrs->storage, x_size, y_size, x, y) = value;
     }
+
+    VTABLE STRING *get_string() {
+        INTVAL x, y, x_size, y_size;
+        char *str;
+        STRING *pstr;
+        Parrot_NumMatrix2D_attributes * const attrs
+          = (Parrot_NumMatrix2D_attributes *) PARROT_NUMMATRIX2D(SELF);
+        x_size = attrs->x;
+        y_size = attrs->y;
+
+        str = (char*) mem_sys_allocate_zeroed((8*x_size*y_size+1)*sizeof(char));
+
+        for (x = 0; x < x_size; ++x) {
+            for (y = 0; y < y_size; ++y) {
+                int h = INDEX_XY_ROWMAJOR(x_size, y_size, x, y);
+                snprintf(&(str[8*h]), 8*sizeof(char), "%7.4f", attrs->storage[h]);
+                str[8*h+7] = ' ';
+            }
+            str[8*(x+1)*y_size-1] = '\n';
+        }
+
+        str[8*x_size*y_size] = '\0';
+        pstr = Parrot_str_new(INTERP, str, 0);
+        mem_sys_free(str);
+
+        return pstr;
+    }
+
+    METHOD resize(INTVAL new_x, INTVAL new_y) {
+      resize_matrix(INTERP, SELF, new_x, new_y);
+    }
 }
+
