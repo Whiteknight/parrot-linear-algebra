@@ -1,7 +1,7 @@
 .sub main :main
   .local pmc lib
 
-  lib = loadlib "NumMatrix2D"
+  lib = loadlib "linalg_group"
   unless lib goto not_loaded
   say "library loaded successfully."
 
