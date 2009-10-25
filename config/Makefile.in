@@ -17,6 +17,7 @@ PBC_TO_EXE    = @bindir@/pbc_to_exe$(EXE)
 PERL_LIB      = $(TOOLS_DIR)/lib
 NQP           = $(PARROT) $(LIB_DIR)/languages/nqp/nqp.pbc
 PBC_TO_EXE    = @bindir@/pbc_to_exe
+CFLAGS        = -fPIC
 
 LD            = @ld@
 LD_LOAD_FLAGS = -shared -O2 -g -fPIC
@@ -54,7 +55,6 @@ realclean: clean
 
 
 $(DYNPMC): $(PMC_SOURCES)
-	echo $(TOOLS_DIR)
 	$(PMC2C) --no-lines --dump $(PMC2C_INCLUDES) $(PMC_SOURCES)
 	$(PMC2C) --no-lines --c $(PMC2C_INCLUDES) $(PMC_SOURCES)
 	$(PMC2C) --no-lines --library $(GROUP) --c $(PMC_SOURCES)
