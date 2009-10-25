@@ -28,15 +28,18 @@ resize_matrix(PARROT_INTERP, PMC * self, INTVAL x, INTVAL y);
 
 /* Resize the matrix internal storage to be able to hold a point at position
    (x, y). The matrix grows but does not shrink. New spaces in the matrix
-   are initialized to 0.0 */
+   are initialized to 0.0. Parameters x and y are the indices that are trying
+   to be accessed, so we must resize the matrix to be able to accomodate those
+   indices. Notice that the matrix type is zero-indexed, so the size is one
+   plus the highest index that we need to access. */
 void
 resize_matrix(PARROT_INTERP, PMC * self, INTVAL x, INTVAL y)
 {
     Parrot_NumMatrix2D_attributes * const attrs = PARROT_NUMMATRIX2D(self);
     const INTVAL old_x = attrs->x;
     const INTVAL old_y = attrs->y;
-    const INTVAL new_x = INDEX_MAX(old_x, x);
-    const INTVAL new_y = INDEX_MAX(old_y, y);
+    const INTVAL new_x = INDEX_MAX(old_x, x + 1);
+    const INTVAL new_y = INDEX_MAX(old_y, y + 1);
     const INTVAL newsize = new_x * new_y;
     FLOATVAL * new_s = (FLOATVAL *)mem_sys_allocate_zeroed(newsize * sizeof (FLOATVAL));
     FLOATVAL * old_s = attrs->storage;
@@ -94,7 +97,7 @@ pmclass NumMatrix2D dynpmc auto_attrs {
     VTABLE void set_number_keyed(PMC * key, FLOATVAL value) {
         INTVAL x, y, x_size, y_size;
         Parrot_NumMatrix2D_attributes * const attrs
-          = (Parrot_NumMatrix2D_attributes *) PARROT_NUMMATRIX2D(SELF);
+            = (Parrot_NumMatrix2D_attributes *) PARROT_NUMMATRIX2D(SELF);
         x_size = attrs->x;
         y_size = attrs->y;
         GET_INDICES_FROM_KEY(INTERP, key, x, y);
@@ -158,7 +161,7 @@ pmclass NumMatrix2D dynpmc auto_attrs {
         /* TODO: dest is a copy of value. We could probably do this better. */
         /*       especially, as soon as we implement a clone method.        */
         dest = pmc_new(INTERP, VTABLE_type(INTERP, SELF));
-        resize_matrix(INTERP, dest, x_size, y_size);
+        resize_matrix(INTERP, dest, x_size - 1, y_size - 1);
         destattr = (Parrot_NumMatrix2D_attributes *) PARROT_NUMMATRIX2D(dest);
 
         memcpy(destattr->storage, valattr->storage, sizeof(FLOATVAL)*x_size*y_size);
@@ -169,7 +172,7 @@ pmclass NumMatrix2D dynpmc auto_attrs {
     }
 
     METHOD resize(INTVAL new_x, INTVAL new_y) {
-        resize_matrix(INTERP, SELF, new_x, new_y);
+        resize_matrix(INTERP, SELF, new_x - 1, new_y - 1);
     }
 
     METHOD swap_column(INTVAL col_A, INTVAL col_b) {
