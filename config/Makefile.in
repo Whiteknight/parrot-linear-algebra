@@ -1,7 +1,7 @@
 INCLUDE_DIR   = @includedir@@versiondir@
 LIB_DIR       = @libdir@@versiondir@
 SRC_DIR       = @srcdir@@versiondir@
-TOOLS_DIR     = @libdir@@versiondir@/tools/lib
+TOOLS_DIR     = @libdir@@versiondir@/tools
 
 LOAD_EXT      = @load_ext@
 O             = @o@
@@ -12,7 +12,6 @@ CP            = @cp@
 CAT           = @cat@
 PARROT        = @bindir@/parrot@exe@
 PBC_TO_EXE    = @bindir@/pbc_to_exe$(EXE)
-TOOLS_DIR     = @libdir@/tools
 PERL_LIB      = $(TOOLS_DIR)/lib
 NQP           = $(PARROT) $(LIB_DIR)/languages/nqp/nqp.pbc
 PBC_TO_EXE    = @bindir@/pbc_to_exe
@@ -20,7 +19,7 @@ PBC_TO_EXE    = @bindir@/pbc_to_exe
 PARROT_DYNEXT = $(LIB_DIR)/dynext
 PERL6GRAMMAR  = $(LIB_DIR)/library/PGE/Perl6Grammar.pbc
 PCT           = $(LIB_DIR)/PCT.pbc
-PMC2C         = $(PERL) $(PARROT_TOOLS_DIR)/build/pmc2c.pl
+PMC2C         = $(PERL) $(TOOLS_DIR)/build/pmc2c.pl
 
 GROUP         = pla_group
 PMC_DIR       = src/pmc
@@ -29,16 +28,16 @@ DYNPMC        = $(PMC_DIR)/$(GROUP)$(LOAD_EXT)
 PMC2C_INCLUDES = --include $(PMC_DIR) --include $(SRC_DIR) --include $(SRC_DIR)/pmc
 
 PMC_SOURCES = \
-    $(PMC_DIR)/NumMatrix2D.pmc
+    $(PMC_DIR)/nummatrix2d.pmc
 
-$(DYNPMC): $(PMC_SOURCES) src/binder/bind.c src/binder/bind.h
-    $(PMC2C) --no-lines --dump $(PMC2C_INCLUDES) $(PMC_SOURCES)
-    $(PMC2C) --no-lines --c $(PMC2C_INCLUDES) $(PMC_SOURCES)
-    $(PMC2C) --no-lines --library $(GROUP) --c $(PMC_SOURCES)
-    $(CC) -c @cc_o_out@$(GROUP)$(O) -I$(PMC_DIR) $(CINCLUDES) $(CFLAGS) $(GROUP).c
-    cd $(PMC_DIR) && $(CC) -c $(CINCLUDES) $(CFLAGS) *.c
-    cd src/binder && $(CC) -c @cc_o_out@bind$(O) -I$(PMC_DIR) $(CINCLUDES) $(CFLAGS) bind.c
-    $(LD) @ld_out@$(DYNPMC) $(GROUP)$(O) src/pmc/*$(O) src/binder/bind$(O) $(LINKARGS)
+$(DYNPMC): $(PMC_SOURCES)
+	echo $(TOOLS_DIR)
+	$(PMC2C) --no-lines --dump $(PMC2C_INCLUDES) $(PMC_SOURCES)
+	$(PMC2C) --no-lines --c $(PMC2C_INCLUDES) $(PMC_SOURCES)
+	$(PMC2C) --no-lines --library $(GROUP) --c $(PMC_SOURCES)
+	$(CC) -c @cc_o_out@$(GROUP)$(O) -I$(PMC_DIR) -I$(INCLUDE_DIR) $(CFLAGS) $(GROUP).c
+	cd $(PMC_DIR) && $(CC) -c $(CFLAGS) *.c
+	$(LD) @ld_out@$(DYNPMC) $(GROUP)$(O) src/pmc/*$(O) $(LINKARGS)
 
 # This is a listing of all targets, that are meant to be called by users
 help:
