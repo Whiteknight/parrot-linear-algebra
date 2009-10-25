@@ -62,16 +62,16 @@ pmclass NumMatrix2D dynpmc auto_attrs {
     ATTR INTVAL y;
 
     VTABLE void init() {
-      Parrot_NumMatrix2D_attributes * const attrs =
-        mem_allocate_zeroed_typed(Parrot_NumMatrix2D_attributes);
+        Parrot_NumMatrix2D_attributes * const attrs =
+            mem_allocate_zeroed_typed(Parrot_NumMatrix2D_attributes);
 
-      attrs->x       = 0;
-      attrs->y       = 0;
-      attrs->storage = NULL;
+        attrs->x       = 0;
+        attrs->y       = 0;
+        attrs->storage = NULL;
 
-      PMC_data(SELF) = attrs;
+        PMC_data(SELF) = attrs;
 
-      PObj_custom_destroy_SET(SELF);
+        PObj_custom_destroy_SET(SELF);
     }
 
     VTABLE FLOATVAL get_number_keyed(PMC * key) {
@@ -87,6 +87,10 @@ pmclass NumMatrix2D dynpmc auto_attrs {
         return ITEM_XY_ROWMAJOR(attrs->storage, x_size, y_size, x, y);
     }
 
+    VTABLE INTVAL get_integer_keyed(PMC * key) {
+        return (INTVAL)VTABLE_get_number_keyed(INTERP, SELF, key);
+    }
+
     VTABLE void set_number_keyed(PMC * key, FLOATVAL value) {
         INTVAL x, y, x_size, y_size;
         Parrot_NumMatrix2D_attributes * const attrs
@@ -96,8 +100,14 @@ pmclass NumMatrix2D dynpmc auto_attrs {
         GET_INDICES_FROM_KEY(INTERP, key, x, y);
         if (x >= x_size || y >= y_size) {
             resize_matrix(INTERP, SELF, x, y);
+            x_size = attrs->x;
+            y_size = attrs->y;
         }
         ITEM_XY_ROWMAJOR(attrs->storage, x_size, y_size, x, y) = value;
+    }
+
+    VTABLE void set_integer_keyed(PMC * key, INTVAL value) {
+        VTABLE_set_number_keyed(INTERP, SELF, key, (FLOATVAL)value);
     }
 
     VTABLE STRING *get_string() {
