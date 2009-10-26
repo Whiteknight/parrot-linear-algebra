@@ -17,11 +17,12 @@ PBC_TO_EXE    = @bindir@/pbc_to_exe$(EXE)
 PERL_LIB      = $(TOOLS_DIR)/lib
 NQP           = $(PARROT) $(LIB_DIR)/languages/nqp/nqp.pbc
 PBC_TO_EXE    = @bindir@/pbc_to_exe
-CFLAGS        = -fPIC
+CFLAGS        = @ccflags@
 
 LD            = @ld@
-LD_LOAD_FLAGS = -shared -O2 -g -fPIC
-LINKARGS      = $(LD_LOAD_FLAGS) -lblas
+LD_LOAD_FLAGS = @ld_load_flags@
+LDFLAGS       = @ldflags@ @ld_debug@
+LINKARGS      =  $(LDFLAGS) $(LD_LOAD_FLAGS) -lblas
 
 PARROT_DYNEXT = $(LIB_DIR)/dynext
 PERL6GRAMMAR  = $(LIB_DIR)/library/PGE/Perl6Grammar.pbc
