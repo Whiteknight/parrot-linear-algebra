@@ -65,15 +65,6 @@ pmclass NumMatrix2D dynpmc auto_attrs {
     ATTR INTVAL y;
 
     VTABLE void init() {
-        Parrot_NumMatrix2D_attributes * const attrs =
-            mem_allocate_zeroed_typed(Parrot_NumMatrix2D_attributes);
-
-        attrs->x       = 0;
-        attrs->y       = 0;
-        attrs->storage = NULL;
-
-        PMC_data(SELF) = attrs;
-
         PObj_custom_destroy_SET(SELF);
     }
 
