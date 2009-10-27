@@ -54,16 +54,23 @@ clean:
 	$(RM_F) dynext/*$(LOAD_EXT)
 
 realclean: clean
+	$(RM_F) t/*.pbc
 	$(RM_F) Makefile
+	
 
 
 install: all
 #IF(cygwin or hpux):    CHMOD 0775 linalg_group$(LOAD_EXT)
 	$(CP) linalg_group$(LOAD_EXT) $(INSTALL_DIR)
 
-
 uninstall:
 	$(RM_F) $(INSTALL_DIR)/linalg_group$(LOAD_EXT)
+
+test: t/Glue.pbc all
+	$(NQP) t/harness t/*.t	
+
+t/Glue.pbc: t/Glue.pir
+	$(PARROT) -o t/Glue.pbc t/Glue.pir
 
 $(DYNPMC): src/pmc/pla_matrix_types.h $(PMC_SOURCES)
 	$(PMC2C) --no-lines --dump $(PMC2C_INCLUDES) $(PMC_SOURCES)
@@ -92,6 +99,7 @@ help:
 	@echo "Installation:"
 	@echo "  install:           Install the pmcs to Parrot's install dir"
 	@echo "  uninstall:         Remove an existing installation"
+	@echo ""
 	@echo "Misc:"
 	@echo "  help:              Print this help message."
 	@echo ""
