@@ -78,7 +78,8 @@ pmclass NumMatrix2D dynpmc auto_attrs {
     }
 
     VTABLE INTVAL get_integer_keyed(PMC * key) {
-        return (INTVAL)VTABLE_get_number_keyed(INTERP, SELF, key);
+        FLOATVAL f = VTABLE_get_number_keyed(INTERP, SELF, key);
+        return (INTVAL)f;
     }
 
     VTABLE void set_number_keyed(PMC * key, FLOATVAL value) {
@@ -102,27 +103,21 @@ pmclass NumMatrix2D dynpmc auto_attrs {
 
     VTABLE STRING *get_string() {
         INTVAL x, y, x_size, y_size;
-        char *str;
-        STRING *pstr;
+        STRING *pstr = Parrot_str_new(INTERP, "", 0);
+        STRING * const newline = Parrot_str_new(INTERP, "\n", 1);
         Parrot_NumMatrix2D_attributes * const attrs
           = (Parrot_NumMatrix2D_attributes *) PARROT_NUMMATRIX2D(SELF);
         x_size = attrs->x;
         y_size = attrs->y;
 
-        str = (char*) mem_sys_allocate_zeroed((8*x_size*y_size+1));
-
         for (x = 0; x < x_size; ++x) {
             for (y = 0; y < y_size; ++y) {
-                int h = INDEX_XY_ROWMAJOR(x_size, y_size, x, y);
-                snprintf(&(str[8*h]), 8, "%7.4f", attrs->storage[h]);
-                str[8*h+7] = ' ';
+                const FLOATVAL f = ITEM_XY_ROWMAJOR(attrs->storage, x_size, y_size, x, y);
+                STRING * const item = Parrot_sprintf_c(INTERP, "\t%f", f);
+                pstr = Parrot_str_append(INTERP, pstr, item);
             }
-            str[8*(x+1)*y_size-1] = '\n';
+            pstr = Parrot_str_append(INTERP, pstr, newline);
         }
-
-        str[8*x_size*y_size] = '\0';
-        pstr = Parrot_str_new(INTERP, str, 0);
-        mem_sys_free(str);
 
         return pstr;
     }

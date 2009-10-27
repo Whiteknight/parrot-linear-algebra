@@ -18,7 +18,7 @@ PBC_TO_EXE    = @bindir@/pbc_to_exe$(EXE)
 PERL_LIB      = $(TOOLS_DIR)/lib
 NQP           = $(PARROT) $(LIB_DIR)/languages/nqp/nqp.pbc
 PBC_TO_EXE    = @bindir@/pbc_to_exe
-CFLAGS        = @ccflags@
+CFLAGS        = -fPIC @ccflags@
 
 LD            = @ld@
 LD_LOAD_FLAGS = @ld_load_flags@
