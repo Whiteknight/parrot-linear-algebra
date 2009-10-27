@@ -39,7 +39,8 @@ DYNEXT_TARGET = $(DYNEXT_DIR)/$(GROUP)$(LOAD_EXT)
 PMC2C_INCLUDES = --include $(PMC_DIR) --include $(SRC_DIR) --include $(SRC_DIR)/pmc
 
 PMC_SOURCES = \
-    $(PMC_DIR)/nummatrix2d.pmc
+    $(PMC_DIR)/nummatrix2d.pmc \
+    $(PMC_DIR)/pmcmatrix2d.pmc
 
 all: $(DYNEXT_TARGET)
 
@@ -64,7 +65,7 @@ install: all
 uninstall:
 	$(RM_F) $(INSTALL_DIR)/linalg_group$(LOAD_EXT)
 
-$(DYNPMC): $(PMC_SOURCES)
+$(DYNPMC): src/pmc/pla_matrix_types.h $(PMC_SOURCES)
 	$(PMC2C) --no-lines --dump $(PMC2C_INCLUDES) $(PMC_SOURCES)
 	$(PMC2C) --no-lines --c $(PMC2C_INCLUDES) $(PMC_SOURCES)
 	$(PMC2C) --no-lines --library $(GROUP) --c $(PMC_SOURCES)
