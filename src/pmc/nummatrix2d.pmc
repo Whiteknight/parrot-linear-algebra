@@ -22,17 +22,13 @@
 #define INDEX_MIN(a, b) (((a) <= (b))?(a):(b))
 #define INDEX_MAX(a, b) (((a) >= (b))?(a):(b))
 
-/* Make the compiler happy. */
-void
-resize_matrix(PARROT_INTERP, PMC * self, INTVAL x, INTVAL y);
-
 /* Resize the matrix internal storage to be able to hold a point at position
    (x, y). The matrix grows but does not shrink. New spaces in the matrix
    are initialized to 0.0. Parameters x and y are the indices that are trying
    to be accessed, so we must resize the matrix to be able to accomodate those
    indices. Notice that the matrix type is zero-indexed, so the size is one
    plus the highest index that we need to access. */
-void
+static void
 resize_matrix(PARROT_INTERP, PMC * self, INTVAL x, INTVAL y)
 {
     Parrot_NumMatrix2D_attributes * const attrs = PARROT_NUMMATRIX2D(self);
@@ -65,15 +61,6 @@ pmclass NumMatrix2D dynpmc auto_attrs {
     ATTR INTVAL y;
 
     VTABLE void init() {
-        Parrot_NumMatrix2D_attributes * const attrs =
-            mem_allocate_zeroed_typed(Parrot_NumMatrix2D_attributes);
-
-        attrs->x       = 0;
-        attrs->y       = 0;
-        attrs->storage = NULL;
-
-        PMC_data(SELF) = attrs;
-
         PObj_custom_destroy_SET(SELF);
     }
 
