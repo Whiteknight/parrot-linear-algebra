@@ -234,6 +234,20 @@ pmclass NumMatrix2D dynpmc auto_attrs {
         return dest;
     }
 
+    METHOD fill(FLOATVAL value) {
+        Parrot_NumMatrix2D_attributes * const attrs
+          = (Parrot_NumMatrix2D_attributes *) PARROT_NUMMATRIX2D(SELF);
+        INTVAL x, y;
+        INTVAL const x_size = attrs->x;
+        INTVAL const y_size = attrs->y;
+
+        for (x = 0; x < x_size; ++x) {
+            for (y = 0; y < y_size; ++y) {
+                ITEM_XY_ROWMAJOR(attrs->storage, x_size, y_size, x, y) = value;
+            }
+        }
+    }
+
     METHOD resize(INTVAL new_x, INTVAL new_y) {
         resize_matrix(INTERP, SELF, new_x - 1, new_y - 1);
     }
