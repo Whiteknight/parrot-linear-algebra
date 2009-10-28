@@ -290,8 +290,8 @@ pmclass NumMatrix2D dynpmc auto_attrs {
         FLOATVAL * old_s = attrs->storage;
 
         INTVAL i, j;
-        for (i = 0; i < min_x; i++) {
-            for (j = 0; j < min_y; j++) {
+        for (i = 0; i < old_x; i++) {
+            for (j = 0; j < old_y; j++) {
                 ITEM_XY_ROWMAJOR(new_s, new_x, new_y, j, i) =
                     ITEM_XY_ROWMAJOR(old_s, old_x, old_y, i, j);
             }
@@ -299,6 +299,27 @@ pmclass NumMatrix2D dynpmc auto_attrs {
         attrs->storage = new_s;
         attrs->x = new_x;
         attrs->y = new_y;
+        free(old_s);
+    }
+
+    METHOD iterate_function_inplace(PMC * func, PMC * args :slurpy) {
+        Parrot_NumMatrix2D_attributes * const attrs = PARROT_NUMMATRIX2D(self);
+        const INTVAL x = attrs->x;
+        const INTVAL y = attrs->y;
+        const INTVAL newsize = x * y;
+        FLOATVAL * old_s = attrs->storage;
+        FLOATVAL * new_s = (FLOATVAL *)mem_sys_allocate_zeroed(newsize * sizeof (FLOATVAL));
+
+        INTVAL i, j;
+        for (i = 0; i < min_x; i++) {
+            for (j = 0; j < min_y; j++) {
+                FLOATVAL value = ITEM_XY_ROWMAJOR(old_s, x, y, i, j);
+                FLOATVAL result = 0.0;
+                Parrot_ext_call(INTERP, func, "PiNPf->N", SELF, value, args, &result);
+                ITEM_XY_ROWMAJOR(new_s, x, y, i, j) = result;
+            }
+        }
+        attrs->storage = new_s;
         free(old_s);
     }
 }
