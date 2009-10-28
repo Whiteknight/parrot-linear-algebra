@@ -22,7 +22,7 @@ sub MAIN () {
 
     # Set up our custom @foo@ markers.
     if ($OS ne 'openbsd') {
-        %VM<config>{'cblas'} := '-lcblas';
+        %VM<config>{'linkcblas'} := '-lblas';
     }
 
     # Replace all of the @foo@ markers
