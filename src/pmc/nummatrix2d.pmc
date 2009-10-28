@@ -234,6 +234,27 @@ pmclass NumMatrix2D dynpmc auto_attrs {
         return dest;
     }
 
+    VTABLE PMC * get_attr_str(STRING * idx) {
+        Parrot_NumMatrix2D_attributes * const attrs = 
+            (Parrot_NumMatrix2D_attributes *)PARROT_NUMMATRIX2D(SELF);
+        if (Parrot_str_equal(INTERP, idx, CONST_STRING(INTERP, "X"))) {
+            PMC * const x = pmc_new(INTERP, enum_class_Intval);
+            VTABLE_set_integer_native(INTERP, x, attrs->x);
+            return x;
+        }
+        else if (Parrot_str_equal(INTERP, idx, CONST_STRING(INTERP, "Y"))) {
+            PMC * const y = pmc_new(INTERP, enum_class_Intval);
+            VTABLE_set_integer_native(INTERP, y, attrs->y);
+            return y;
+        }
+        else if (Parrot_str_equal(INTERP, idx, CONST_STRING(INTERP, "size"))) {
+            PMC * const size = pmc_new(INTERP, enum_class_Intval);
+            VTABLE_set_integer_native(INTERP, size, attrs->y * attrs->x);
+            return size;
+        }
+        return PMCNULL;
+    }
+
     METHOD fill(FLOATVAL value) {
         Parrot_NumMatrix2D_attributes * const attrs
           = (Parrot_NumMatrix2D_attributes *) PARROT_NUMMATRIX2D(SELF);
