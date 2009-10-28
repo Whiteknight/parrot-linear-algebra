@@ -20,6 +20,11 @@ sub MAIN () {
     # Slurp in the unconfigured Makefile text
     my $unconfigured := slurp(@ARGS[0] || 'config/Makefile.in');
 
+    # Set up our custom @foo@ markers.
+    if ($OS ne 'openbsd') {
+        %VM<config>{'cblas'} := '-lcblas';
+    }
+
     # Replace all of the @foo@ markers
     my $replaced := subst($unconfigured, rx('\@<ident>\@'), replacement);
 
