@@ -35,14 +35,41 @@ resize_matrix(PARROT_INTERP, PMC * self, INTVAL x, INTVAL y)
 }
 
 
+
 pmclass NumMatrix2D dynpmc auto_attrs {
     ATTR FLOATVAL * storage;
     ATTR INTVAL x;
     ATTR INTVAL y;
 
+/*
+
+=head1 VTABLEs
+
+=over 4
+
+=item* init
+
+=cut
+
+*/
+
     VTABLE void init() {
         PObj_custom_destroy_SET(SELF);
     }
+
+/*
+
+=item* get_number_keyed
+
+=item* get_integer_keyed
+
+=item* get_string_keyed
+
+=item* get_pmc_keyed
+
+=cut
+
+*/
 
     VTABLE FLOATVAL get_number_keyed(PMC * key) {
         INTVAL x, y, x_size, y_size;
@@ -62,6 +89,72 @@ pmclass NumMatrix2D dynpmc auto_attrs {
         return (INTVAL)f;
     }
 
+    VTABLE STRING * get_string_keyed(PMC * key) {
+        FLOATVAL f = VTABLE_get_number_keyed(INTERP, SELF, key);
+        STRING * const item = Parrot_sprintf_c(INTERP, "\t%f", f);
+        return item;
+    }
+
+    VTABLE PMC * get_pmc_keyed(PMC * key) {
+        FLOATVAL f = VTABLE_get_number_keyed(INTERP, SELF, key);
+        PMC * const item = pmc_new(INTERP, enum_class_Float);
+        VTABLE_set_number_native(INTERP, item, f);
+        return item;
+    }
+
+/*
+
+=item* get_number_keyed_int
+
+=item* get_integer_keyed_int
+
+=item* get_string_keyed_int
+
+=item* get_pmc_keyed_int
+
+=cut
+
+*/
+
+    VTABLE FLOATVAL get_number_keyed_int(INTVAL key) {
+        Parrot_NumMatrix2D_attributes * const attrs
+            = (Parrot_NumMatrix2D_attributes *) PARROT_NUMMATRIX2D(SELF);
+        const INTVAL total_size = attrs->x * attrs->y;
+        if (key >= total_size) {
+            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                                        "NumMatrix2D: Matrix dimensions must match in add.");
+        }
+        return attrs->storage[key];
+    }
+
+    VTABLE INTVAL get_integer_keyed_int(INTVAL key) {
+        FLOATVAL f = VTABLE_get_number_keyed_int(INTERP, SELF, key);
+        return (INTVAL)f;
+    }
+
+    VTABLE STRING * get_string_keyed_int(INTVAL key) {
+        FLOATVAL f = VTABLE_get_number_keyed_int(INTERP, SELF, key);
+        STRING * const item = Parrot_sprintf_c(INTERP, "\t%f", f);
+        return item;
+    }
+
+    VTABLE PMC * get_pmc_keyed_int(INTVAL key) {
+        FLOATVAL f = VTABLE_get_number_keyed_int(INTERP, SELF, key);
+        PMC * const item = pmc_new(INTERP, enum_class_Float);
+        VTABLE_set_number_native(INTERP, item, f);
+        return item;
+    }
+
+/*
+
+=item* set_number_keyed
+
+=item* set_integer_keyed
+
+=cut
+
+*/
+
     VTABLE void set_number_keyed(PMC * key, FLOATVAL value) {
         INTVAL x, y, x_size, y_size;
         Parrot_NumMatrix2D_attributes * const attrs
@@ -80,6 +173,14 @@ pmclass NumMatrix2D dynpmc auto_attrs {
     VTABLE void set_integer_keyed(PMC * key, INTVAL value) {
         VTABLE_set_number_keyed(INTERP, SELF, key, (FLOATVAL)value);
     }
+
+/*
+
+=item* get_string
+
+=cut
+
+*/
 
     VTABLE STRING *get_string() {
         INTVAL x, y, x_size, y_size;
