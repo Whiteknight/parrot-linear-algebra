@@ -1,6 +1,8 @@
 #ifndef _PLA_MATRIX_TYPES_H_
 #define _PLA_MATRIX_TYPES_H_
 
+#include <cblas.h>
+
 #define GET_INDICES_FROM_KEY(i, k, x, y) \
 do { \
     (x) = VTABLE_get_integer((i), (k)); \
@@ -23,4 +25,8 @@ do { \
 #define INDEX_MIN(a, b) (((a) <= (b))?(a):(b))
 #define INDEX_MAX(a, b) (((a) >= (b))?(a):(b))
 
+#define FLAG_TRANSPOSED 1
+
+#define IS_TRANSPOSED(flags) (((flags) & (FLAG_TRANSPOSED)) != 0)
+#define IS_TRANSPOSED_BLAS(flags) (IS_TRANSPOSED(flags) ? CblasTrans : CblasNoTrans)
 #endif
