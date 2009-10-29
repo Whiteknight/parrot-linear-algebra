@@ -61,7 +61,9 @@ pmclass NumMatrix2D dynpmc auto_attrs {
     VTABLE void destroy() {
         Parrot_NumMatrix2D_attributes * attr =
             (Parrot_NumMatrix2D_attributes *) PARROT_NUMMATRIX2D(SELF);
-        mem_sys_free(attr->storage);
+        FLOAT * const s = attr->storage;
+        if (s)
+            mem_sys_free(s);
     }
 
 /*
