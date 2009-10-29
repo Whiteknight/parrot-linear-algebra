@@ -17,7 +17,9 @@ sub MAIN () {
         exit 1
       pla_library_loaded:
     };
-    plan(11);
+
+    plan(25);
+
     create_nummatrix2d();
     vtable_set_number_keyed();
     vtable_get_number_keyed();
@@ -128,8 +130,50 @@ sub vtable_get_attr_keyed_str() {
     }
 }
 
-sub vtable_get_integer_keyed() {}
-sub vtable_set_integer_keyed() {}
+sub vtable_get_integer_keyed() {
+    Q:PIR {
+        $P0 = new 'NumMatrix2D'
+        $P0[1;1] = 1.0
+        $P0[0;1] = 2.0
+        $P0[1;0] = 3.0
+        $P0[0;0] = 4.0
+
+        $I0 = $P0[1;1]
+        is($I0, 1)
+
+        $I0 = $P0[0;1]
+        is($I0, 2)
+
+        $I0 = $P0[1;0]
+        is($I0, 3)
+
+        $I0 = $P0[0;0]
+        is($I0, 4)
+    }
+}
+
+sub vtable_set_integer_keyed() {
+    Q:PIR {
+        $P0 = new 'NumMatrix2D'
+        $P0[1;1] = 1
+        $P0[0;1] = 2
+        $P0[1;0] = 3
+        $P0[0;0] = 4
+
+        $N0 = $P0[1;1]
+        is($N0, 1.0)
+
+        $N0 = $P0[0;1]
+        is($N0, 2.0)
+
+        $N0 = $P0[1;0]
+        is($N0, 3.0)
+
+        $N0 = $P0[0;0]
+        is($N0, 4.0)
+    }
+}
+
 sub vtable_get_string() {}
 sub vtable_get_string_keyed() {}
 sub vtable_get_pmc_keyed() {}
