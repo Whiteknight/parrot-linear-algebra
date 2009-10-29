@@ -105,7 +105,29 @@ sub vtable_get_number_keyed() {
     }
 }
 
-sub vtable_get_attr_keyed_str() {}
+sub vtable_get_attr_keyed_str() {
+    Q:PIR {
+        $P0 = new 'NumMatrix2D'
+        $P0[2;5] = 1.0
+        $P1 = getattribute $P0, "X"
+        is($P1, 3)
+        $P2 = getattribute $P0, "Y"
+        is($P2, 6)
+
+        $P0[2;7] = 2.0
+        $P1 = getattribute $P0, "X"
+        is($P1, 3)
+        $P2 = getattribute $P0, "Y"
+        is($P2, 8)
+
+        $P0[10;7] = 3.0
+        $P1 = getattribute $P0, "X"
+        is($P1, 11)
+        $P2 = getattribute $P0, "Y"
+        is($P2, 8)
+    }
+}
+
 sub vtable_get_integer_keyed() {}
 sub vtable_set_integer_keyed() {}
 sub vtable_get_string() {}
