@@ -77,7 +77,7 @@ $(DYNPMC): src/pmc/pla_matrix_types.h $(PMC_SOURCES)
 	$(PMC2C) --no-lines --c $(PMC2C_INCLUDES) $(PMC_SOURCES)
 	$(PMC2C) --no-lines --library $(GROUP) --c $(PMC_SOURCES)
 	$(CC) -c @cc_o_out@$(GROUP)$(O) -I$(PMC_DIR) -I$(INCLUDE_DIR) -I$(PMC_INCLUDE_DIR) $(CFLAGS) $(GROUP).c
-	cd $(PMC_DIR) && $(CC) -c -I$(PMC_DIR) -I$(INCLUDE_DIR) -I$(PMC_INCLUDE_DIR) $(CFLAGS) *.c
+	cd $(PMC_DIR) && $(CC) -c -I$(INCLUDE_DIR) -I$(PMC_INCLUDE_DIR) $(CFLAGS) *.c
 	$(LD) @ld_out@$(DYNPMC) $(GROUP)$(O) src/pmc/*$(O) $(LINKARGS)
 
 $(DYNEXT_TARGET): $(DYNPMC)
