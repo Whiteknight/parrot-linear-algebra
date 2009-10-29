@@ -211,11 +211,6 @@ pmclass NumMatrix2D dynpmc auto_attrs {
 
         return pstr;
     }
- 
-    METHOD resize(INTVAL new_x, INTVAL new_y) {
-        resize_matrix(INTERP, SELF, new_x - 1, new_y - 1);
-    }
-
 
     MULTI PMC *add(NumMatrix2D *value, PMC *dest) {
         int i = 0;
@@ -332,6 +327,20 @@ pmclass NumMatrix2D dynpmc auto_attrs {
         return c;
     }
 
+/*
+
+=back
+
+=head1 METHODS
+
+=over 4
+
+*/
+
+    METHOD resize(INTVAL new_x, INTVAL new_y) {
+        resize_matrix(INTERP, SELF, new_x - 1, new_y - 1);
+    }
+
     METHOD fill(FLOATVAL value) {
         Parrot_NumMatrix2D_attributes * const attrs
           = (Parrot_NumMatrix2D_attributes *) PARROT_NUMMATRIX2D(SELF);
@@ -416,5 +425,12 @@ pmclass NumMatrix2D dynpmc auto_attrs {
         attrs->storage = new_s;
         free(old_s);
     }
+/*
+
+=back
+
+=end
+
+*/
 }
 
