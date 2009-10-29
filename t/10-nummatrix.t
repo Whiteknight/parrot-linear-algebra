@@ -19,8 +19,30 @@ sub MAIN () {
     };
     plan(11);
     create_nummatrix2d();
-    set_number_nummatrix2d();
-    get_number_nummatrix2d();
+    vtable_set_number_keyed();
+    vtable_get_number_keyed();
+    vtable_get_attr_keyed_str();
+    vtable_get_integer_keyed();
+    vtable_set_integer_keyed();
+    vtable_get_string();
+    vtable_get_string_keyed();
+    vtable_get_pmc_keyed();
+    vtable_set_pmc_keyed();
+    vtable_get_number_keyed_int();
+    vtable_set_number_keyed_int();
+    vtable_get_integer_keyed_int();
+    vtable_set_integer_keyed_int();
+    vtable_get_string_keyed_int();
+    vtable_get_pmc_keyed_int();
+    vtable_set_pmc_keyed_int();
+    vtable_add_nummatrix2d();
+    vtable_multiply_nummatrix2d();
+    vtable_clone();
+    method_resize();
+    method_fill();
+    method_transpose();
+    method_mem_transpose();
+    method_iterate_function_inplace();
 }
 
 sub create_nummatrix2d() {
@@ -32,7 +54,7 @@ sub create_nummatrix2d() {
     }
 }
 
-sub set_number_nummatrix2d() {
+sub vtable_set_number_keyed() {
     Q:PIR {
         push_eh can_not_set
         $P0 = new 'NumMatrix2D'
@@ -47,7 +69,7 @@ sub set_number_nummatrix2d() {
     }
 }
 
-sub get_number_nummatrix2d() {
+sub vtable_get_number_keyed() {
     Q:PIR {
         $P0 = new 'NumMatrix2D'
         $P0[2;2] = 3.0
@@ -83,3 +105,25 @@ sub get_number_nummatrix2d() {
     }
 }
 
+sub vtable_get_attr_keyed_str() {}
+sub vtable_get_integer_keyed() {}
+sub vtable_set_integer_keyed() {}
+sub vtable_get_string() {}
+sub vtable_get_string_keyed() {}
+sub vtable_get_pmc_keyed() {}
+sub vtable_set_pmc_keyed() {}
+sub vtable_get_number_keyed_int() {}
+sub vtable_set_number_keyed_int() {}
+sub vtable_get_integer_keyed_int() {}
+sub vtable_set_integer_keyed_int() {}
+sub vtable_get_string_keyed_int() {}
+sub vtable_get_pmc_keyed_int() {}
+sub vtable_set_pmc_keyed_int() {}
+sub vtable_add_nummatrix2d() {}
+sub vtable_multiply_nummatrix2d() {}
+sub vtable_clone() {}
+sub method_resize() {}
+sub method_fill() {}
+sub method_transpose() {}
+sub method_mem_transpose() {}
+sub method_iterate_function_inplace() {}
