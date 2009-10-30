@@ -23,7 +23,7 @@ sub MAIN () {
     create_nummatrix2d();
     vtable_set_number_keyed();
     vtable_get_number_keyed();
-    vtable_get_attr_keyed_str();
+    vtable_get_attr_str();
     vtable_get_integer_keyed();
     vtable_set_integer_keyed();
     vtable_get_string();
@@ -46,7 +46,6 @@ sub MAIN () {
     method_mem_transpose();
     method_iterate_function_inplace();
 }
-
 sub create_nummatrix2d() {
     Q:PIR {
         $P0 = new 'NumMatrix2D'
@@ -107,7 +106,7 @@ sub vtable_get_number_keyed() {
     }
 }
 
-sub vtable_get_attr_keyed_str() {
+sub vtable_get_attr_str() {
     Q:PIR {
         $P0 = new 'NumMatrix2D'
         $P0[2;5] = 1.0
