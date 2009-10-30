@@ -181,6 +181,11 @@ pmclass NumMatrix2D dynpmc auto_attrs {
         VTABLE_set_number_keyed(INTERP, SELF, key, (FLOATVAL)value);
     }
 
+    VTABLE void set_pmc_keyed(PMC * key, PMC * value) {
+        const FLOATVAL v = VTABLE_get_number(INTERP, value);
+        VTABLE_set_number_keyed(INTERP, SELF, key, v);
+    }
+
 /*
 
 =item* get_string
@@ -353,13 +358,6 @@ pmclass NumMatrix2D dynpmc auto_attrs {
                 ITEM_XY_ROWMAJOR(attrs->storage, x_size, y_size, x, y) = value;
             }
         }
-    }
-
-    METHOD swap_column(INTVAL col_A, INTVAL col_b) {
-    }
-
-    METHOD swap_row(INTVAL row_a, INTVAL row_b) {
-
     }
 
     METHOD transpose() {

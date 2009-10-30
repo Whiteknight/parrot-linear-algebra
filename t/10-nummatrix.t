@@ -18,7 +18,7 @@ sub MAIN () {
       pla_library_loaded:
     };
 
-    plan(25);
+    plan(34);
 
     create_nummatrix2d();
     vtable_set_number_keyed();
@@ -79,31 +79,31 @@ sub vtable_get_number_keyed() {
         $P0[1;1] = 2.0
 
         $N0 = $P0[0;0]
-        is($N0, 1.0, "Got 1,1")
+        is($N0, 1.0, "Got 0,0")
 
         $N0 = $P0[0;1]
-        is($N0, 0.0, "Got 1,1")
+        is($N0, 0.0, "Got 0,1")
 
         $N0 = $P0[0;2]
-        is($N0, 0.0, "Got 1,1")
+        is($N0, 0.0, "Got 0,2")
 
         $N0 = $P0[1;0]
-        is($N0, 0.0, "Got 1,1")
+        is($N0, 0.0, "Got 1,0")
 
         $N0 = $P0[1;1]
         is($N0, 2.0, "Got 1,1")
 
         $N0 = $P0[1;2]
-        is($N0, 0.0, "Got 1,1")
+        is($N0, 0.0, "Got 1,2")
 
         $N0 = $P0[2;0]
-        is($N0, 0.0, "Got 1,1")
+        is($N0, 0.0, "Got 2,0")
 
         $N0 = $P0[2;1]
-        is($N0, 0.0, "Got 1,1")
+        is($N0, 0.0, "Got 2,1")
 
         $N0 = $P0[2;2]
-        is($N0, 3.0, "Got 1,1")
+        is($N0, 3.0, "Got 2,2")
     }
 }
 
@@ -112,21 +112,21 @@ sub vtable_get_attr_keyed_str() {
         $P0 = new 'NumMatrix2D'
         $P0[2;5] = 1.0
         $P1 = getattribute $P0, "X"
-        is($P1, 3)
+        is($P1, 3, "get first X")
         $P2 = getattribute $P0, "Y"
-        is($P2, 6)
+        is($P2, 6, "get first Y")
 
         $P0[2;7] = 2.0
         $P1 = getattribute $P0, "X"
-        is($P1, 3)
+        is($P1, 3, "get first X again")
         $P2 = getattribute $P0, "Y"
-        is($P2, 8)
+        is($P2, 8, "get resized Y")
 
         $P0[10;7] = 3.0
         $P1 = getattribute $P0, "X"
-        is($P1, 11)
+        is($P1, 11, "get resized X")
         $P2 = getattribute $P0, "Y"
-        is($P2, 8)
+        is($P2, 8, "get resized Y again")
     }
 }
 
@@ -139,16 +139,16 @@ sub vtable_get_integer_keyed() {
         $P0[0;0] = 4.0
 
         $I0 = $P0[1;1]
-        is($I0, 1)
+        is($I0, 1, "get integer 1,1")
 
         $I0 = $P0[0;1]
-        is($I0, 2)
+        is($I0, 2, "get integer 0,1")
 
         $I0 = $P0[1;0]
-        is($I0, 3)
+        is($I0, 3, "get integer 1,0")
 
         $I0 = $P0[0;0]
-        is($I0, 4)
+        is($I0, 4, "get integer 0,0")
     }
 }
 
@@ -161,23 +161,78 @@ sub vtable_set_integer_keyed() {
         $P0[0;0] = 4
 
         $N0 = $P0[1;1]
-        is($N0, 1.0)
+        is($N0, 1.0, "got 1,1 set as integer")
 
         $N0 = $P0[0;1]
-        is($N0, 2.0)
+        is($N0, 2.0, "got 0,1 set as integer")
 
         $N0 = $P0[1;0]
-        is($N0, 3.0)
+        is($N0, 3.0, "got 1,0 set as integer")
 
         $N0 = $P0[0;0]
-        is($N0, 4.0)
+        is($N0, 4.0, "got 0,0 set as integer")
     }
 }
 
+# TODO: These!
 sub vtable_get_string() {}
 sub vtable_get_string_keyed() {}
-sub vtable_get_pmc_keyed() {}
-sub vtable_set_pmc_keyed() {}
+
+sub vtable_get_pmc_keyed() {
+    Q:PIR {
+        $P0 = new 'NumMatrix2D'
+        $P0[1;1] = 1.0
+        $P0[0;1] = 2.0
+        $P0[1;0] = 3.0
+        $P0[0;0] = 4.0
+
+        $P1 = $P0[1;1]
+        $S0 = typeof $P1
+        is($S0, "Float", "got Number PMC")
+        $N0 = $P1
+        is($N0, 1.0, "Got 1,1 as PMC")
+
+        $P1 = $P0[0;1]
+        $N0 = $P1
+        is($N0, 2.0, "Got 0,1 as PMC")
+
+        $P1 = $P0[1;0]
+        $N0 = $P1
+        is($N0, 3.0, "Got 1,0 as PMC")
+
+        $P1 = $P0[0;0]
+        $N0 = $P1
+        is($N0, 4.0, "Got 0,0 as PMC")
+    }
+}
+
+sub vtable_set_pmc_keyed() {
+    Q:PIR {
+        $P0 = new 'NumMatrix2D'
+        $P1 = box 1.0
+        $P0[1;1] = $P1
+        $P1 = box 2.0
+        $P0[0;1] = $P1
+        $P1 = box 3.0
+        $P0[1;0] = $P1
+        $P1 = box 4.0
+        $P0[0;0] = $P1
+
+        $N0 = $P0[1;1]
+        is($N0, 1.0, "got 1,1 set as PMC")
+
+        $N0 = $P0[0;1]
+        is($N0, 2.0, "got 0,1 set as PMC")
+
+        $N0 = $P0[1;0]
+        is($N0, 3.0, "got 1,0 set as PMC")
+
+        $N0 = $P0[0;0]
+        is($N0, 4.0, "got 0,0 set as PMC")
+    }
+}
+
+
 sub vtable_get_number_keyed_int() {}
 sub vtable_set_number_keyed_int() {}
 sub vtable_get_integer_keyed_int() {}
