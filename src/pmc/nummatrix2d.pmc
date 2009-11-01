@@ -203,25 +203,34 @@ pmclass NumMatrix2D dynpmc auto_attrs {
 */
 
     VTABLE STRING *get_string() {
-        INTVAL x, y, x_size, y_size;
+        INTVAL x, y;
         STRING *pstr = Parrot_str_new(INTERP, "", 0);
         STRING * const newline = Parrot_str_new(INTERP, "\n", 1);
-        Parrot_NumMatrix2D_attributes * const attrs
-          = (Parrot_NumMatrix2D_attributes *) PARROT_NUMMATRIX2D(SELF);
-        x_size = attrs->x;
-        y_size = attrs->y;
+        Parrot_NumMatrix2D_attributes * const attrs = PARROT_NUMMATRIX2D(SELF);
+        FLOATVAL * const s = attrs->storage;
+        const INTVAL x_size = attrs->x;
+        const INTVAL y_size = attrs->y;
 
-        for (x = 0; x < x_size; ++x) {
+        if (IS_TRANSPOSED(attrs->flags)) {
             for (y = 0; y < y_size; ++y) {
-                const FLOATVAL f = IS_TRANSPOSED(attrs->flags) ?
-                                    ITEM_XY_COLMAJOR(attrs->storage, x_size, y_size, x, y) :
-                                    ITEM_XY_ROWMAJOR(attrs->storage, x_size, y_size, x, y);
-                STRING * const item = Parrot_sprintf_c(INTERP, "\t%f", f);
-                pstr = Parrot_str_append(INTERP, pstr, item);
+                for (x = 0; x < x_size; ++x) {
+                    const FLOATVAL f = ITEM_XY_COLMAJOR(s, x_size, y_size, x, y);
+                    STRING * const item = Parrot_sprintf_c(INTERP, "\t%f", f);
+                    pstr = Parrot_str_append(INTERP, pstr, item);
+                }
+                pstr = Parrot_str_append(INTERP, pstr, newline);
             }
-            pstr = Parrot_str_append(INTERP, pstr, newline);
         }
-
+        else {
+            for (y = 0; y < y_size; ++y) {
+                for (x = 0; x < x_size; ++x) {
+                    const FLOATVAL f = ITEM_XY_ROWMAJOR(s, x_size, y_size, x, y);
+                    STRING * const item = Parrot_sprintf_c(INTERP, "\t%f", f);
+                    pstr = Parrot_str_append(INTERP, pstr, item);
+                }
+                pstr = Parrot_str_append(INTERP, pstr, newline);
+            }
+        }
         return pstr;
     }
 
@@ -354,12 +363,23 @@ pmclass NumMatrix2D dynpmc auto_attrs {
         resize_matrix(INTERP, SELF, new_x - 1, new_y - 1);
     }
 
-    METHOD fill(FLOATVAL value) {
-        Parrot_NumMatrix2D_attributes * const attrs
-          = (Parrot_NumMatrix2D_attributes *) PARROT_NUMMATRIX2D(SELF);
+    METHOD fill(FLOATVAL value,
+                INTVAL x_size :optional, INTVAL has_x_size :opt_flag,
+                INTVAL y_size :optional, INTVAL has_y_size :opt_flag
+               ) {
+        Parrot_NumMatrix2D_attributes * const attrs = PARROT_NUMMATRIX2D(SELF);
+        INTVAL const curr_x_size = attrs->x;
+        INTVAL const curr_y_size = attrs->y;
         INTVAL x, y;
-        INTVAL const x_size = attrs->x;
-        INTVAL const y_size = attrs->y;
+
+        if (!has_x_size)
+            x_size = curr_x_size;
+        if (!has_y_size)
+            y_size = curr_y_size;
+
+        if ((has_x_size && x_size > curr_x_size) ||
+            (has_y_size && y_size > curr_y_size))
+            resize_matrix(INTERP, SELF, x_size - 1, y_size - 1);
 
         for (x = 0; x < x_size; ++x) {
             for (y = 0; y < y_size; ++y) {
