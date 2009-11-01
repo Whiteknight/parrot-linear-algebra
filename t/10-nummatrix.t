@@ -18,7 +18,7 @@ sub MAIN () {
       pla_library_loaded:
     };
 
-    plan(34);
+    plan(47);
 
     create_nummatrix2d();
     vtable_set_number_keyed();
@@ -46,12 +46,18 @@ sub MAIN () {
     method_mem_transpose();
     method_iterate_function_inplace();
 }
+
 sub create_nummatrix2d() {
     Q:PIR {
+        push_eh can_not_create
         $P0 = new 'NumMatrix2D'
         $I0 = isnull $P0
         $I0 = not $I0
         'ok'($I0, "Can create a new NumMatrix2D")
+        .return()
+      can_not_create:
+        'ok'(0, "Could not create a NumMatrix2D")
+        .return()
     }
 }
 
@@ -232,12 +238,84 @@ sub vtable_set_pmc_keyed() {
 }
 
 
-sub vtable_get_number_keyed_int() {}
+sub vtable_get_number_keyed_int() {
+    Q:PIR {
+        $P0 = new 'NumMatrix2D'
+        $P0[1;1] = 1.0
+        $P0[0;1] = 2.0
+        $P0[1;0] = 3.0
+        $P0[0;0] = 4.0
+
+        $N0 = $P0[0]
+        is($N0, 4.0, "Can get number 0 by linear index")
+
+        $N0 = $P0[1]
+        is($N0, 2.0, "Can get number 1 by linear index")
+
+        $N0 = $P0[2]
+        is($N0, 3.0, "Can get number 2 by linear index")
+
+        $N0 = $P0[3]
+        is($N0, 1.0, "Can get number 3 by linear index")
+    }
+}
+
 sub vtable_set_number_keyed_int() {}
-sub vtable_get_integer_keyed_int() {}
+
+sub vtable_get_integer_keyed_int() {
+    Q:PIR {
+        $P0 = new 'NumMatrix2D'
+        $P0[1;1] = 1.0
+        $P0[0;1] = 2.0
+        $P0[1;0] = 3.0
+        $P0[0;0] = 4.0
+
+        $I0 = $P0[0]
+        is($I0, 4, "Can get integer 0 by linear index")
+
+        $I0 = $P0[1]
+        is($I0, 2, "Can get integer 1 by linear index")
+
+        $I0 = $P0[2]
+        is($I0, 3, "Can get integer 2 by linear index")
+
+        $I0 = $P0[3]
+        is($I0, 1, "Can get integer 3 by linear index")
+    }
+}
+
 sub vtable_set_integer_keyed_int() {}
 sub vtable_get_string_keyed_int() {}
-sub vtable_get_pmc_keyed_int() {}
+
+sub vtable_get_pmc_keyed_int() {
+    Q:PIR {
+        $P0 = new 'NumMatrix2D'
+        $P0[1;1] = 1.0
+        $P0[0;1] = 2.0
+        $P0[1;0] = 3.0
+        $P0[0;0] = 4.0
+
+        $P1 = $P0[0]
+        $S0 = typeof $P1
+        is($S0, "Float", "got Number PMC from linear index")
+        $N0 = $P1
+        is($N0, 4.0, "Got PMC 0 from linear index")
+
+        $P1 = $P0[1]
+        $N0 = $P1
+        is($N0, 2.0, "Got PMC 1 from linear index")
+
+        $P1 = $P0[2]
+        $N0 = $P1
+        is($N0, 3.0, "Got PMC 2 from linear index")
+
+        $P1 = $P0[3]
+        $N0 = $P1
+        is($N0, 1.0, "Got PMC 3 from linear index")
+    }
+}
+
+
 sub vtable_set_pmc_keyed_int() {}
 sub vtable_add_nummatrix2d() {}
 sub vtable_multiply_nummatrix2d() {}
