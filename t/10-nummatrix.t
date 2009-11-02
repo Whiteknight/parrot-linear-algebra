@@ -18,7 +18,7 @@ sub MAIN () {
       pla_library_loaded:
     };
 
-    plan(65);
+    plan(67);
 
     create_nummatrix2d();
     vtable_set_number_keyed();
@@ -391,7 +391,33 @@ sub method_resize() {
     }
 }
 
-sub method_fill() {}
+sub method_fill() {
+    Q:PIR {
+        $P0 = new ['NumMatrix2D']
+        $P0[1;2] = 2.0
+        $P0[1;1] = 2.0
+        $P0[1;0] = 2.0
+        $P0[0;2] = 2.0
+        $P0[0;1] = 2.0
+        $P0[0;0] = 2.0
+
+        $P1 = new ['NumMatrix2D']
+        $P1.'fill'(2.0, 2, 3)
+        $I0 = $P0 == $P1
+        ok($I0, "can fill a matrix to a given size")
+
+        $P0[1;2] = 3.0
+        $P0[1;1] = 3.0
+        $P0[1;0] = 3.0
+        $P0[0;2] = 3.0
+        $P0[0;1] = 3.0
+        $P0[0;0] = 3.0
+
+        $P1.'fill'(3.0)
+        $I0 = $P0 == $P1
+        ok($I0, "can fill a matrix without specifying size")
+    }
+}
 
 sub method_transpose() {
     Q:PIR {
