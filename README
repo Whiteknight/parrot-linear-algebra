@@ -1,26 +1,33 @@
 parrot-linear-algebra
 
-A linear algebra library package for Parrot
+A linear algebra library package for the Parrot Virtual Machine
 
 PROJECT GOALS
 
-The initial goals of this package are to receive and make independent the
-bindings for CBLAS and CLAPACK that were originally developed for the Matrixy
-compiler project
+The goals of the Parrot-Linear-Algebra (PLA) project are to develop a good,
+high-performance linear algebra toolset for use with the Parrot Virtual
+Machine, and programs that run on top of Parrot. In pursuit of these goals,
+high-performance PMC matrix types will be developed, along with interfaces
+to the BLAS and LAPACK libraries for high-performance operations.
 
-OLD: http://code.google.com/p/matrixy
-NEW: http://github.com/Whiteknight/matrixy
+In addition to these core goals, PLA may also provide a series of ancillary
+tools that are similar in implementation to it's high-performance core
+utilities. 
+
+OLD Project Site: http://code.google.com/p/matrixy
+NEW Project Site: http://github.com/Whiteknight/matrixy
+Parrot:           http://www.parrot.org
 
 STATUS
-Currently, this package is in an extreme state of disrepair because it is
-being separated from the Matrixy project. Nothing works, nothing builds, and
-this is expected.
+PLA is being actively developed. It has core PMC types that build, a build
+and installation system, and a growing test suite.
 
 DEPENDENCIES
-<unknown>
+Currently depends on Parrot (Version 1.6.0 or higher), make, and CBLAS 
+(or ATLAS with the CBLAS-like bindings).
 
 BUILDING
-<unknown>
+Currently builds and installs.
 
 CREDITS
 Original versions were developed as part of the Matrixy project by Blairuk.
