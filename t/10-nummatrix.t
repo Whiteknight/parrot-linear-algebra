@@ -18,7 +18,7 @@ sub MAIN () {
       pla_library_loaded:
     };
 
-    plan(47);
+    plan(55);
 
     create_nummatrix2d();
     vtable_set_number_keyed();
@@ -39,6 +39,7 @@ sub MAIN () {
     vtable_set_pmc_keyed_int();
     vtable_add_nummatrix2d();
     vtable_multiply_nummatrix2d();
+    vtable_is_equal();
     vtable_clone();
     method_resize();
     method_fill();
@@ -319,7 +320,55 @@ sub vtable_get_pmc_keyed_int() {
 sub vtable_set_pmc_keyed_int() {}
 sub vtable_add_nummatrix2d() {}
 sub vtable_multiply_nummatrix2d() {}
-sub vtable_clone() {}
+
+sub vtable_is_equal() {
+    Q:PIR {
+        $P0 = new 'NumMatrix2D'
+        $P1 = new 'NumMatrix2D'
+
+        $I0 = $P0 == $P1
+        ok($I0, "empty matrices are equal")
+
+        $P0[0;0] = 1.0
+        $P1[0;0] = 1.0
+        $I0 = $P0 == $P1
+        ok($I0, "Initialized 1x1 matrices are equal")
+
+        $P0[3;5] = 2.0
+        $P1[3;5] = 2.0
+        $I0 = $P0 == $P1
+        ok($I0, "Auto-resized matrices are equal")
+
+        $P0[3;5] = 3.0
+        $I0 = $P0 == $P1
+        is($I0, 0, "matrices with different values aren't equal")
+        $P1[3;5] = 3.0
+        $I0 = $P0 == $P1
+        ok($I0, "matrices can be made equal again")
+
+        $P0[4;7] = 0.0
+        $I0 = $P0 == $P1
+        is($I0, 0, "matrices of different sizes aren't equal")
+    }
+}
+
+sub vtable_clone() {
+    Q:PIR {
+        $P0 = new 'NumMatrix2D'
+        $P0[1;1] = 1.0
+        $P0[0;1] = 2.0
+        $P0[1;0] = 3.0
+        $P0[0;0] = 4.0
+
+        $P1 = clone $P0
+        $S0 = typeof $P1
+        is($S0, "NumMatrix2D", "a clone is the right type")
+
+        $I0 = $P0 == $P1
+        ok($I0, "Clones are equal")
+    }
+}
+
 sub method_resize() {}
 sub method_fill() {}
 sub method_transpose() {}

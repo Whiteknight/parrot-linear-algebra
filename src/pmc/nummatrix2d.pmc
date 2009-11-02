@@ -349,6 +349,35 @@ pmclass NumMatrix2D dynpmc auto_attrs {
         return c;
     }
 
+    VTABLE INTVAL is_equal(PMC * other) {
+        if (other->vtable->base_type == SELF->vtable->base_type) {
+            Parrot_NumMatrix2D_attributes * const self_attrs = PARROT_NUMMATRIX2D(SELF);
+            Parrot_NumMatrix2D_attributes * const other_attrs = PARROT_NUMMATRIX2D(other);
+            const INTVAL self_x = self_attrs->x;
+            const INTVAL self_y = self_attrs->y;
+            const INTVAL other_x = other_attrs->x;
+            const INTVAL other_y = other_attrs->y;
+            FLOATVAL * const self_s = self_attrs->storage;
+            FLOATVAL * const other_s = other_attrs->storage;
+            INTVAL x, y;
+
+            if (self_x != other_x || self_y != other_y)
+                return 0;
+
+            for (y = 0; y < self_y; y++) {
+                for (x = 0; x < self_x; x++) {
+                    const FLOATVAL self_value = ITEM_XY_ROWMAJOR(self_s, self_x, self_y, x, y);
+                    const FLOATVAL other_value = ITEM_XY_ROWMAJOR(other_s, other_x, other_y, x, y);
+                    if (self_value != other_value)
+                        return 0;
+                }
+            }
+            return 1;
+        }
+        return 0;
+    }
+
+
 /*
 
 =back
