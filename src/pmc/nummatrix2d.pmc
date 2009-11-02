@@ -393,10 +393,28 @@ pmclass NumMatrix2D dynpmc auto_attrs {
 =over 4
 
 */
+/*
+
+=item resize()
+
+=cut
+
+*/
 
     METHOD resize(INTVAL new_x, INTVAL new_y) {
         resize_matrix(INTERP, SELF, new_x - 1, new_y - 1);
     }
+    
+/*
+
+=item fill()
+
+Fill the matrix with a single value. if sizes are provided, fill to those
+sizes, growing the matrix if needed.
+
+=cut
+
+*/
 
     METHOD fill(FLOATVAL value,
                 INTVAL x_size :optional, INTVAL has_x_size :opt_flag,
@@ -422,6 +440,16 @@ pmclass NumMatrix2D dynpmc auto_attrs {
             }
         }
     }
+    
+/*
+
+=item transpose()
+
+Transposes the matrix.
+
+=cut
+
+*/
 
     METHOD transpose() {
         Parrot_NumMatrix2D_attributes * const attrs =
@@ -440,6 +468,17 @@ pmclass NumMatrix2D dynpmc auto_attrs {
         transposed = !transposed;
         RETURN(INTVAL transposed);
     }
+    
+/*
+
+=item mem_transpose()
+
+Transposes the actual data storage of the matrix. More expensive up-front
+than the transpose() method.
+
+=cut
+
+*/
 
     METHOD mem_transpose() {
         Parrot_NumMatrix2D_attributes * const attrs = 
@@ -464,6 +503,17 @@ pmclass NumMatrix2D dynpmc auto_attrs {
         attrs->y = new_y;
         free(old_s);
     }
+    
+/*
+
+=item iterate_function_inplace()
+
+Calls a function for every element in the array, replacing the current
+value with the return value of the called function.
+
+=cut
+
+*/
 
     METHOD iterate_function_inplace(PMC * func, PMC * args :slurpy) {
         Parrot_NumMatrix2D_attributes * const attrs =
@@ -487,12 +537,27 @@ pmclass NumMatrix2D dynpmc auto_attrs {
         free(old_s);
     }
     
+/*
+
+=item instantiate_from_array()
+
+Instantiate a new matrix from a linear array, filling each row with data
+in order.
+
+=cut
+
+*/
+    
     METHOD initialize_from_array(INTVAL x_size, INTVAL y_size, PMC *values) {
         Parrot_NumMatrix2D_attributes * const attrs = PARROT_NUMMATRIX2D(SELF);
         FLOATVAL * const s = attrs->storage;
         INTVAL x = attrs->x;
         INTVAL y = attrs->y;
         INTVAL i, j, num = 0;
+        if (x * y > VTABLE_elements(INTERP, values))
+            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                "NumMatrix2D: not enough elements available for initialization.");
+            
         resize_matrix(INTERP, SELF, x_size - 1, y_size - 1);
         for (i = 0; i < y_size; i++) {
             for (j = 0; j < x_size; j++) {
