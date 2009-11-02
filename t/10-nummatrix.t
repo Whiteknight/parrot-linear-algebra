@@ -18,7 +18,7 @@ sub MAIN () {
       pla_library_loaded:
     };
 
-    plan(61);
+    plan(65);
 
     create_nummatrix2d();
     vtable_set_number_keyed();
@@ -392,6 +392,69 @@ sub method_resize() {
 }
 
 sub method_fill() {}
-sub method_transpose() {}
-sub method_mem_transpose() {}
+
+sub method_transpose() {
+    Q:PIR {
+        $P0 = new 'NumMatrix2D'
+        $P0[1;2] = 6.0
+        $P0[1;1] = 5.0
+        $P0[1;0] = 4.0
+        $P0[0;2] = 3.0
+        $P0[0;1] = 2.0
+        $P0[0;0] = 1.0
+        say "P0: "
+        say $P0
+
+        $P1 = new 'NumMatrix2D'
+        $P1[2;1] = 6.0
+        $P1[1;1] = 5.0
+        $P1[0;1] = 4.0
+        $P1[2;0] = 3.0
+        $P1[1;0] = 2.0
+        $P1[0;0] = 1.0
+        say "P1: "
+        say $P1
+
+        $P2 = clone $P0
+        $I0 = $P2 == $P0
+        ok($I0, "a clone is not transposed")
+        say "P2 as P0: "
+        say $P2
+
+        $P2.'transpose'()
+        $I0 = $P1 == $P2
+        ok($I0, "transpose does what it should")
+        say "P2 transposed: "
+        say $P2
+    }
+}
+
+sub method_mem_transpose() {
+    Q:PIR {
+        $P0 = new 'NumMatrix2D'
+        $P0[1;2] = 6.0
+        $P0[1;1] = 5.0
+        $P0[1;0] = 4.0
+        $P0[0;2] = 3.0
+        $P0[0;1] = 2.0
+        $P0[0;0] = 1.0
+
+        $P1 = new 'NumMatrix2D'
+        $P1[2;1] = 6.0
+        $P1[1;1] = 5.0
+        $P1[0;1] = 4.0
+        $P1[2;0] = 3.0
+        $P1[1;0] = 2.0
+        $P1[0;0] = 1.0
+
+        $P2 = clone $P0
+        $I0 = $P2 == $P0
+        ok($I0, "a clone is not mem_transposed")
+
+        $P2.'mem_transpose'()
+        $I0 = $P2 == $P1
+        ok($I0, "transpose does what it should")
+    }
+}
+
 sub method_iterate_function_inplace() {}

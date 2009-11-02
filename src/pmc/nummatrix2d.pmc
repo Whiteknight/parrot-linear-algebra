@@ -353,8 +353,10 @@ pmclass NumMatrix2D dynpmc auto_attrs {
         if (other->vtable->base_type == SELF->vtable->base_type) {
             Parrot_NumMatrix2D_attributes * const self_attrs = PARROT_NUMMATRIX2D(SELF);
             Parrot_NumMatrix2D_attributes * const other_attrs = PARROT_NUMMATRIX2D(other);
+            const INTVAL self_is_transposed = IS_TRANSPOSED(self_attrs->flags);
             const INTVAL self_x = self_attrs->x;
             const INTVAL self_y = self_attrs->y;
+            const INTVAL other_is_transposed = IS_TRANSPOSED(other_attrs->flags);
             const INTVAL other_x = other_attrs->x;
             const INTVAL other_y = other_attrs->y;
             FLOATVAL * const self_s = self_attrs->storage;
@@ -366,8 +368,12 @@ pmclass NumMatrix2D dynpmc auto_attrs {
 
             for (y = 0; y < self_y; y++) {
                 for (x = 0; x < self_x; x++) {
-                    const FLOATVAL self_value = ITEM_XY_ROWMAJOR(self_s, self_x, self_y, x, y);
-                    const FLOATVAL other_value = ITEM_XY_ROWMAJOR(other_s, other_x, other_y, x, y);
+                    const FLOATVAL self_value = self_is_transposed ?
+                        ITEM_XY_COLMAJOR(self_s, self_x, self_y, x, y) :
+                        ITEM_XY_ROWMAJOR(self_s, self_x, self_y, x, y);
+                    const FLOATVAL other_value = other_is_transposed ?
+                        ITEM_XY_COLMAJOR(other_s, other_x, other_y, x, y) :
+                        ITEM_XY_ROWMAJOR(other_s, other_x, other_y, x, y);
                     if (self_value != other_value)
                         return 0;
                 }
