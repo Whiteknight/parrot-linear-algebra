@@ -18,7 +18,7 @@ sub MAIN () {
       pla_library_loaded:
     };
 
-    plan(55);
+    plan(61);
 
     create_nummatrix2d();
     vtable_set_number_keyed();
@@ -369,7 +369,28 @@ sub vtable_clone() {
     }
 }
 
-sub method_resize() {}
+sub method_resize() {
+    Q:PIR {
+        $P0 = new ['NumMatrix2D']
+        $P1 = getattribute $P0, "X"
+        $P2 = getattribute $P0, "Y"
+        is($P1, 0, "new matrices are empty, X")
+        is($P2, 0, "new matrices are empty, Y")
+
+        $P0.'resize'(3, 3)
+        $P1 = getattribute $P0, "X"
+        $P2 = getattribute $P0, "Y"
+        is($P1, 3, "matrices can grow on resize, X")
+        is($P2, 3, "matrices can grow on resize, Y")
+
+        $P0.'resize'(1, 1)
+        $P1 = getattribute $P0, "X"
+        $P2 = getattribute $P0, "Y"
+        is($P1, 3, "matrices do not shrink, X")
+        is($P2, 3, "matrices do not shrink, Y")
+    }
+}
+
 sub method_fill() {}
 sub method_transpose() {}
 sub method_mem_transpose() {}
