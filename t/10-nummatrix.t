@@ -18,7 +18,7 @@ sub MAIN () {
       pla_library_loaded:
     };
 
-    plan(72);
+    plan(73);
 
     create_nummatrix2d();
     vtable_set_number_keyed();
