@@ -547,7 +547,7 @@ in order.
 =cut
 
 */
-    
+
     METHOD initialize_from_array(INTVAL x_size, INTVAL y_size, PMC *values) {
         Parrot_NumMatrix2D_attributes * const attrs = PARROT_NUMMATRIX2D(SELF);
         FLOATVAL * const s = attrs->storage;
@@ -557,24 +557,24 @@ in order.
         if (x * y > VTABLE_elements(INTERP, values))
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
                 "NumMatrix2D: not enough elements available for initialization.");
-            
+
         resize_matrix(INTERP, SELF, x_size - 1, y_size - 1);
         for (i = 0; i < y_size; i++) {
             for (j = 0; j < x_size; j++) {
-                FLOATVAL value = VTABLE_get_number_keyed(INTERP, values, num);
+                FLOATVAL value = VTABLE_get_number_keyed_int(INTERP, values, num);
                 num++;
                 ITEM_XY_ROWMAJOR(s, x, y, j, i) = value;
             }
         }
     }
-    
+
     METHOD get_block(INTVAL x_idx, INTVAL y_idx, INTVAL x_size, INTVAL y_size) {
         Parrot_NumMatrix2D_attributes * const attrs = PARROT_NUMMATRIX2D(SELF);
         FLOATVAL * const s = attrs->storage;
         const INTVAL x = attrs->x;
         const INTVAL y = attrs->y;
         INTVAL i, j;
-        
+
         if ((x < x_idx + x_size) || (y < y_idx + y_size))
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
                 "NumMatrix2D: block boundaries exceed matrix size");
@@ -593,29 +593,28 @@ in order.
             RETURN(PMC * new_matrix);
         }
     }
-    
+
     METHOD set_block(INTVAL x_idx, INTVAL y_idx, PMC * blck) {
         Parrot_NumMatrix2D_attributes * const self_attrs = PARROT_NUMMATRIX2D(SELF);
         Parrot_NumMatrix2D_attributes * const blck_attrs = PARROT_NUMMATRIX2D(blck);
         FLOATVAL * const self_s = self_attrs->storage;
-        FLOATVAL * const blck_s = blck_attrs->storage
+        FLOATVAL * const blck_s = blck_attrs->storage;
         const INTVAL self_x = self_attrs->x;
         const INTVAL self_y = self_attrs->y;
         const INTVAL blck_x = blck_attrs->x;
         const INTVAL blck_y = blck_attrs->y;
         INTVAL i, j;
-        
+
         if (blck_x + x_idx > self_x || blck_y + y_idx > self_y)
             resize_matrix(INTERP, SELF, blck_x + x_idx - 1, blck_y + y_idx - 1);
-        for (i = 0; i < y_size; i++) {
-            for (j = 0; j < x_size; j++) {
+        for (i = 0; i < blck_y; i++) {
+            for (j = 0; j < blck_x; j++) {
                 ITEM_XY_ROWMAJOR(self_s, self_x + x_idx, self_y + y_idx, j, i) =
                     ITEM_XY_ROWMAJOR(blck_s, blck_x, blck_y, j, i);
             }
         }
-        
     }
-    
+
 /*
 
 =back
