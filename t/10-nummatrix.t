@@ -537,7 +537,25 @@ sub method_initialize_from_array() {
     }
 }
 
-sub method_set_block() {}
+sub method_set_block() {
+    Q:PIR {
+        $P0 = new ['NumMatrix2D']
+        $P0[0;0] = 1.0
+        $P0[1;1] = 1.0
+
+        $P1 = new ['NumMatrix2D']
+        $P1[0;0] = 1.0
+        $P1[1;1] = 1.0
+        $P1[2;2] = 1.0
+        $P1[3;3] = 1.0
+
+        $P2 = new ['NumMatrix2D']
+        $P2.'set_block'(0, 0, $P0)
+        $P2.'set_block'(2, 2, $P0)
+        $I0 = $P2 == $P1
+        ok($I0, "set_block works")
+    }
+}
 
 sub method_get_block() {
     Q:PIR {
