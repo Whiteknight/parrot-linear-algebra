@@ -18,7 +18,7 @@ sub MAIN () {
       pla_library_loaded:
     };
 
-    plan(67);
+    plan(70);
 
     create_nummatrix2d();
     vtable_set_number_keyed();
@@ -46,6 +46,9 @@ sub MAIN () {
     method_transpose();
     method_mem_transpose();
     method_iterate_function_inplace();
+    method_initialize_from_array();
+    method_get_block();
+    method_set_block();
 }
 
 sub create_nummatrix2d() {
@@ -438,20 +441,14 @@ sub method_transpose() {
         $P1[2;0] = 3.0
         $P1[1;0] = 2.0
         $P1[0;0] = 1.0
-        say "P1: "
-        say $P1
 
         $P2 = clone $P0
         $I0 = $P2 == $P0
         ok($I0, "a clone is not transposed")
-        say "P2 as P0: "
-        say $P2
 
         $P2.'transpose'()
         $I0 = $P1 == $P2
         ok($I0, "transpose does what it should")
-        say "P2 transposed: "
-        say $P2
     }
 }
 
@@ -484,3 +481,62 @@ sub method_mem_transpose() {
 }
 
 sub method_iterate_function_inplace() {}
+sub method_initialize_from_array() {}
+sub method_set_block() {}
+
+sub method_get_block() {
+    Q:PIR {
+        $P0 = new ['ResizableFloatArray']
+        $P0[0] = 1.0
+        $P0[1] = 2.0
+        $P0[2] = 3.0
+        $P0[3] = 4.0
+        $P0[4] = 5.0
+        $P0[5] = 6.0
+
+        $P1 = new ['NumMatrix2D']
+        $P1[0;0] = 1.0
+        $P1[1;0] = 2.0
+        $P1[2;0] = 3.0
+        $P1[0;1] = 4.0
+        $P1[1;1] = 5.0
+        $P1[2;1] = 6.0
+
+        $P2 = new ['NumMatrix2D']
+        $P2[0;0] = 1.0
+        $P2[1;0] = 2.0
+        $P2[0;1] = 3.0
+        $P2[1;1] = 4.0
+        $P2[0;2] = 5.0
+        $P2[1;2] = 6.0
+
+        $P3 = new ['NumMatrix2D']
+        $P3[0;0] = 1.0
+        $P3[1;0] = 2.0
+        $P3[2;0] = 3.0
+        $P3[3;0] = 4.0
+        $P3[4;0] = 5.0
+        $P3[5;0] = 6.0
+        $P3[0;1] = 0.0
+        $P3[1;1] = 0.0
+        $P3[2;1] = 0.0
+        $P3[3;1] = 0.0
+        $P3[4;1] = 0.0
+        $P3[5;1] = 0.0
+
+        $P9 = new ['NumMatrix2D']
+        $P9.'initialize_from_array'(3, 2, $P0)
+        $I0 = $P9 == $P1
+        ok($I0, "Initialize matrix from array first")
+
+        $P9 = new ['NumMatrix2D']
+        $P9.'initialize_from_array'(2, 3, $P0)
+        $I0 = $P9 == $P2
+        ok($I0, "Same initialization array, different dimensions")
+
+        $P9 = new ['NumMatrix2D']
+        $P9.'initialize_from_array'(6, 2, $P0)
+        $I0 = $P9 == $P3
+        ok($I0, "initialization can grow larger then the array")
+    }
+}
