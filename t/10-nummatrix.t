@@ -18,7 +18,7 @@ sub MAIN () {
       pla_library_loaded:
     };
 
-    plan(70);
+    plan(72);
 
     create_nummatrix2d();
     vtable_set_number_keyed();
@@ -479,10 +479,8 @@ sub method_mem_transpose() {
 }
 
 sub method_iterate_function_inplace() {}
-sub method_initialize_from_array() {}
-sub method_set_block() {}
 
-sub method_get_block() {
+sub method_initialize_from_array() {
     Q:PIR {
         $P0 = new ['ResizableFloatArray']
         $P0[0] = 1.0
@@ -536,5 +534,37 @@ sub method_get_block() {
         $P9.'initialize_from_array'(6, 2, $P0)
         $I0 = $P9 == $P3
         ok($I0, "initialization can grow larger then the array")
+    }
+}
+
+sub method_set_block() {}
+
+sub method_get_block() {
+    Q:PIR {
+        $P0 = new ['NumMatrix2D']
+        $P0[0;0] = 1.0
+        $P0[1;0] = 2.0
+        $P0[2;0] = 3.0
+        $P0[0;1] = 4.0
+        $P0[1;1] = 5.0
+        $P0[2;1] = 6.0
+
+        $P1 = new ['NumMatrix2D']
+        $P1[0;0] = 1.0
+        $P1[1;0] = 2.0
+        $P1[0;1] = 4.0
+        $P1[1;1] = 5.0
+
+        $P2 = new ['NumMatrix2D']
+        $P2[0;0] = 5.0
+        $P2[1;0] = 6.0
+
+        $P9 = $P0.'get_block'(0, 0, 2, 2)
+        $I0 = $P9 == $P1
+        ok($I0, "can get a block with zero offset")
+
+        $P9 = $P0.'get_block'(1, 1, 2, 1)
+        $I0 = $P9 == $P2
+        ok($I0, "can get a block with non-zero offset")
     }
 }
