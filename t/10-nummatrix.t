@@ -431,8 +431,6 @@ sub method_transpose() {
         $P0[0;2] = 3.0
         $P0[0;1] = 2.0
         $P0[0;0] = 1.0
-        say "P0: "
-        say $P0
 
         $P1 = new 'NumMatrix2D'
         $P1[2;1] = 6.0

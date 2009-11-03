@@ -551,17 +551,13 @@ in order.
     METHOD initialize_from_array(INTVAL x_size, INTVAL y_size, PMC *values) {
         Parrot_NumMatrix2D_attributes * const attrs = PARROT_NUMMATRIX2D(SELF);
         FLOATVAL * s;
-        INTVAL self_x = attrs->x;
-        INTVAL self_y = attrs->y;
-        INTVAL i, j, num = 0;
-        if (self_x * self_y > VTABLE_elements(INTERP, values))
-            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
-                "NumMatrix2D: not enough elements available for initialization.");
+        INTVAL self_x, self_y, i, j, num = 0;
 
         resize_matrix(INTERP, SELF, x_size - 1, y_size - 1);
         self_x = attrs->x;
         self_y = attrs->y;
         s = attrs->storage;
+
         for (i = 0; i < y_size; i++) {
             for (j = 0; j < x_size; j++) {
                 FLOATVAL value = VTABLE_get_number_keyed_int(INTERP, values, num);
