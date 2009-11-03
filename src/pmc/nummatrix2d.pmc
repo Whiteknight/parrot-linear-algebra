@@ -596,19 +596,23 @@ in order.
     METHOD set_block(INTVAL x_idx, INTVAL y_idx, PMC * blck) {
         Parrot_NumMatrix2D_attributes * const self_attrs = PARROT_NUMMATRIX2D(SELF);
         Parrot_NumMatrix2D_attributes * const blck_attrs = PARROT_NUMMATRIX2D(blck);
-        FLOATVAL * const self_s = self_attrs->storage;
+        FLOATVAL * self_s = self_attrs->storage;
         FLOATVAL * const blck_s = blck_attrs->storage;
-        const INTVAL self_x = self_attrs->x;
-        const INTVAL self_y = self_attrs->y;
+        INTVAL self_x = self_attrs->x;
+        INTVAL self_y = self_attrs->y;
         const INTVAL blck_x = blck_attrs->x;
         const INTVAL blck_y = blck_attrs->y;
         INTVAL i, j;
 
-        if (blck_x + x_idx > self_x || blck_y + y_idx > self_y)
+        if (blck_x + x_idx > self_x || blck_y + y_idx > self_y) {
             resize_matrix(INTERP, SELF, blck_x + x_idx - 1, blck_y + y_idx - 1);
+            self_s = self_attrs->storage;
+            self_x = self_attrs->x;
+            self_y = self_attrs->y;
+        }
         for (i = 0; i < blck_y; i++) {
             for (j = 0; j < blck_x; j++) {
-                ITEM_XY_ROWMAJOR(self_s, self_x + x_idx, self_y + y_idx, j, i) =
+                ITEM_XY_ROWMAJOR(self_s, self_x, self_y, j + x_idx, i + y_idx) =
                     ITEM_XY_ROWMAJOR(blck_s, blck_x, blck_y, j, i);
             }
         }
