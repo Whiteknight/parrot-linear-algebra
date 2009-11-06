@@ -536,6 +536,35 @@ value with the return value of the called function.
         free(old_s);
     }
 
+    METHOD iterate_function_external(PMC * func, PMC * args :slurpy) {
+        Parrot_NumMatrix2D_attributes * const attrs = PARROT_NUMMATRIX2D(SELF);
+        PMC * const new_matrix = pmc_new(INTERP, SELF->vtable->base_type);
+        Parrot_NumMatrix2D_attributes * new_attrs;
+        const INTVAL x_size = attrs->x;
+        const INTVAL y_size = attrs->y;
+        const INTVAL newsize = x_size * y_size;
+        FLOATVAL * const self_s = attrs->storage;
+        FLOATVAL * new_s;
+        INTVAL i, j;
+
+        if (newsize == 0 || self_s == NULL)
+            RETURN(PMC * new_matrix);
+
+        resize_matrix(INTERP, new_matrix, x_size - 1, y_size - 1);
+        new_attrs = PARROT_NUMMATRIX2D(new_matrix);
+        new_s = new_attrs->storage;
+
+        for (j = 0; j < y_size; j++) {
+            for (i = 0; i < x_size; i++) {
+                FLOATVAL value = ITEM_XY_ROWMAJOR(self_s, x_size, y_size, i, j);
+                FLOATVAL result = 0.0;
+                Parrot_ext_call(INTERP, func, "PNIIPf->N", SELF, value, i, j, args, &result);
+                ITEM_XY_ROWMAJOR(new_s, x_size, y_size, i, j) = result;
+            }
+        }
+        RETURN(PMC * new_matrix);
+    }
+
 /*
 
 =item instantiate_from_array()
