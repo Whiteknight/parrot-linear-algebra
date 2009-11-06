@@ -18,7 +18,7 @@ sub MAIN () {
       pla_library_loaded:
     };
 
-    plan(74);
+    plan(77);
 
     create_nummatrix2d();
     vtable_set_number_keyed();
@@ -495,8 +495,6 @@ sub method_mem_transpose() {
     }
 }
 
-sub method_iterate_function_inplace() {}
-
 sub method_initialize_from_array() {
     Q:PIR {
         $P0 = new ['ResizableFloatArray']
@@ -552,6 +550,71 @@ sub method_initialize_from_array() {
         $I0 = $P9 == $P3
         ok($I0, "initialization can grow larger then the array")
     }
+}
+
+sub method_iterate_function_inplace() {
+    Q:PIR {
+        .local pmc orig
+        orig = new ['NumMatrix2D']
+        orig[0;0] = 1.0
+        orig[1;0] = 2.0
+        orig[0;1] = 3.0
+        orig[1;1] = 4.0
+
+        .local pmc result_1
+        result_1 = new ['NumMatrix2D']
+        result_1[0;0] = 1.0
+        result_1[1;0] = 4.0
+        result_1[0;1] = 9.0
+        result_1[1;1] = 16.0
+
+        .local pmc squared
+        squared = get_global "_iterate_helper_squared"
+        $P0 = clone orig
+        $P0.'iterate_function_inplace'(squared)
+        $I0 = $P0 == result_1
+        ok($I0, "can iterate a function over all elements")
+
+        .local pmc result_2
+        result_2 = new ['NumMatrix2D']
+        result_2[0;0] = 7.0
+        result_2[1;0] = 12.0
+        result_2[0;1] = 17.0
+        result_2[1;1] = 22.0
+
+        .local pmc ax_b
+        ax_b = get_global "_iterate_helper_ax_b"
+        $P0 = clone orig
+        $P0.'iterate_function_inplace'(ax_b, 5, 2)
+        $I0 = $P0 == result_2
+        ok($I0, "can iterate with arguments")
+
+        .local pmc result_3
+        result_3 = new ['NumMatrix2D']
+        result_3[0;0] = 0.0
+        result_3[1;0] = 1.0
+        result_3[0;1] = 1.0
+        result_3[1;1] = 2.0
+
+        .local pmc coords
+        coords = get_global "_iterate_helper_coords"
+        $P0 = clone orig
+        $P0.'iterate_function_inplace'(coords)
+        $I0 = $P0 == result_3
+        ok($I0, "Iterations have access to coordinates")
+    }
+}
+
+sub _iterate_helper_squared($matrix, $value, $x, $y) {
+    return($value * $value);
+}
+
+sub _iterate_helper_ax_b($matrix, $value, $x, $y, $a, $b) {
+    return(($a * $value) + $b);
+}
+
+sub _iterate_helper_coords($matrix, $value, $x, $y) {
+    return($x + $y);
 }
 
 sub method_set_block() {
