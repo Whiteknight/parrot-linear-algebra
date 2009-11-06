@@ -18,7 +18,7 @@ sub MAIN () {
       pla_library_loaded:
     };
 
-    plan(73);
+    plan(74);
 
     create_nummatrix2d();
     vtable_set_number_keyed();
@@ -31,15 +31,12 @@ sub MAIN () {
     vtable_get_pmc_keyed();
     vtable_set_pmc_keyed();
     vtable_get_number_keyed_int();
-    vtable_set_number_keyed_int();
     vtable_get_integer_keyed_int();
-    vtable_set_integer_keyed_int();
     vtable_get_string_keyed_int();
     vtable_get_pmc_keyed_int();
-    vtable_set_pmc_keyed_int();
+    vtable_is_equal();
     vtable_add_nummatrix2d();
     vtable_multiply_nummatrix2d();
-    vtable_is_equal();
     vtable_clone();
     method_resize();
     method_fill();
@@ -264,8 +261,6 @@ sub vtable_get_number_keyed_int() {
     }
 }
 
-sub vtable_set_number_keyed_int() {}
-
 sub vtable_get_integer_keyed_int() {
     Q:PIR {
         $P0 = new 'NumMatrix2D'
@@ -288,12 +283,11 @@ sub vtable_get_integer_keyed_int() {
     }
 }
 
-sub vtable_set_integer_keyed_int() {}
 sub vtable_get_string_keyed_int() {}
 
 sub vtable_get_pmc_keyed_int() {
     Q:PIR {
-        $P0 = new 'NumMatrix2D'
+        $P0 = new ['NumMatrix2D']
         $P0[1;1] = 1.0
         $P0[0;1] = 2.0
         $P0[1;0] = 3.0
@@ -319,15 +313,10 @@ sub vtable_get_pmc_keyed_int() {
     }
 }
 
-
-sub vtable_set_pmc_keyed_int() {}
-sub vtable_add_nummatrix2d() {}
-sub vtable_multiply_nummatrix2d() {}
-
 sub vtable_is_equal() {
     Q:PIR {
-        $P0 = new 'NumMatrix2D'
-        $P1 = new 'NumMatrix2D'
+        $P0 = new ['NumMatrix2D']
+        $P1 = new ['NumMatrix2D']
 
         $I0 = $P0 == $P1
         ok($I0, "empty matrices are equal")
@@ -354,6 +343,34 @@ sub vtable_is_equal() {
         is($I0, 0, "matrices of different sizes aren't equal")
     }
 }
+
+sub vtable_add_nummatrix2d() {
+    Q:PIR {
+        $P0 = new ['NumMatrix2D']
+        $P0[0;0] = 1.0
+        $P0[1;0] = 2.0
+        $P0[0;1] = 3.0
+        $P0[1;1] = 4.0
+
+        $P1 = new ['NumMatrix2D']
+        $P1[0;0] = 5.0
+        $P1[1;0] = 6.0
+        $P1[0;1] = 7.0
+        $P1[1;1] = 8.0
+
+        $P2 = new ['NumMatrix2D']
+        $P2[0;0] = 6.0
+        $P2[1;0] = 8.0
+        $P2[0;1] = 10.0
+        $P2[1;1] = 12.0
+
+        $P3 = $P0 + $P1
+        $I0 = $P3 == $P2
+        ok($I0, "can add two matrices together of the same size")
+    }
+}
+
+sub vtable_multiply_nummatrix2d() {}
 
 sub vtable_clone() {
     Q:PIR {
