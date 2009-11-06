@@ -134,8 +134,7 @@ pmclass NumMatrix2D dynpmc auto_attrs {
 */
 
     VTABLE FLOATVAL get_number_keyed_int(INTVAL key) {
-        Parrot_NumMatrix2D_attributes * const attrs
-            = (Parrot_NumMatrix2D_attributes *) PARROT_NUMMATRIX2D(SELF);
+        Parrot_NumMatrix2D_attributes * const attrs = PARROT_NUMMATRIX2D(SELF);
         const INTVAL total_size = attrs->x * attrs->y;
         if (key >= total_size) {
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
@@ -237,10 +236,8 @@ pmclass NumMatrix2D dynpmc auto_attrs {
     MULTI PMC *add(NumMatrix2D *value, PMC *dest) {
         int i = 0, j = 0;
         INTVAL x_size, y_size;
-        Parrot_NumMatrix2D_attributes * const selfattr
-          = (Parrot_NumMatrix2D_attributes *) PARROT_NUMMATRIX2D(SELF);
-        Parrot_NumMatrix2D_attributes * const valattr
-          = (Parrot_NumMatrix2D_attributes *) PARROT_NUMMATRIX2D(value);
+        Parrot_NumMatrix2D_attributes * const selfattr = PARROT_NUMMATRIX2D(SELF);
+        Parrot_NumMatrix2D_attributes * const valattr = PARROT_NUMMATRIX2D(value);
         Parrot_NumMatrix2D_attributes * destattr;
 
         x_size = selfattr->x;
@@ -508,7 +505,7 @@ pmclass NumMatrix2D dynpmc auto_attrs {
     METHOD resize(INTVAL new_x, INTVAL new_y) {
         resize_matrix(INTERP, SELF, new_x - 1, new_y - 1);
     }
-    
+
 /*
 
 =item fill()
@@ -544,7 +541,7 @@ sizes, growing the matrix if needed.
             }
         }
     }
-    
+
 /*
 
 =item transpose()
@@ -572,7 +569,7 @@ Transposes the matrix.
         transposed = !transposed;
         RETURN(INTVAL transposed);
     }
-    
+
 /*
 
 =item mem_transpose()
@@ -607,7 +604,7 @@ than the transpose() method.
         attrs->y = new_y;
         free(old_s);
     }
-    
+
 /*
 
 =item iterate_function_inplace()
@@ -620,25 +617,56 @@ value with the return value of the called function.
 */
 
     METHOD iterate_function_inplace(PMC * func, PMC * args :slurpy) {
-        Parrot_NumMatrix2D_attributes * const attrs =
-            (Parrot_NumMatrix2D_attributes *) PARROT_NUMMATRIX2D(SELF);
+        Parrot_NumMatrix2D_attributes * const attrs = PARROT_NUMMATRIX2D(SELF);
         const INTVAL x_size = attrs->x;
         const INTVAL y_size = attrs->y;
         const INTVAL newsize = x_size * y_size;
         FLOATVAL * old_s = attrs->storage;
         FLOATVAL * new_s = (FLOATVAL *)mem_sys_allocate_zeroed(newsize * sizeof (FLOATVAL));
-
         INTVAL i, j;
-        for (i = 0; i < x_size; i++) {
-            for (j = 0; j < y_size; j++) {
+
+        if (newsize == 0 || old_s == NULL)
+            RETURN();
+
+        for (j = 0; j < y_size; j++) {
+            for (i = 0; i < x_size; i++) {
                 FLOATVAL value = ITEM_XY_ROWMAJOR(old_s, x_size, y_size, i, j);
                 FLOATVAL result = 0.0;
-                Parrot_ext_call(INTERP, func, "PNPf->N", SELF, value, args, &result);
+                Parrot_ext_call(INTERP, func, "PNIIPf->N", SELF, value, i, j, args, &result);
                 ITEM_XY_ROWMAJOR(new_s, x_size, y_size, i, j) = result;
             }
         }
         attrs->storage = new_s;
         free(old_s);
+    }
+
+    METHOD iterate_function_external(PMC * func, PMC * args :slurpy) {
+        Parrot_NumMatrix2D_attributes * const attrs = PARROT_NUMMATRIX2D(SELF);
+        PMC * const new_matrix = pmc_new(INTERP, SELF->vtable->base_type);
+        Parrot_NumMatrix2D_attributes * new_attrs;
+        const INTVAL x_size = attrs->x;
+        const INTVAL y_size = attrs->y;
+        const INTVAL newsize = x_size * y_size;
+        FLOATVAL * const self_s = attrs->storage;
+        FLOATVAL * new_s;
+        INTVAL i, j;
+
+        if (newsize == 0 || self_s == NULL)
+            RETURN(PMC * new_matrix);
+
+        resize_matrix(INTERP, new_matrix, x_size - 1, y_size - 1);
+        new_attrs = PARROT_NUMMATRIX2D(new_matrix);
+        new_s = new_attrs->storage;
+
+        for (j = 0; j < y_size; j++) {
+            for (i = 0; i < x_size; i++) {
+                FLOATVAL value = ITEM_XY_ROWMAJOR(self_s, x_size, y_size, i, j);
+                FLOATVAL result = 0.0;
+                Parrot_ext_call(INTERP, func, "PNIIPf->N", SELF, value, i, j, args, &result);
+                ITEM_XY_ROWMAJOR(new_s, x_size, y_size, i, j) = result;
+            }
+        }
+        RETURN(PMC * new_matrix);
     }
 
 /*
