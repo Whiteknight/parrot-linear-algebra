@@ -21,7 +21,7 @@ do { \
                                INDEX_XY_ROWMAJOR(x_max, y_max, x, y)))
 
 #define ITEM_XY_ROWMAJOR(s, x_max, y_max, x, y) \
-    (s)[INDEX_XY_ROWMAJOR(x_max, y_max, x, x)]
+    (s)[INDEX_XY_ROWMAJOR(x_max, y_max, x, y)]
 
 #define ITEM_XY_COLMAJOR(s, x_max, y_max, x, y) \
     (s)[INDEX_XY_COLMAJOR(x_max, y_max, x, y)]
