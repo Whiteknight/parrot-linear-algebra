@@ -18,7 +18,7 @@ sub MAIN () {
       pla_library_loaded:
     };
 
-    plan(77);
+    plan(80);
 
     create_nummatrix2d();
     vtable_set_number_keyed();
@@ -44,6 +44,7 @@ sub MAIN () {
     method_mem_transpose();
     method_iterate_function_inplace();
     method_initialize_from_array();
+    method_initialize_from_args();
     method_get_block();
     method_set_block();
 }
@@ -549,6 +550,55 @@ sub method_initialize_from_array() {
         $P9.'initialize_from_array'(6, 2, $P0)
         $I0 = $P9 == $P3
         ok($I0, "initialization can grow larger then the array")
+    }
+}
+
+sub method_initialize_from_args() {
+    Q:PIR {
+        $P1 = new ['NumMatrix2D']
+        $P1[0;0] = 1.0
+        $P1[1;0] = 2.0
+        $P1[2;0] = 3.0
+        $P1[0;1] = 4.0
+        $P1[1;1] = 5.0
+        $P1[2;1] = 6.0
+
+        $P2 = new ['NumMatrix2D']
+        $P2[0;0] = 1.0
+        $P2[1;0] = 2.0
+        $P2[0;1] = 3.0
+        $P2[1;1] = 4.0
+        $P2[0;2] = 5.0
+        $P2[1;2] = 6.0
+
+        $P3 = new ['NumMatrix2D']
+        $P3[0;0] = 1.0
+        $P3[1;0] = 2.0
+        $P3[2;0] = 3.0
+        $P3[3;0] = 4.0
+        $P3[4;0] = 5.0
+        $P3[5;0] = 6.0
+        $P3[0;1] = 0.0
+        $P3[1;1] = 0.0
+        $P3[2;1] = 0.0
+        $P3[3;1] = 0.0
+        $P3[4;1] = 0.0
+        $P3[5;1] = 0.0
+
+        $P9 = new ['NumMatrix2D']
+        $P9.'initialize_from_args'(3, 2, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0)
+        $I0 = $P9 == $P1
+        ok($I0, "Initialize matrix from args first")
+
+        $P9 = new ['NumMatrix2D']
+        $P9.'initialize_from_args'(2, 3, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0)
+        $I0 = $P9 == $P2
+        ok($I0, "Same initialization args, different dimensions")
+
+        $P9 = new ['NumMatrix2D']
+        $P9.'initialize_from_args'(6, 2, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0)
+        $I0 = $P9 == $P3
+        ok($I0, "args initialization can grow larger then the array")
     }
 }
 
