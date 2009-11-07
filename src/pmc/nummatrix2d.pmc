@@ -320,13 +320,36 @@ pmclass NumMatrix2D dynpmc auto_attrs {
         return dest;
     }
 
+    MULTI PMC *add(Float *value, PMC *dest) {
+        const FLOATVAL v = VTABLE_get_number(INTERP, value);
+        Parrot_NumMatrix2D_attributes * const attrs = PARROT_NUMMATRIX2D(SELF);
+        Parrot_NumMatrix2D_attributes * dest_attrs;
+        const INTVAL x_size = attrs->x;
+        const INTVAL y_size = attrs->y;
+        FLOATVAL * const s = attrs->storage;
+        FLOATVAL * dest_s;
+        INTVAL i, j;
+
+        dest = pmc_new(INTERP, SELF->vtable->base_type);
+        resize_matrix(INTERP, dest, x_size - 1, y_size - 1);
+        dest_attrs = PARROT_NUMMATRIX2D(dest);
+        dest_s = dest_attrs->storage;
+
+        /* TODO: See if BLAS has a routine to do this */
+        for (j = 0; j < y_size; j++) {
+            for (i = 0; i < x_size; i++) {
+                ITEM_XY_ROWMAJOR(dest_s, x_size, y_size, i, j) =
+                    ITEM_XY_ROWMAJOR(s, x_size, y_size, i, j) + v;
+            }
+        }
+        return dest;
+    }
+
     MULTI PMC *multiply(NumMatrix2D *value, PMC *dest) {
         INTVAL x_size = 0, y_size = 0, sflags = 0, vflags = 0;
 
-        Parrot_NumMatrix2D_attributes * const selfattr =
-            (Parrot_NumMatrix2D_attributes *) PARROT_NUMMATRIX2D(SELF);
-        Parrot_NumMatrix2D_attributes * const valattr =
-            (Parrot_NumMatrix2D_attributes *) PARROT_NUMMATRIX2D(value);
+        Parrot_NumMatrix2D_attributes * const selfattr = PARROT_NUMMATRIX2D(SELF);
+        Parrot_NumMatrix2D_attributes * const valattr = PARROT_NUMMATRIX2D(value);
         Parrot_NumMatrix2D_attributes * destattr = NULL;
 
         x_size = selfattr->x;
@@ -435,6 +458,31 @@ pmclass NumMatrix2D dynpmc auto_attrs {
         }
 
         destattr->flags = sflags & vflags;
+        return dest;
+    }
+
+    MULTI PMC *multiply(Float *value, PMC *dest) {
+        const FLOATVAL v = VTABLE_get_number(INTERP, value);
+        Parrot_NumMatrix2D_attributes * const attrs = PARROT_NUMMATRIX2D(SELF);
+        Parrot_NumMatrix2D_attributes * dest_attrs;
+        const INTVAL x_size = attrs->x;
+        const INTVAL y_size = attrs->y;
+        FLOATVAL * const s = attrs->storage;
+        FLOATVAL * dest_s;
+        INTVAL i, j;
+
+        dest = pmc_new(INTERP, SELF->vtable->base_type);
+        resize_matrix(INTERP, dest, x_size - 1, y_size - 1);
+        dest_attrs = PARROT_NUMMATRIX2D(dest);
+        dest_s = dest_attrs->storage;
+
+        /* TODO: See if BLAS has a routine to do this */
+        for (j = 0; j < y_size; j++) {
+            for (i = 0; i < x_size; i++) {
+                ITEM_XY_ROWMAJOR(dest_s, x_size, y_size, i, j) =
+                    ITEM_XY_ROWMAJOR(s, x_size, y_size, i, j) * v;
+            }
+        }
         return dest;
     }
 
