@@ -18,7 +18,7 @@ sub MAIN () {
       pla_library_loaded:
     };
 
-    plan(81);
+    plan(82);
 
     create_nummatrix2d();
     vtable_set_number_keyed();
@@ -395,7 +395,26 @@ sub vtable_add_float() {
 }
 
 sub vtable_multiply_nummatrix2d() {}
-sub vtable_multiply_float() {}
+sub vtable_multiply_float() {
+    Q:PIR {
+        $P0 = new ['NumMatrix2D']
+        $P0[0;0] = 1.0
+        $P0[1;0] = 2.0
+        $P0[0;1] = 3.0
+        $P0[1;1] = 4.0
+
+        $P1 = new ['NumMatrix2D']
+        $P1[0;0] = 2.5
+        $P1[1;0] = 5.0
+        $P1[0;1] = 7.5
+        $P1[1;1] = 10.0
+
+        $P2 = box 2.5
+        $P3 = $P0 * $P2
+        $I0 = $P3 == $P1
+        ok($I0, "can multiply a Float with NumMatrix2D")
+    }
+}
 
 sub vtable_clone() {
     Q:PIR {
