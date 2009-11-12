@@ -33,7 +33,7 @@ resize_matrix(PARROT_INTERP, PMC * self, INTVAL x, INTVAL y)
 }
 
 
-pmclass PMCMatrix2D dynpmc auto_attrs {
+pmclass PMCMatrix2D dynpmc auto_attrs does matrix {
     ATTR PMC ** storage;
     ATTR INTVAL x;
     ATTR INTVAL y;
