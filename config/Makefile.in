@@ -3,7 +3,7 @@ PMC_INCLUDE_DIR = @includedir@@versiondir@/pmc
 LIB_DIR         = @libdir@@versiondir@
 SRC_DIR         = @srcdir@@versiondir@
 TOOLS_DIR       = @libdir@@versiondir@/tools
-INSTALL_DIR     = $(LIBDIR)/dynpmc
+INSTALL_DIR     = $(LIB_DIR)/dynext
 
 LOAD_EXT      = @load_ext@
 O             = @o@
@@ -61,7 +61,7 @@ realclean: clean
 
 install: all
 #IF(cygwin or hpux):    CHMOD 0775 linalg_group$(LOAD_EXT)
-	$(CP) linalg_group$(LOAD_EXT) $(INSTALL_DIR)
+	$(CP) $(DYNEXT_DIR)/linalg_group$(LOAD_EXT) $(INSTALL_DIR)
 
 uninstall:
 	$(RM_F) $(INSTALL_DIR)/linalg_group$(LOAD_EXT)
