@@ -32,8 +32,8 @@ resize_matrix(PARROT_INTERP, PMC * self, INTVAL x, INTVAL y)
     INTVAL i, j;
     for (i = 0; i < old_x; i++) {
         for (j = 0; j < old_y; j++) {
-            ITEM_XY_ROWMAJOR(new_s, new_x, new_y, i, j) =
-                ITEM_XY_ROWMAJOR(old_s, old_x, old_y, i, j);
+            ITEM_XY_COLMAJOR(new_s, new_x, new_y, i, j) =
+                ITEM_XY_COLMAJOR(old_s, old_x, old_y, i, j);
         }
     }
     attrs->storage = new_s;
@@ -123,7 +123,9 @@ Sets the character value at coordinates x,y
             x_size = attrs->x;
             y_size = attrs->y;
         }
-        ITEM_XY(attrs->storage, attrs->flags, x_size, y_size, x, y) = (char)value;
+        ITEM_XY_COLMAJOR(attrs->storage, x_size, y_size, x, y) = (char)value;
+        fprintf(stderr, "matrix %d,%d\n", x_size, y_size);
+        fprintf(stderr, "setting %c to %d,%d->%d\n", (char)value, x, y, INDEX_XY_COLMAJOR(x_size, y_size, x, y));
     }
 
     VTABLE void set_pmc_keyed(PMC * key, PMC * value) {
@@ -131,7 +133,7 @@ Sets the character value at coordinates x,y
         VTABLE_set_integer_keyed(INTERP, SELF, key, v);
     }
 
-    VTABLE void set_number_keyed(PMC * key, FLOATVAL * value) {
+    VTABLE void set_number_keyed(PMC * key, FLOATVAL value) {
         const INTVAL v = (INTVAL)value;
         VTABLE_set_integer_keyed(INTERP, SELF, key, v);
     }
@@ -192,8 +194,8 @@ Sets the character value at coordinates x,y
         char * const new_s = ALLOCATE_STORAGE(newsize);
         for (x = 0; x < x_size; ++x) {
             for (y = 0; y < y_size; ++y) {
-                ITEM_XY_ROWMAJOR(new_s, x_size, y_size, x, y) =
-                    ITEM_XY_ROWMAJOR(old_s, x_size, y_size, x, y);
+                ITEM_XY_COLMAJOR(new_s, x_size, y_size, x, y) =
+                    ITEM_XY_COLMAJOR(old_s, x_size, y_size, x, y);
             }
         }
         new_atts->storage = new_s;
@@ -209,10 +211,8 @@ Sets the character value at coordinates x,y
             Parrot_CharMatrix2D_attributes * const other_attrs = PARROT_CHARMATRIX2D(other);
             const INTVAL self_x = self_attrs->x;
             const INTVAL self_y = self_attrs->y;
-            const INTVAL self_flags = self_attrs->flags;
             const INTVAL other_x = other_attrs->x;
             const INTVAL other_y = other_attrs->y;
-            const INTVAL other_flags = other_attrs->flags;
             char * const self_s = self_attrs->storage;
             char * const other_s = other_attrs->storage;
             INTVAL x, y;
@@ -223,9 +223,9 @@ Sets the character value at coordinates x,y
             for (y = 0; y < self_y; y++) {
                 for (x = 0; x < self_x; x++) {
                     const char self_value =
-                        ITEM_XY(self_s, self_flags, self_x, self_y, x, y);
+                        ITEM_XY_COLMAJOR(self_s, self_x, self_y, x, y);
                     const char other_value =
-                        ITEM_XY(other_s, other_flags, other_x, other_y, x, y);
+                        ITEM_XY_COLMAJOR(other_s, other_x, other_y, x, y);
                     if (self_value != other_value)
                         return 0;
                 }
