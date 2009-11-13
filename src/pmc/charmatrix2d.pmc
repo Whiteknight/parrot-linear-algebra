@@ -138,6 +138,21 @@ Sets the character value at coordinates x,y
         VTABLE_set_integer_keyed(INTERP, SELF, key, v);
     }
 
+    VTABLE void set_string_keyed_int(INTVAL key, STRING * str) {
+        Parrot_CharMatrix2D_attributes * const attrs = PARROT_CHARMATRIX2D(SELF);
+        char * const cstr = Parrot_str_to_cstring(INTERP, str);
+        const INTVAL length = strlen(cstr);
+        const INTVAL y_size = attrs->y;
+        const INTVAL x_size = attrs->x;
+        INTVAL i;
+        resize_matrix(INTERP, SELF, length - 1, key - 1);
+        for (i = 0; i < length; i++)
+            ITEM_XY_COLMAJOR(attrs->storage, x_size, y_size, i, key) = cstr[i];
+        for (i = length; i < y_size; i++)
+            ITEM_XY_COLMAJOR(attrs->storage, x_size, y_size, i, key) = ' ';
+    }
+
+
 /*
 
 =item* get_string
