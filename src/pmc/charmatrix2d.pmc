@@ -1,0 +1,373 @@
+#include "pla_matrix_types.h"
+
+#define ALLOCATE_STORAGE(s) (char *)mem_sys_allocate_zeroed(s * sizeof (char))
+
+/* Resize the matrix internal storage to be able to hold a point at position
+   (x, y). The matrix grows but does not shrink. New spaces in the matrix
+   are initialized to 0.0. Parameters x and y are the indices that are trying
+   to be accessed, so we must resize the matrix to be able to accomodate those
+   indices. Notice that the matrix type is zero-indexed, so the size is one
+   plus the highest index that we need to access. 
+
+   This function will not shrink the matrix, only grow it. After the call,
+   the matrix will be at least large enough to hold an item at the given
+   index. To shrink the matrix, use the get_block() method, or that
+   algorithm. */
+static void
+resize_matrix(PARROT_INTERP, PMC * self, INTVAL x, INTVAL y)
+{
+    Parrot_CharMatrix2D_attributes * const attrs = PARROT_CHARMATRIX2D(self);
+    /* Store the old values */
+    const INTVAL old_x = attrs->x;
+    const INTVAL old_y = attrs->y;
+    char * old_s = attrs->storage;
+
+    /* x and y are indices, not sizes. Resize the matrix to accomodate this
+       new point without shrinking by taking the max. */
+    const INTVAL new_x = INDEX_MAX(old_x, x + 1);
+    const INTVAL new_y = INDEX_MAX(old_y, y + 1);
+    const INTVAL newsize = new_x * new_y;
+    char * new_s = ALLOCATE_STORAGE(newsize);
+
+    INTVAL i, j;
+    for (i = 0; i < old_x; i++) {
+        for (j = 0; j < old_y; j++) {
+            ITEM_XY_ROWMAJOR(new_s, new_x, new_y, i, j) =
+                ITEM_XY_ROWMAJOR(old_s, old_x, old_y, i, j);
+        }
+    }
+    attrs->storage = new_s;
+    attrs->x = new_x;
+    attrs->y = new_y;
+    if (old_s)
+        mem_sys_free(old_s);
+}
+
+static STRING *
+get_string_from_row(PARROT_INTERP, char * s, INTVAL cols, INTVAL row) {
+    char * const rowstart = &(s[cols * row]);
+    STRING * const str = Parrot_str_new(interp, rowstart, cols);
+    return str;
+}
+
+pmclass CharMatrix2D dynpmc auto_attrs does matrix {
+    ATTR char * storage;
+    ATTR INTVAL x;
+    ATTR INTVAL y;
+    ATTR INTVAL flags;
+
+/*
+
+=head1 VTABLEs
+
+=over 4
+
+=item* init
+
+=cut
+
+*/
+
+    VTABLE void init() {
+        Parrot_CharMatrix2D_attributes * const a = PARROT_CHARMATRIX2D(SELF);
+        a->storage = NULL;
+        a->x = 0;
+        a->y = 0;
+        a->flags = 0;
+        PObj_custom_destroy_SET(SELF);
+    }
+
+    VTABLE void destroy() {
+        Parrot_CharMatrix2D_attributes * const a = PARROT_CHARMATRIX2D(SELF);
+        char * const s = a->storage;
+        if (s)
+            mem_sys_free(s);
+    }
+
+/*
+=item* get_string_keyed_int
+
+Returns the string at row N
+
+=cut
+
+*/
+
+    VTABLE STRING * get_string_keyed_int(INTVAL key) {
+        Parrot_CharMatrix2D_attributes * const attrs = PARROT_CHARMATRIX2D(SELF);
+        const INTVAL x_size = attrs->x;
+        const INTVAL y_size = attrs->y;
+        if (key >= y_size)
+            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                "CharMatrix2D: Attempt to access non-existant row");
+        else
+            return get_string_from_row(INTERP, attrs->storage, x_size, key);
+    }
+
+/*
+
+=item* set_integer_keyed
+
+Sets the character value at coordinates x,y
+
+=cut
+
+*/
+
+    VTABLE void set_integer_keyed(PMC * key, INTVAL value) {
+        Parrot_CharMatrix2D_attributes * const attrs = PARROT_CHARMATRIX2D(SELF);
+        INTVAL x, y, x_size = attrs->x, y_size = attrs->y;
+        GET_INDICES_FROM_KEY(INTERP, key, x, y);
+        if (x >= x_size || y >= y_size) {
+            resize_matrix(INTERP, SELF, x, y);
+            x_size = attrs->x;
+            y_size = attrs->y;
+        }
+        ITEM_XY(attrs->storage, attrs->flags, x_size, y_size, x, y) = (char)value;
+    }
+
+    VTABLE void set_pmc_keyed(PMC * key, PMC * value) {
+        const INTVAL v = VTABLE_get_number(INTERP, value);
+        VTABLE_set_integer_keyed(INTERP, SELF, key, v);
+    }
+
+    VTABLE void set_number_keyed(PMC * key, FLOATVAL * value) {
+        const INTVAL v = (INTVAL)value;
+        VTABLE_set_integer_keyed(INTERP, SELF, key, v);
+    }
+
+/*
+
+=item* get_string
+
+=cut
+
+*/
+
+    VTABLE STRING *get_string() {
+        INTVAL i;
+        STRING *pstr = Parrot_str_new(INTERP, "", 0);
+        STRING * const newline = Parrot_str_new(INTERP, "\n", 1);
+        Parrot_CharMatrix2D_attributes * const attrs = PARROT_CHARMATRIX2D(SELF);
+        char * const s = attrs->storage;
+        const INTVAL x_size = attrs->x;
+        const INTVAL y_size = attrs->y;
+        for (i = 0; i < y_size; i++) {
+            STRING * const row = get_string_from_row(INTERP, s, x_size, i);
+            pstr = Parrot_str_append(INTERP, pstr, row);
+            pstr = Parrot_str_append(INTERP, pstr, newline);
+        }
+        return pstr;
+    }
+
+    VTABLE PMC * get_attr_str(STRING * idx) {
+        Parrot_CharMatrix2D_attributes * const attrs = PARROT_CHARMATRIX2D(SELF);
+        if (Parrot_str_equal(INTERP, idx, CONST_STRING(INTERP, "X"))) {
+            PMC * const x = pmc_new(INTERP, enum_class_Integer);
+            VTABLE_set_integer_native(INTERP, x, attrs->x);
+            return x;
+        }
+        else if (Parrot_str_equal(INTERP, idx, CONST_STRING(INTERP, "Y"))) {
+            PMC * const y = pmc_new(INTERP, enum_class_Integer);
+            VTABLE_set_integer_native(INTERP, y, attrs->y);
+            return y;
+        }
+        else if (Parrot_str_equal(INTERP, idx, CONST_STRING(INTERP, "size"))) {
+            PMC * const size = pmc_new(INTERP, enum_class_Integer);
+            VTABLE_set_integer_native(INTERP, size, attrs->y * attrs->x);
+            return size;
+        }
+        return PMCNULL;
+    }
+
+    VTABLE PMC * clone() {
+        PMC * const c = pmc_new(INTERP, SELF->vtable->base_type);
+        Parrot_CharMatrix2D_attributes * const old_atts = PARROT_CHARMATRIX2D(SELF);
+        Parrot_CharMatrix2D_attributes * const new_atts = PARROT_CHARMATRIX2D(c);
+        INTVAL x, y;
+        INTVAL const x_size = old_atts->x;
+        INTVAL const y_size = old_atts->y;
+        INTVAL const newsize = x_size * y_size;
+        char * const old_s = old_atts->storage;
+        char * const new_s = ALLOCATE_STORAGE(newsize);
+        for (x = 0; x < x_size; ++x) {
+            for (y = 0; y < y_size; ++y) {
+                ITEM_XY_ROWMAJOR(new_s, x_size, y_size, x, y) =
+                    ITEM_XY_ROWMAJOR(old_s, x_size, y_size, x, y);
+            }
+        }
+        new_atts->storage = new_s;
+        new_atts->flags = old_atts->flags;
+        new_atts->x = x_size;
+        new_atts->y = y_size;
+        return c;
+    }
+
+    VTABLE INTVAL is_equal(PMC * other) {
+        if (other->vtable->base_type == SELF->vtable->base_type) {
+            Parrot_CharMatrix2D_attributes * const self_attrs = PARROT_CHARMATRIX2D(SELF);
+            Parrot_CharMatrix2D_attributes * const other_attrs = PARROT_CHARMATRIX2D(other);
+            const INTVAL self_x = self_attrs->x;
+            const INTVAL self_y = self_attrs->y;
+            const INTVAL self_flags = self_attrs->flags;
+            const INTVAL other_x = other_attrs->x;
+            const INTVAL other_y = other_attrs->y;
+            const INTVAL other_flags = other_attrs->flags;
+            char * const self_s = self_attrs->storage;
+            char * const other_s = other_attrs->storage;
+            INTVAL x, y;
+
+            if (self_x != other_x || self_y != other_y)
+                return 0;
+
+            for (y = 0; y < self_y; y++) {
+                for (x = 0; x < self_x; x++) {
+                    const char self_value =
+                        ITEM_XY(self_s, self_flags, self_x, self_y, x, y);
+                    const char other_value =
+                        ITEM_XY(other_s, other_flags, other_x, other_y, x, y);
+                    if (self_value != other_value)
+                        return 0;
+                }
+            }
+            return 1;
+        }
+        return 0;
+    }
+
+
+/*
+
+=back
+
+=head1 METHODS
+
+=over 4
+
+*/
+/*
+
+=item resize()
+
+=cut
+
+*/
+
+    METHOD resize(INTVAL new_x, INTVAL new_y) {
+        resize_matrix(INTERP, SELF, new_x - 1, new_y - 1);
+    }
+
+/*
+
+=item fill()
+
+Fill the matrix with a single value. if sizes are provided, fill to those
+sizes, growing the matrix if needed.
+
+=cut
+
+*/
+
+    METHOD fill(INTVAL value,
+                INTVAL x_size :optional, INTVAL has_x_size :opt_flag,
+                INTVAL y_size :optional, INTVAL has_y_size :opt_flag
+               ) {
+        Parrot_CharMatrix2D_attributes * const attrs = PARROT_CHARMATRIX2D(SELF);
+        const char v = (char)value;
+        char * s  = attrs->storage;
+        INTVAL const curr_x_size = attrs->x;
+        INTVAL const curr_y_size = attrs->y;
+        INTVAL x, y;
+
+        if (!has_x_size)
+            x_size = curr_x_size;
+        if (!has_y_size)
+            y_size = curr_y_size;
+
+        if ((has_x_size && x_size > curr_x_size) ||
+            (has_y_size && y_size > curr_y_size)) {
+            resize_matrix(INTERP, SELF, x_size - 1, y_size - 1);
+            s = attrs->storage;
+        }
+
+        for (x = 0; x < x_size; ++x) {
+            for (y = 0; y < y_size; ++y) {
+                ITEM_XY_ROWMAJOR(s, x_size, y_size, x, y) = v;
+            }
+        }
+    }
+
+/*
+
+=item iterate_function_inplace()
+
+Calls a function for every element in the array, replacing the current
+value with the return value of the called function.
+
+=cut
+
+*/
+
+    METHOD iterate_function_inplace(PMC * func, PMC * args :slurpy) {
+        Parrot_CharMatrix2D_attributes * const attrs = PARROT_CHARMATRIX2D(SELF);
+        const INTVAL x_size = attrs->x;
+        const INTVAL y_size = attrs->y;
+        const INTVAL newsize = x_size * y_size;
+        char * old_s = attrs->storage;
+        char * new_s = ALLOCATE_STORAGE(newsize);
+        INTVAL i, j;
+
+        if (newsize == 0 || old_s == NULL)
+            RETURN();
+
+        for (j = 0; j < y_size; j++) {
+            for (i = 0; i < x_size; i++) {
+                const INTVAL value = ITEM_XY_ROWMAJOR(old_s, x_size, y_size, i, j);
+                INTVAL result = 0.0;
+                Parrot_ext_call(INTERP, func, "PIIIPf->I", SELF, value, i, j, args, &result);
+                ITEM_XY_ROWMAJOR(new_s, x_size, y_size, i, j) = (char)result;
+            }
+        }
+        attrs->storage = new_s;
+        if (old_s)
+            free(old_s);
+    }
+
+    METHOD iterate_function_external(PMC * func, PMC * args :slurpy) {
+        Parrot_CharMatrix2D_attributes * const attrs = PARROT_CHARMATRIX2D(SELF);
+        PMC * const new_matrix = pmc_new(INTERP, SELF->vtable->base_type);
+        Parrot_CharMatrix2D_attributes * new_attrs;
+        const INTVAL x_size = attrs->x;
+        const INTVAL y_size = attrs->y;
+        const INTVAL newsize = x_size * y_size;
+        char * const self_s = attrs->storage;
+        char * new_s;
+        INTVAL i, j;
+
+        if (newsize == 0 || self_s == NULL)
+            RETURN(PMC * new_matrix);
+
+        resize_matrix(INTERP, new_matrix, x_size - 1, y_size - 1);
+        new_attrs = PARROT_CHARMATRIX2D(new_matrix);
+        new_s = new_attrs->storage;
+
+        for (j = 0; j < y_size; j++) {
+            for (i = 0; i < x_size; i++) {
+                INTVAL value = ITEM_XY_ROWMAJOR(self_s, x_size, y_size, i, j);
+                INTVAL result = 0.0;
+                Parrot_ext_call(INTERP, func, "PIIIPf->I", SELF, value, i, j, args, &result);
+                ITEM_XY_ROWMAJOR(new_s, x_size, y_size, i, j) = (char)result;
+            }
+        }
+        RETURN(PMC * new_matrix);
+    }
+
+/*
+
+=back
+
+=end
+
+*/
+}
+

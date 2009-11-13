@@ -32,6 +32,12 @@ do { \
 #define INDEX_MIN(a, b) (((a) <= (b))?(a):(b))
 #define INDEX_MAX(a, b) (((a) >= (b))?(a):(b))
 
+#define SWAP_XY(a) do { \
+        const INTVAL __temp_val = a->x; \
+        a->x = a->y; \
+        a->y = __temp_val; \
+    } while(0);
+
 #define FLAG_TRANSPOSED    1
 #define FLAG_SYMMETRIC     2
 #define FLAG_HERMITIAN     4
