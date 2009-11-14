@@ -143,6 +143,17 @@ Sets the character value at coordinates x,y
         ITEM_XY_COLMAJOR(attrs->storage, x_size, y_size, x, y) = (char)value;
     }
 
+    VTABLE void set_integer_keyed_int(INTVAL key, INTVAL value) {
+        Parrot_CharMatrix2D_attributes * const attrs = PARROT_CHARMATRIX2D(SELF);
+        attrs->storage[key] = (char)value;
+    }
+
+    VTABLE void set_number_keyed_int(INTVAL key, FLOATVAL value) {
+        Parrot_CharMatrix2D_attributes * const attrs = PARROT_CHARMATRIX2D(SELF);
+        const INTVAL v = (INTVAL)value;
+        attrs->storage[key] = (char)v;
+    }
+
     VTABLE void set_pmc_keyed(PMC * key, PMC * value) {
         const INTVAL v = VTABLE_get_number(INTERP, value);
         VTABLE_set_integer_keyed(INTERP, SELF, key, v);
@@ -319,16 +330,17 @@ sizes, growing the matrix if needed.
 
     METHOD initialize_from_mixed_array(INTVAL row, PMC * array) {
         Parrot_CharMatrix2D_attributes * const attrs = PARROT_CHARMATRIX2D(SELF);
-        INTVAL const x_size = attrs->x;
-        INTVAL const y_size = attrs->y;
         INTVAL i = 0;
         PMC * iter = pmc_new_init(INTERP, enum_class_ArrayIterator, array);
         while (VTABLE_get_bool(INTERP, iter)) {
+            INTVAL const x_size = attrs->x;
+            INTVAL const y_size = attrs->y;
             PMC * const item = VTABLE_shift_pmc(INTERP, iter);
             switch(item->vtable->base_type) {
                 case enum_class_Float: {
                     const FLOATVAL value = VTABLE_get_number(INTERP, item);
                     const INTVAL idx = INDEX_XY_COLMAJOR(x_size, y_size, i, row);
+                    resize_matrix(INTERP, SELF, i, row);
                     VTABLE_set_number_keyed_int(INTERP, SELF, idx, value);
                     i++;
                     break;
@@ -342,6 +354,7 @@ sizes, growing the matrix if needed.
                 default: {
                     const INTVAL value = VTABLE_get_integer(INTERP, item);
                     const INTVAL idx = INDEX_XY_COLMAJOR(x_size, y_size, i, row);
+                    resize_matrix(INTERP, SELF, i, row);
                     VTABLE_set_integer_keyed_int(INTERP, SELF, idx, value);
                     i++;
                     break;
