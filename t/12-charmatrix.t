@@ -18,9 +18,11 @@ sub MAIN () {
       pla_library_loaded:
     };
 
-    plan(3);
+    plan(4);
+
     create_charmatrix2d();
     op_does_matrix();
+    vtable_set_string_keyed_int();
 }
 
 sub create_charmatrix2d() {
@@ -45,5 +47,16 @@ sub op_does_matrix() {
         $I0 = does $P0, 'gobbledegak'
         $I0 = not $I0
         ok($I0, "...and only does matrix")
+    }
+}
+
+sub vtable_set_string_keyed_int() {
+    Q:PIR {
+        $P0 = new ['CharMatrix2D']
+        $P0[0] = "ABCD"
+        $P0[1] = "EFGH"
+        $S0 = "ABCD\nEFGH\n"
+        $S1 = $P0
+        is($S0, $S1, "can set row-at-a-time, with equal lengths")
     }
 }
