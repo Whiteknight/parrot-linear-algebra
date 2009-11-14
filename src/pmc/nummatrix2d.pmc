@@ -73,7 +73,7 @@ static void init_from_pmc_array(PARROT_INTERP, PMC * self, INTVAL x_size, INTVAL
     }
 }
 
-pmclass NumMatrix2D dynpmc auto_attrs does matrix {
+pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
     ATTR FLOATVAL * storage;
     ATTR INTVAL x;
     ATTR INTVAL y;

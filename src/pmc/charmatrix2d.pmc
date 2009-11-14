@@ -67,7 +67,7 @@ insert_string_at_row_offset(PARROT_INTERP, PMC * self, INTVAL row, INTVAL offset
     return length;
 }
 
-pmclass CharMatrix2D dynpmc auto_attrs does matrix {
+pmclass CharMatrix2D dynpmc auto_attrs provides matrix {
     ATTR char * storage;
     ATTR INTVAL x;
     ATTR INTVAL y;
