@@ -18,9 +18,10 @@ sub MAIN () {
       pla_library_loaded:
     };
 
-    plan(82);
+    plan(84);
 
     create_nummatrix2d();
+    op_does_matrix();
     vtable_set_number_keyed();
     vtable_get_number_keyed();
     vtable_get_attr_str();
@@ -62,6 +63,17 @@ sub create_nummatrix2d() {
       can_not_create:
         'ok'(0, "Could not create a NumMatrix2D")
         .return()
+    }
+}
+
+sub op_does_matrix() {
+    Q:PIR {
+        $P0 = new ['NumMatrix2D']
+        $I0 = does $P0, 'matrix'
+        ok($I0, "NumMatrix2D does matrix")
+        $I0 = does $P0, 'gobbledegak'
+        $I0 = not $I0
+        ok($I0, "...and only does matrix")
     }
 }
 
