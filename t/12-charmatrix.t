@@ -18,11 +18,15 @@ sub MAIN () {
       pla_library_loaded:
     };
 
-    plan(4);
+    plan(10);
 
     create_charmatrix2d();
     op_does_matrix();
     vtable_set_string_keyed_int();
+    vtable_get_string_keyed_int();
+    vtable_set_integer_keyed();
+    vtable_set_number_keyed();
+    vtable_set_pmc_keyed();
 }
 
 sub create_charmatrix2d() {
@@ -60,3 +64,54 @@ sub vtable_set_string_keyed_int() {
         is($S0, $S1, "can set row-at-a-time, with equal lengths")
     }
 }
+
+sub vtable_get_string_keyed_int() {
+    Q:PIR {
+        $P0 = new ['CharMatrix2D']
+        $P0[0] = "ABCD"
+        $P0[1] = "EFGH"
+        $S0 = $P0[0]
+        is($S0, "ABCD", "Can get the first row as a string")
+        $S0 = $P0[1]
+        is($S0, "EFGH", "Can get the second row as a string")
+    }
+}
+
+sub vtable_set_integer_keyed() {
+    Q:PIR {
+        $P0 = new ['CharMatrix2D']
+        # TODO: We really need to figure out indexing, because this seems wrong
+        $P0[0;0] = 65
+        $P0[1;0] = 66
+        $P0[2;0] = 67
+        $P0[3;0] = 68
+        $P0[0;1] = 69
+        $P0[1;1] = 70
+        $P0[2;1] = 71
+        $P0[3;1] = 72
+        $S0 = $P0[0]
+        is($S0, "ABCD", "Can set characters by ASCII value, first row")
+        $S0 = $P0[1]
+        is($S0, "EFGH", "Can set characeters by ASCII value, second row")
+    }
+}
+
+sub vtable_set_number_keyed() {
+    Q:PIR {
+        $P0 = new ['CharMatrix2D']
+        $P0[0;0] = 65.2
+        $P0[1;0] = 66.3
+        $P0[2;0] = 67.4
+        $P0[3;0] = 68.5
+        $P0[0;1] = 69.6
+        $P0[1;1] = 70.7
+        $P0[2;1] = 71.8
+        $P0[3;1] = 72.9
+        $S0 = $P0[0]
+        is($S0, "ABCD", "Can set characters by decimal ASCII value, first row")
+        $S0 = $P0[1]
+        is($S0, "EFGH", "Can set characeters by decimal ASCII value, second row")
+    }
+}
+
+sub vtable_set_pmc_keyed() {}
