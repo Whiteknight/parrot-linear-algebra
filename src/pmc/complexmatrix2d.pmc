@@ -185,8 +185,7 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
         INTVAL rows_size = attrs->rows;
         INTVAL cols_size = attrs->cols;
         INTVAL rows, cols;
-        const FLOATVAL real = VTABLE_get_number_keyed_int(INTERP, value, 0);
-        const FLOATVAL imag = VTABLE_get_number_keyed_int(INTERP, value, 1);
+        FLOATVAL real, imag;
         const INTVAL flags = attrs->flags;
         FLOATVAL * s;
         GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
@@ -196,6 +195,19 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
             cols_size = attrs->cols;
         }
         s = attrs->storage;
+        switch (value->vtable->base_type) {
+            case enum_class_Complex:
+                real = VTABLE_get_number_keyed_int(INTERP, value, 0);
+                imag = VTABLE_get_number_keyed_int(INTERP, value, 1);
+                break;
+            case enum_class_Float:
+                real = VTABLE_get_number(INTERP, value);
+                imag = 0.0;
+                break;
+            default:
+                Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                    "ComplexMatrix2d: cannot set unknown PMC type");
+        }
         R_ITEM_XY(s, flags, rows_size, cols_size, rows, cols) = real;
         I_ITEM_XY(s, flags, rows_size, cols_size, rows, cols) = imag;
     }
