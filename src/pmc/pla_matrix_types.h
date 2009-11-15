@@ -99,51 +99,56 @@ do { \
 */
 
 /* Complex-Valued Matrix Accessors */
-/*
-#define RINDEX_XY_ROWMAJOR(x_max, y_max, x, y) \
-    (((y_max) * (x)) + (y))
-#define IINDEX_XY_ROWMAJOR(x_max, y_max, x, y) \
-    (((y_max) * (x)) + (y) + 1)
+#define R_INDEX_XY_ROWMAJOR(numrows, numcols, row, col) \
+    (((row) * (numcols) * 2) + (col))
+#define I_INDEX_XY_ROWMAJOR(numrows, numcols, row, col) \
+    (((row) * (numcols) * 2) + (col) + 1)
 
-#define RINDEX_XY_COLMAJOR(x_max, y_max, x, y) \
-    (((x_max) * (y)) + (x))
-#define IINDEX_XY_COLMAJOR(x_max, y_max, x, y) \
-    (((x_max) * (y)) + (x) + 1)
+#define R_INDEX_XY_COLMAJOR(numrows, numcols, row, col) \
+    (((col) * (numrows) * 2) + (row))
+#define I_INDEX_XY_COLMAJOR(numrows, numcols, row, col) \
+    (((col) * (numrows * 2)) + (row) + 1)
 
-#define RINDEX_XY(flags, x_max, y_max, x, y) \
-    (((IS_TRANSPOSED(flags)) ? RINDEX_XY_COLMAJOR(x_max, y_max, x, y) : \
-                               RINDEX_XY_ROWMAJOR(x_max, y_max, x, y)))
-#define IINDEX_XY(flags, x_max, y_max, x, y) \
-    (((IS_TRANSPOSED(flags)) ? IINDEX_XY_COLMAJOR(x_max, y_max, x, y) : \
-                               IINDEX_XY_ROWMAJOR(x_max, y_max, x, y)))
+#define R_INDEX_XY(flags, rowsize, colsize, row, col) \
+    (((IS_TRANSPOSED(flags)) ? \
+    R_INDEX_XY_COLMAJOR(rowsize, colsize, row, col) : \
+    R_INDEX_XY_ROWMAJOR(rowsize, colsize, row, col)))
+#define I_INDEX_XY(flags, rowsize, colsize, row, col) \
+    (((IS_TRANSPOSED(flags)) ? \
+    I_INDEX_XY_COLMAJOR(rowsize, colsize, row, col) : \
+    I_INDEX_XY_ROWMAJOR(rowsize, colsize, row, col)))
 
-#define RITEM_XY_ROWMAJOR(s, x_max, y_max, x, y) \
-    (s)[RINDEX_XY_ROWMAJOR(x_max, y_max, x, y)]
-#define IITEM_XY_ROWMAJOR(s, x_max, y_max, x, y) \
-    (s)[IINDEX_XY_ROWMAJOR(x_max, y_max, x, y)]
+#define R_ITEM_XY_ROWMAJOR(s, rowsize, colsize, row, col) \
+    (s)[R_INDEX_XY_ROWMAJOR(rowsize, colsize, row, col)]
+#define I_ITEM_XY_ROWMAJOR(s, rowsize, colsize, row, col) \
+    (s)[I_INDEX_XY_ROWMAJOR(rowsize, colsize, row, col)]
 
-#define RITEM_XY_COLMAJOR(s, x_max, y_max, x, y) \
-    (s)[RINDEX_XY_COLMAJOR(x_max, y_max, x, y)]
-#define IITEM_XY_COLMAJOR(s, x_max, y_max, x, y) \
-    (s)[IINDEX_XY_COLMAJOR(x_max, y_max, x, y)]
+#define R_ITEM_XY_COLMAJOR(s, rowsize, colsize, row, col) \
+    (s)[R_INDEX_XY_COLMAJOR(rowsize, colsize, row, col)]
+#define I_ITEM_XY_COLMAJOR(s, rowsize, colsize, row, col) \
+    (s)[I_INDEX_XY_COLMAJOR(rowsize, colsize, row, col)]
 
-#define RITEM_XY(s, flags, x_max, y_max, x, y) \
-    (s)[RINDEX_XY(flags, x_max, y_max, x, y)]
-#define IITEM_XY(s, flags, x_max, y_max, x, y) \
-    (s)[IINDEX_XY(flags, x_max, y_max, x, y)]
-*/
+#define R_ITEM_XY(s, flags, rowsize, colsize, row, col) \
+    (s)[R_INDEX_XY(flags, rowsize, colsize, row, col)]
+#define R_ITEM_XY(s, flags, rowsize, colsize, row, col) \
+    (s)[R_INDEX_XY(flags, rowsize, colsize, row, col)]
 
-#define FLAG_TRANSPOSED    1
-#define FLAG_SYMMETRIC     2
-#define FLAG_HERMITIAN     4
-#define FLAG_UTRIANGLE     8
-#define FLAG_LTRIANGLE    16
-#define FLAG_TRIANGLE    (FLAG_UTRIANGLE) | (FLAG_LTRIANGLE)
-#define FLAG_TRIDIAGONAL  32
-#define FLAG_TINY         64
-#define FLAG_DIAGONAL    (FLAG_SYMMETRIC) | (FLAG_HERMITIAN) | (FLAG_LTRIANGLE) |\
-                            (FLAG_UTRIANGLE) | (FLAG_TRIDIAGONAL)
+/* Matrix flags */
+#define FLAG_TRANSPOSED     0x01
+#define FLAG_SYMMETRIC      0x02
+#define FLAG_HERMITIAN      0x04
+#define FLAG_UTRIANGLE      0x08
+#define FLAG_LTRIANGLE      0x10
+#define FLAG_TRIANGLE       (FLAG_UTRIANGLE) | (FLAG_LTRIANGLE)
+#define FLAG_TRIDIAGONAL    0x20
+#define FLAG_TINY           0x40
+#define FLAG_DIAGONAL       (FLAG_SYMMETRIC) | \
+                            (FLAG_HERMITIAN) | \
+                            (FLAG_LTRIANGLE) | \
+                            (FLAG_UTRIANGLE) | \
+                            (FLAG_TRIDIAGONAL)
 
+/* Logical flag checking macros */
 #define IS_GENERAL(flags)         ((! (flags)))
 #define IS_TINY(flags)            (((flags) & (FLAG_TINY)))
 #define IS_SYMMETRIC(flags)       (((flags) & (FLAG_SYMMETRIC)))
@@ -156,4 +161,4 @@ do { \
 #define IS_TRANSPOSED(flags)      (((flags) & (FLAG_TRANSPOSED)))
 #define IS_TRANSPOSED_BLAS(flags) (IS_TRANSPOSED(flags) ? CblasTrans : CblasNoTrans)
 
-#endif
+#endif /* _PLA_MATRIX_TYPES_H_ */
