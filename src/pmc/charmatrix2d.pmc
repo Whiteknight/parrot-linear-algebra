@@ -44,14 +44,16 @@ resize_matrix(PARROT_INTERP, PMC * self, INTVAL x, INTVAL y)
 }
 
 static STRING *
-get_string_from_row(PARROT_INTERP, char * s, INTVAL cols, INTVAL row) {
+get_string_from_row(PARROT_INTERP, char * s, INTVAL cols, INTVAL row)
+{
     char * const rowstart = &(s[cols * row]);
     STRING * const str = Parrot_str_new(interp, rowstart, cols);
     return str;
 }
 
 static INTVAL
-insert_string_at_row_offset(PARROT_INTERP, PMC * self, INTVAL row, INTVAL offset, STRING * str) {
+insert_string_at_row_offset(PARROT_INTERP, PMC * self, INTVAL row, INTVAL offset, STRING * str)
+{
     Parrot_CharMatrix2D_attributes * const attrs = PARROT_CHARMATRIX2D(self);
     char * const cstr = Parrot_str_to_cstring(interp, str);
     const INTVAL length = strlen(cstr);
@@ -134,7 +136,7 @@ Sets the character value at coordinates x,y
     VTABLE void set_integer_keyed(PMC * key, INTVAL value) {
         Parrot_CharMatrix2D_attributes * const attrs = PARROT_CHARMATRIX2D(SELF);
         INTVAL x, y, x_size = attrs->x, y_size = attrs->y;
-        GET_INDICES_FROM_KEY(INTERP, key, x, y);
+        GET_KEY_INDICES_ROWMAJOR(INTERP, key, x, y);
         if (x >= x_size || y >= y_size) {
             resize_matrix(INTERP, SELF, x, y);
             x_size = attrs->x;
