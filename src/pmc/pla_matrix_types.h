@@ -130,8 +130,8 @@ do { \
 
 #define R_ITEM_XY(s, flags, rowsize, colsize, row, col) \
     (s)[R_INDEX_XY(flags, rowsize, colsize, row, col)]
-#define R_ITEM_XY(s, flags, rowsize, colsize, row, col) \
-    (s)[R_INDEX_XY(flags, rowsize, colsize, row, col)]
+#define I_ITEM_XY(s, flags, rowsize, colsize, row, col) \
+    (s)[I_INDEX_XY(flags, rowsize, colsize, row, col)]
 
 /* Matrix flags */
 #define FLAG_TRANSPOSED     0x01

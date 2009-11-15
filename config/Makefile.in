@@ -41,7 +41,8 @@ PMC2C_INCLUDES = --include $(PMC_DIR) --include $(SRC_DIR) --include $(SRC_DIR)/
 PMC_SOURCES = \
     $(PMC_DIR)/nummatrix2d.pmc \
     $(PMC_DIR)/pmcmatrix2d.pmc \
-    $(PMC_DIR)/charmatrix2d.pmc
+    $(PMC_DIR)/charmatrix2d.pmc \
+    $(PMC_DIR)/complexmatrix2d.pmc
 
 all: $(DYNEXT_TARGET)
 
