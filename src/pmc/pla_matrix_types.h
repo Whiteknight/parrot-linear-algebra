@@ -100,9 +100,9 @@ do { \
 
 /* Complex-Valued Matrix Accessors */
 #define R_INDEX_XY_ROWMAJOR(numrows, numcols, row, col) \
-    (((row) * (numcols) * 2) + (col))
+    ((((row) * (numcols)) + (col)) * 2)
 #define I_INDEX_XY_ROWMAJOR(numrows, numcols, row, col) \
-    (((row) * (numcols) * 2) + (col) + 1)
+    (((((row) * (numcols)) + (col)) * 2) + 1)
 
 #define R_INDEX_XY_COLMAJOR(numrows, numcols, row, col) \
     (((col) * (numrows) * 2) + (row))

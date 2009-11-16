@@ -212,6 +212,11 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
                 Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
                     "ComplexMatrix2d: cannot set unknown PMC type");
         }
+        fprintf(stderr, "%d,%d -> %d,%d -> %f+%fi\n",
+            rows, cols,
+            R_INDEX_XY(flags, rows_size, cols_size, rows, cols),
+            I_INDEX_XY(flags, rows_size, cols_size, rows, cols),
+            real, imag);
         R_ITEM_XY(s, flags, rows_size, cols_size, rows, cols) = real;
         I_ITEM_XY(s, flags, rows_size, cols_size, rows, cols) = imag;
     }
