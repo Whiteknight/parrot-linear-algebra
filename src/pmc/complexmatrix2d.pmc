@@ -204,6 +204,10 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
                 real = VTABLE_get_number(INTERP, value);
                 imag = 0.0;
                 break;
+            case enum_class_Integer:
+                real = (FLOATVAL)VTABLE_get_integer(INTERP, value);
+                imag = 0.0;
+                break;
             default:
                 Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
                     "ComplexMatrix2d: cannot set unknown PMC type");
