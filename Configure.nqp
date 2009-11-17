@@ -15,7 +15,8 @@ sub MAIN () {
     say("to figure out how to build parrot-linear-algebra.\n");
 
     # Load Parrot config and glue functions
-    load_bytecode('config/config-helpers.pir');
+    pir::load_bytecode('PGE.pbc');
+    pir::load_bytecode('config/config-helpers.pir');
 
     # Slurp in the unconfigured Makefile text
     my $unconfigured := slurp(@ARGS[0] || 'config/Makefile.in');
