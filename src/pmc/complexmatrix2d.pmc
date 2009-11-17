@@ -205,7 +205,10 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
                 imag = 0.0;
                 break;
             case enum_class_Integer:
-                real = (FLOATVAL)VTABLE_get_integer(INTERP, value);
+                {
+                    const INTVAL _r = VTABLE_get_integer(INTERP, value);
+                    real = (FLOATVAL)_r;
+                }
                 imag = 0.0;
                 break;
             default:
