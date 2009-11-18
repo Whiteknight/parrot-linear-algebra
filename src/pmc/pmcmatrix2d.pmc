@@ -105,7 +105,7 @@ pmclass PMCMatrix2D dynpmc auto_attrs provides matrix {
 
     VTABLE STRING *get_string() {
         INTVAL rows, cols;
-        STRING *pstr = Parrot_str_new(INTERP, "{", 1);
+        STRING *pstr = Parrot_str_new(INTERP, "{\n", 2);
         STRING * const strend = Parrot_str_new(INTERP, "}", 1);
         STRING * const newline = Parrot_str_new(INTERP, "\n", 1);
         Parrot_PMCMatrix2D_attributes * const attrs = PARROT_PMCMATRIX2D(SELF);
@@ -116,14 +116,14 @@ pmclass PMCMatrix2D dynpmc auto_attrs provides matrix {
             for (rows = 0; rows < rows_size; ++rows) {
                 PMC * const item = ITEM_XY_ROWMAJOR(s, rows_size, cols_size, rows, cols);
                 STRING * const str = VTABLE_get_string(INTERP, item);
-                STRING * const index = Parrot_sprintf_c(INTERP, "\t[%d,$d] = ", rows, cols);
+                STRING * const index = Parrot_sprintf_c(INTERP, "\t[%d,%d] = ", rows, cols);
                 pstr = Parrot_str_append(INTERP, pstr, index);
-                pstr = Parrot_str_append(INTERP, pstr, item);
+                pstr = Parrot_str_append(INTERP, pstr, str);
                 pstr = Parrot_str_append(INTERP, pstr, newline);
             }
-            pstr = Parrot_str_append(INTERP, pstr, strend);
-            pstr = Parrot_str_append(INTERP, pstr, newline);
         }
+        pstr = Parrot_str_append(INTERP, pstr, strend);
+        pstr = Parrot_str_append(INTERP, pstr, newline);
         return pstr;
     }
 }
