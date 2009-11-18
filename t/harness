@@ -10,7 +10,7 @@ MAIN();
 # verbose mode
 
 sub MAIN () {
-    load_bytecode('t/Glue.pbc');
+    pir::load_bytecode('t/Glue.pbc');
     my $total_passed:= 0;
     my $total_failed:= 0;
     my $total_files := 0;
@@ -61,11 +61,15 @@ sub MAIN () {
         }
         if ($failed) {
             say('failed ' ~ $failed ~ '/' ~ $num_tests ~ ' tests');
-        } elsif( @plan_parts[0] != 1 || $num_tests < 0) {
-            say('INVALID PLAN: ' ~ join('',@plan_parts));
-            $failed_files++;
-        } else {
-            say('passed ' ~ $curr_test ~ ' tests');
+        }
+        else {
+            if( @plan_parts[0] != 1 || $num_tests < 0) {
+                say('INVALID PLAN: ' ~ join('',@plan_parts));
+                $failed_files++;
+            }
+            else {
+                say('passed ' ~ $curr_test ~ ' tests');
+            }
         }
         $total_passed := $total_passed + $passed;
         $total_failed := $total_failed + $failed;

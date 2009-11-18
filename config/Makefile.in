@@ -16,7 +16,7 @@ CAT           = @cat@
 PARROT        = @bindir@/parrot@exe@
 PBC_TO_EXE    = @bindir@/pbc_to_exe$(EXE)
 PERL_LIB      = $(TOOLS_DIR)/lib
-NQP           = $(PARROT) $(LIB_DIR)/languages/nqp/nqp.pbc
+NQP           = $(PARROT) $(LIB_DIR)/library/nqp-rx.pbc
 PBC_TO_EXE    = @bindir@/pbc_to_exe
 CFLAGS        = -fPIC @ccflags@
 
