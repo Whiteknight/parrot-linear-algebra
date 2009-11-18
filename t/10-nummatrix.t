@@ -547,7 +547,7 @@ sub method_mem_transpose() {
 
         $P2.'mem_transpose'()
         $I0 = $P2 == $P1
-        ok($I0, "transpose does what it should")
+        ok($I0, "mem_transpose does what it should")
     }
 }
 
@@ -711,15 +711,15 @@ sub method_iterate_function_inplace() {
 }
 
 sub _iterate_helper_squared($matrix, $value, $x, $y) {
-    return($value * $value);
+    return $value * $value;
 }
 
 sub _iterate_helper_ax_b($matrix, $value, $x, $y, $a, $b) {
-    return(($a * $value) + $b);
+    return ($a * $value) + $b;
 }
 
 sub _iterate_helper_coords($matrix, $value, $x, $y) {
-    return($x + $y);
+    return $x + $y;
 }
 
 sub method_set_block() {
