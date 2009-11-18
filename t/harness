@@ -1,4 +1,4 @@
-#! parrot_nqp
+#! parrot-nqp
 
 our @ARGS;
 
@@ -23,7 +23,7 @@ sub MAIN () {
         print($filename ~ '...');
 
         my $file        := slurp($_);
-        my $test_output := qx('parrot_nqp', $filename);
+        my $test_output := qx('parrot-nqp', $filename);
         my $output      := split("\n",$test_output);
         my @plan_parts  := split('..',$output[0]);
 

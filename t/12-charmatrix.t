@@ -1,4 +1,4 @@
-#! parrot_nqp
+#! parrot-nqp
 our @ARGS;
 MAIN();
 
