@@ -24,7 +24,7 @@ sub MAIN () {
     op_does_matrix();
 }
 
-sub create_charmatrix2d() {
+sub create_complexmatrix2d() {
     Q:PIR {
         push_eh can_not_create
         $P0 = new ['ComplexMatrix2D']
