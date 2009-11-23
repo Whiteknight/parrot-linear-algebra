@@ -2,7 +2,7 @@ parrot-linear-algebra
 
 A linear algebra library package for the Parrot Virtual Machine
 
-PROJECT GOALS
+== PROJECT GOALS
 
 The goals of the Parrot-Linear-Algebra (PLA) project are to develop a good,
 high-performance linear algebra toolset for use with the Parrot Virtual
@@ -18,18 +18,39 @@ OLD Project Site: http://code.google.com/p/matrixy
 NEW Project Site: http://github.com/Whiteknight/matrixy
 Parrot:           http://www.parrot.org
 
-STATUS
+== STATUS
+
 PLA is being actively developed. It has core PMC types that build, a build
 and installation system, and a growing test suite.
 
-DEPENDENCIES
+== DEPENDENCIES
+
 Currently depends on Parrot (Version 1.6.0 or higher), make, and CBLAS 
-(or ATLAS with the CBLAS-like bindings).
+(or ATLAS with the CBLAS-like bindings). On Ubuntu or other Debian-based
+distros, you can type this incantation:
 
-BUILDING
-Currently builds and installs.
+sudo apt-get install libatlas3-base
+sudo apt-get install libatlas-base-dev
 
-CREDITS
+Notice that the "-base" variant is only generally optimized. If you are able
+try to use a platform-specific variant (such as "-sse2" or "-3dnow") for
+better performance.
+
+== BUILDING
+
+To get, build, test, and install Parrot-Linear-Algebra, follow these steps
+(on Linux):
+
+git clone git://github.com/Whiteknight/parrot-linear-algebra.git pla
+cd pla
+parrot-nqp Configure.nqp
+make && make test && sudo make install
+
+NOTICE: Installation is slightly broken right now, you may need to install it
+before you can test it (If testing fails, uninstall).
+
+== CREDITS
+
 Original versions were developed as part of the Matrixy project by Blairuk.
 See the file CREDITS for updated information about contributors.
 
