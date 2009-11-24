@@ -68,6 +68,68 @@ init_from_pmc_array(PARROT_INTERP, PMC * self, INTVAL rows_size, INTVAL cols_siz
     }
 }
 
+static PMC *
+get_complex_pmc_at_xy(PARROT_INTERP, PMC *self, INTVAL rows, INTVAL cols)
+{
+	Parrot_ComplexMatrix2D_attributes * const attrs = PARROT_COMPLEXMATRIX2D(self);
+	const INTVAL rows_size = attrs->rows;
+	const INTVAL cols_size = attrs->cols;
+	PMC * newcomplex;
+	const INTVAL flags = attrs->flags;
+	FLOATVAL real, imag;
+	FLOATVAL * const s = attrs->storage;
+	
+	if (rows >= rows_size || cols >= cols_size)
+	    Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
+		"ComplexMatrix2d: indices out of bounds");
+	real = R_ITEM_XY(s, flags, rows_size, cols_size, rows, cols);
+	imag = I_ITEM_XY(s, flags, rows_size, cols_size, rows, cols);
+	newcomplex = pmc_new(interp, enum_class_Complex);
+	VTABLE_set_number_keyed_int(interp, newcomplex, 0, real);
+	VTABLE_set_number_keyed_int(interp, newcomplex, 1, imag);
+	return newcomplex;
+}
+
+static void
+set_complex_pmc_at_xy(PARROT_INTERP, PMC * self, PMC * value, INTVAL row, INTVAL col)
+{
+    Parrot_ComplexMatrix2D_attributes * const attrs = PARROT_COMPLEXMATRIX2D(self);
+    INTVAL rows_size = attrs->rows;
+    INTVAL cols_size = attrs->cols;
+    FLOATVAL real, imag;
+    const INTVAL flags = attrs->flags;
+    FLOATVAL * s;
+
+    if (row >= rows_size || col >= cols_size) {
+        resize_matrix(interp, self, row, col);
+        rows_size = attrs->rows;
+        cols_size = attrs->cols;
+    }
+    s = attrs->storage;
+    switch (value->vtable->base_type) {
+        case enum_class_Complex:
+            real = VTABLE_get_number_keyed_int(interp, value, 0);
+            imag = VTABLE_get_number_keyed_int(interp, value, 1);
+            break;
+        case enum_class_Float:
+            real = VTABLE_get_number(interp, value);
+            imag = 0.0;
+            break;
+        case enum_class_Integer:
+            {
+                const INTVAL _r = VTABLE_get_integer(interp, value);
+                real = (FLOATVAL)_r;
+            }
+            imag = 0.0;
+            break;
+        default:
+            Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                "ComplexMatrix2d: cannot set unknown PMC type");
+    }
+    R_ITEM_XY(s, flags, rows_size, cols_size, row, col) = real;
+    I_ITEM_XY(s, flags, rows_size, cols_size, row, col) = imag;
+}
+
 pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
     ATTR FLOATVAL * storage;
     ATTR INTVAL rows;
@@ -152,24 +214,9 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
     }
 
     VTABLE PMC * get_pmc_keyed(PMC * key) {
-        Parrot_ComplexMatrix2D_attributes * const attrs = PARROT_COMPLEXMATRIX2D(SELF);
-        const INTVAL rows_size = attrs->rows;
-        const INTVAL cols_size = attrs->cols;
-        INTVAL rows, cols;
-        PMC * newcomplex;
-        const INTVAL flags = attrs->flags;
-        FLOATVAL real, imag;
-        FLOATVAL * const s = attrs->storage;
-        GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
-        if (rows >= rows_size || cols >= cols_size)
-            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
-                "ComplexMatrix2d: indices out of bounds");
-        real = R_ITEM_XY(s, flags, rows_size, cols_size, rows, cols);
-        imag = I_ITEM_XY(s, flags, rows_size, cols_size, rows, cols);
-        newcomplex = pmc_new(INTERP, enum_class_Complex);
-        VTABLE_set_number_keyed_int(INTERP, newcomplex, 0, real);
-        VTABLE_set_number_keyed_int(INTERP, newcomplex, 1, imag);
-        return newcomplex;
+    	INTVAL rows, cols;
+    	GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
+        return get_complex_pmc_at_xy(INTERP, SELF, rows, cols);
     }
 
 /*
@@ -181,42 +228,9 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
 */
 
     VTABLE void set_pmc_keyed(PMC * key, PMC * value) {
-        Parrot_ComplexMatrix2D_attributes * const attrs = PARROT_COMPLEXMATRIX2D(SELF);
-        INTVAL rows_size = attrs->rows;
-        INTVAL cols_size = attrs->cols;
         INTVAL rows, cols;
-        FLOATVAL real, imag;
-        const INTVAL flags = attrs->flags;
-        FLOATVAL * s;
         GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
-        if (rows >= rows_size || cols >= cols_size) {
-            resize_matrix(INTERP, SELF, rows, cols);
-            rows_size = attrs->rows;
-            cols_size = attrs->cols;
-        }
-        s = attrs->storage;
-        switch (value->vtable->base_type) {
-            case enum_class_Complex:
-                real = VTABLE_get_number_keyed_int(INTERP, value, 0);
-                imag = VTABLE_get_number_keyed_int(INTERP, value, 1);
-                break;
-            case enum_class_Float:
-                real = VTABLE_get_number(INTERP, value);
-                imag = 0.0;
-                break;
-            case enum_class_Integer:
-                {
-                    const INTVAL _r = VTABLE_get_integer(INTERP, value);
-                    real = (FLOATVAL)_r;
-                }
-                imag = 0.0;
-                break;
-            default:
-                Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
-                    "ComplexMatrix2d: cannot set unknown PMC type");
-        }
-        R_ITEM_XY(s, flags, rows_size, cols_size, rows, cols) = real;
-        I_ITEM_XY(s, flags, rows_size, cols_size, rows, cols) = imag;
+        set_complex_pmc_at_xy(INTERP, SELF, value, rows, cols);
     }
 
 /*
@@ -477,28 +491,16 @@ value with the return value of the called function.
         Parrot_ComplexMatrix2D_attributes * const attrs = PARROT_COMPLEXMATRIX2D(SELF);
         const INTVAL rows_size = attrs->rows;
         const INTVAL cols_size = attrs->cols;
-        const INTVAL newsize = rows_size * cols_size;
-        FLOATVAL * old_s = attrs->storage;
-        FLOATVAL * new_s = ALLOCATE_STORAGE(newsize);
         INTVAL i, j;
-
-        if (newsize == 0 || old_s == NULL)
-            RETURN();
 
         for (j = 0; j < cols_size; j++) {
             for (i = 0; i < rows_size; i++) {
-                const FLOATVAL r_value = R_ITEM_XY_ROWMAJOR(old_s, rows_size, cols_size, i, j);
-                const FLOATVAL i_value = I_ITEM_XY_ROWMAJOR(old_s, rows_size, cols_size, i, j);
-                FLOATVAL r_result = 0.0;
-                FLOATVAL i_result = 0.0;
-                Parrot_ext_call(INTERP, func, "PNNIIPf->N", SELF, r_value, i_value, i, j, args, &r_result, &i_result);
-                R_ITEM_XY_ROWMAJOR(new_s, rows_size, cols_size, i, j) = r_result;
-                I_ITEM_XY_ROWMAJOR(new_s, rows_size, cols_size, i, j) = i_result;
+                PMC * const item_xy = get_complex_pmc_at_xy(INTERP, SELF, i, j);
+                PMC * result = PMCNULL;
+                Parrot_ext_call(INTERP, func, "PPIIPf->P", SELF, item_xy, i, j, args, &result);
+                set_complex_pmc_at_xy(INTERP, SELF, result, i, j);
             }
         }
-        attrs->storage = new_s;
-        if (old_s)
-            free(old_s);
     }
 
 /*
