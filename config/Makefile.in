@@ -69,7 +69,7 @@ uninstall:
 	$(RM_F) $(INSTALL_DIR)/linalg_group$(LOAD_EXT)
 
 test: t/Glue.pbc all
-	$(NQP) t/harness t/*.t	
+	$(NQP) t/harness t/*.t && $(NQP) t/harness t/pmc/*.t	
 
 t/Glue.pbc: t/Glue.pir
 	$(PARROT) -o t/Glue.pbc t/Glue.pir
