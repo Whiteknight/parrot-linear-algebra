@@ -32,9 +32,13 @@ distros, you can type this incantation:
 sudo apt-get install libatlas3-base
 sudo apt-get install libatlas-base-dev
 
-Notice that the "-base" variant is only generally optimized. If you are able
-try to use a platform-specific variant (such as "-sse2" or "-3dnow") for
-better performance.
+On Fedoa you can type:
+
+sudo yum install atlas-devel
+
+Notice that the default vesions of the atlas library are only generally 
+optimized. If you are able try to use a platform-specific variant (such
+as "-sse2" or "-3dnow") for better performance.
 
 == BUILDING
 
@@ -48,6 +52,11 @@ make && make test && sudo make install
 
 NOTICE: Installation is slightly broken right now, you may need to install it
 before you can test it (If testing fails, uninstall).
+
+NOTICE: On Fedora yum installs to /usr/lib/atlas. You may need to modify the
+makefile after configuration to include the flag "-L/usr/lib/atlas". You may
+also need to modify the linker arguments to link against "-lcblas" instead of
+"-lblas" on debian-based systems.
 
 == CREDITS
 
