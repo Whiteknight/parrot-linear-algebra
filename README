@@ -50,9 +50,6 @@ cd pla
 parrot-nqp Configure.nqp
 make && make test && sudo make install
 
-NOTICE: Installation is slightly broken right now, you may need to install it
-before you can test it (If testing fails, uninstall).
-
 NOTICE: On Fedora yum installs to /usr/lib/atlas. You may need to modify the
 makefile after configuration to include the flag "-L/usr/lib/atlas". You may
 also need to modify the linker arguments to link against "-lcblas" instead of
