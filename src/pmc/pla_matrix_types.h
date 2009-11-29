@@ -105,9 +105,9 @@ do { \
     (((((row) * (numcols)) + (col)) * 2) + 1)
 
 #define R_INDEX_XY_COLMAJOR(numrows, numcols, row, col) \
-    (((col) * (numrows) * 2) + (row))
+    ((((col) * (numrows)) + (row)) * 2)
 #define I_INDEX_XY_COLMAJOR(numrows, numcols, row, col) \
-    (((col) * (numrows * 2)) + (row) + 1)
+    (((((col) * (numrows)) + (row)) * 2) + 1)
 
 #define R_INDEX_XY(flags, rowsize, colsize, row, col) \
     (((IS_TRANSPOSED(flags)) ? \
