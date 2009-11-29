@@ -17,7 +17,7 @@ sub MAIN () {
       pla_library_loaded:
     };
 
-    plan(6);
+    plan(7);
 
     create_complexmatrix2d();
     op_does_matrix();
@@ -34,6 +34,7 @@ sub MAIN () {
     method_fill();
     method_transpose();
     method_mem_transpose();
+    method_conjugate();
     method_iterate_function_inplace();
 }
 
@@ -128,7 +129,36 @@ sub method_mem_transpose() {
         
         $P0.'mem_transpose'()
         $I0 = $P0 == $P2
-        ok($I0, "can transpose a ComplexMatrix2D")
+        ok($I0, "can mem_transpose a ComplexMatrix2D")
+    }
+}
+
+sub method_conjugate() {
+    Q:PIR {
+        $P0 = new ['ComplexMatrix2D']
+        $P1 = new ['Complex']
+        $P1 = "1+1i"
+        $P0[0;0] = $P1
+        $P1 = "2+2i"
+        $P0[0;1] = $P1
+        $P1 = "3+3i"
+        $P0[1;0] = $P1
+        $P1 = "4+4i"
+        $P0[1;1] = $P1
+        
+        $P2 = new ['ComplexMatrix2D']
+        $P1 = "1-1i"
+        $P2[0;0] = $P1
+        $P1 = "2-2i"
+        $P2[0;1] = $P1
+        $P1 = "3-3i"
+        $P2[1;0] = $P1
+        $P1 = "4-4i"
+        $P2[1;1] = $P1
+        
+        $P0.'conjugate'()
+        $I0 = $P0 == $P2
+        ok($I0, "can conjugate a ComplexMatrix2D")
     }
 }
 
