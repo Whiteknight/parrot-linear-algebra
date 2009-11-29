@@ -10,7 +10,7 @@ sub MAIN () {
         c.'import'('Test::More')
 
         .local pmc pla
-        pla = loadlib 'linalg_group'
+        pla = loadlib './linalg_group'
         if pla goto pla_library_loaded
         say "Cannot load linalg_group"
         exit 1
