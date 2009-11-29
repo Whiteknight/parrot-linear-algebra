@@ -17,7 +17,7 @@ sub MAIN () {
       pla_library_loaded:
     };
 
-    plan(4);
+    plan(6);
 
     create_complexmatrix2d();
     op_does_matrix();
@@ -73,8 +73,65 @@ sub vtable_clone() {}
 sub vtable_is_equal() {}
 sub method_resize() {}
 sub method_fill() {}
-sub method_transpose() {}
-sub method_mem_transpose() {}
+
+sub method_transpose() {
+    Q:PIR {
+        $P0 = new ['ComplexMatrix2D']
+        $P1 = new ['Complex']
+        $P1 = "1+1i"
+        $P0[0;0] = $P1
+        $P1 = "2+2i"
+        $P0[0;1] = $P1
+        $P1 = "3+3i"
+        $P0[1;0] = $P1
+        $P1 = "4+4i"
+        $P0[1;1] = $P1
+        
+        $P2 = new ['ComplexMatrix2D']
+        $P1 = "1+1i"
+        $P2[0;0] = $P1
+        $P1 = "3+3i"
+        $P2[0;1] = $P1
+        $P1 = "2+2i"
+        $P2[1;0] = $P1
+        $P1 = "4+4i"
+        $P2[1;1] = $P1
+        
+        $P0.'transpose'()
+        $I0 = $P0 == $P2
+        ok($I0, "can transpose a ComplexMatrix2D")
+    }
+}
+
+sub method_mem_transpose() {
+    Q:PIR {
+        $P0 = new ['ComplexMatrix2D']
+        $P1 = new ['Complex']
+        $P1 = "1+1i"
+        $P0[0;0] = $P1
+        $P1 = "2+2i"
+        $P0[0;1] = $P1
+        $P1 = "3+3i"
+        $P0[1;0] = $P1
+        $P1 = "4+4i"
+        $P0[1;1] = $P1
+        
+        $P2 = new ['ComplexMatrix2D']
+        $P1 = "1+1i"
+        $P2[0;0] = $P1
+        $P1 = "3+3i"
+        $P2[0;1] = $P1
+        $P1 = "2+2i"
+        $P2[1;0] = $P1
+        $P1 = "4+4i"
+        $P2[1;1] = $P1
+        
+        $P0.'mem_transpose'()
+        $I0 = $P0 == $P2
+        ok($I0, "can transpose a ComplexMatrix2D")
+    }
+}
+
 sub method_iterate_function_inplace() {
     Q:PIR {
         $P0 = new ['ComplexMatrix2D']
