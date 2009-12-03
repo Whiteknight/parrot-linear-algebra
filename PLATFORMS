@@ -8,6 +8,13 @@ Ubuntu 9.04: Supported
 		sudo apt-get install libatlas-base-dev
 	+ C Compilers:
 
+Ubuntu 9.10: Supported
+	+ Parrot: 1.8.0
+	+ BLAS: Atlas
+		sudo apt-get install libatlas3-base
+		sudo apt-get install libatlas-base-dev
+	+ C Compilers: gcc-4.4.1
+
 Fedora 12: Supported
 	+ Parrot: 1.8.0
 	+ BLAS: Atlas
