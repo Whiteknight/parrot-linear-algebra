@@ -2,15 +2,17 @@ Status information about which Platforms Parrot-Linear-Algebra is supported, inc
 incantations needed to install it.
 
 Ubuntu 9.04: Supported
+	+ Parrot: 1.8.0
 	+ BLAS: Atlas
 		sudo apt-get install libatlas3-base
 		sudo apt-get install libatlas-base-dev
 	+ C Compilers:
 
 Fedora 12: Supported
+	+ Parrot: 1.8.0
 	+ BLAS: Atlas
 		sudo yum install atlas-devel
-	+ C Compilers:
+	+ C Compilers: gcc-4.4.2
 
 OpenSolaris 2009.06: Not Supported
 	+ BLAS: None Provided
