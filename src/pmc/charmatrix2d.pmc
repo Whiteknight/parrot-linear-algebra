@@ -30,6 +30,7 @@ resize_matrix(PARROT_INTERP, PMC * self, INTVAL x, INTVAL y)
     char * new_s = ALLOCATE_STORAGE(newsize);
 
     INTVAL i, j;
+    memset(new_s, ' ', newsize);
     for (i = 0; i < old_x; i++) {
         for (j = 0; j < old_y; j++) {
             ITEM_XY_COLMAJOR(new_s, new_x, new_y, i, j) =

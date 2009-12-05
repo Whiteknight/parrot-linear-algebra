@@ -1,0 +1,418 @@
+#include <cblas.h>
+
+#define VECTOR_TYPE_UNDEF    0
+#define VECTOR_TYPE_COL      1
+#define VECTOR_TYPE_ROW      -1
+#define GET_VECTOR_TYPE(x) ((x)->flags & (VECTOR_TYPE_COL | VECTOR_TYPE_ROW))
+#define SET_VECTOR_TYPE(x, v) ((x)->flags = ((v) & (VECTOR_TYPE_COL | VECTOR_TYPE_ROW)))
+#define SWITCH_VECTOR_TYPE(x) ((x)->flags *= -1;)
+
+static void
+resize_vector(PARROT_INTERP, PMC * self, INTVAL length)
+{
+    Parrot_NumVector_attributes * const attrs = PARROT_NUMVECTOR(self);
+    if (length > attrs->length) {
+        attrs->storage = mem_sys_realloc(attrs->storage, sizeof(FLOATVAL) * length);
+        attrs->length = length;
+    }
+}
+
+pmclass NumVector dynpmc auto_attrs {
+    ATTR FLOATVAL * storage;
+    ATTR INTVAL length;
+    ATTR INTVAL flags;
+
+/*
+
+=head1 VTABLEs
+
+=over 4
+
+=item* init
+
+=item* destroy
+
+=cut
+
+*/
+
+    VTABLE void init() {
+        Parrot_NumVector_attributes * const attrs = PARROT_NUMVECTOR(SELF);
+        attrs->storage = NULL;
+        attrs->length = 0;
+        attrs->flags = 0;
+        PObj_custom_destroy_SET(SELF);
+    }
+
+    VTABLE void destroy() {
+        Parrot_NumVector_attributes * const attrs = PARROT_NUMVECTOR(SELF);
+        FLOATVAL * const storage = attrs->storage;
+        if (s != NULL)
+            mem_sys_free(s);
+    }
+
+/*
+
+=item* get_number
+
+=item* get_number_keyed
+
+=item* get_number_keyed_int
+
+=item* get_integer
+
+=item* get_integer_keyed
+
+=item* get_integer_keyed_int
+
+=cut
+
+*/
+
+    VTABLE FLOATVAL get_number() {
+        Parrot_NumVector_attributes * const attrs = PARROT_NUMVECTOR(SELF);
+        return (FLOATVAL) attrs->length;
+    }
+
+    VTABLE FLOATVAL get_number_keyed(PMC * key) {
+        Parrot_NumVector_attributes * const attrs = PARROT_NUMVECTOR(SELF);
+        const INTVAL entry = VTABLE_get_integer(INTERP, key);
+        if (entry <= 0 || entry > length)
+            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                "NumVector: Indices out of bounds");
+        return attrs->storage[entry-1];
+    }
+
+    VTABLE PMC * get_number_keyed_int(INTVAL key) {
+        Parrot_NumVector_attributes * const attrs = PARROT_NUMVECTOR(SELF);
+        if (key <= 0 || key > length)
+            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                "NumVector: Indices out of bounds");
+        return attrs->storage[key-1];
+    }
+
+    VTABLE INTVAL get_integer() {
+        Parrot_NumVector_attributes * const attrs = PARROT_NUMVECTOR(SELF);
+        return attrs->length;
+    }
+
+    VTABLE INTVAL get_integer_keyed(PMC * key) {
+        const FLOATVAL f = VTABLE_get_number_keyed(INTERP, SELF, key);
+        return (INTVAL) f;
+    }
+
+    VTABLE INTVAL get_integer_keyed_int(INTVAL key) {
+        const FLOATVAL f = VTABLE_get_number_keyed_int(INTERP, SELF, key);
+        return (INTVAL) f;
+    }
+
+/*
+
+=item* get_string
+
+=item* get_string_keyed
+
+=item* get_string_keyed_int
+
+=cut
+
+*/
+
+    VTABLE STRING * get_string() {
+        INTVAL i = 0;
+        Parrot_NumVector_attributes * const attrs = PARROT_NUMVECTOR(SELF);
+        STRING * pstr = Parrot_str_new(INTERP, "", 0);
+
+        if (GET_VECTOR_TYPE(attrs) == VECTOR_TYPE_COL) {
+            for (i = 0; i < attrs->length; ++i) {
+                STRING * const item = Parrot_sprintf_c(INTERP, "\t%g\n", attrs->storage[i]);
+                Parrot_str_append(INTERP, pstr, item);
+            }
+        }
+        else {
+            for (i = 0; i < attrs->length; ++i) {
+                STRING * const item = Parrot_sprintf_c(INTERP, "\t%g", attrs->storage[i]);
+                Parrot_str_append(INTERP, pstr, item);
+            }
+            Parrot_str_append(INTERP, pstr, "\n");
+        }
+
+        return pstr;
+    }
+
+    VTABLE STRING * get_string_keyed(PMC * key) {
+        const FLOATVAL f = VTABLE_get_number_keyed(INTERP, SELF, key);
+        STRING * const item = Parrot_sprintf_c(INTERP, "%g", f);
+        return item;
+    }
+
+    VTABLE STRING * get_string_keyed_int(INTVAL key) {
+        const FLOATVAL f = VTABLE_get_number_keyed_int(INTERP, SELF, key);
+        STRING * const item = Parrot_sprintf_c(INTERP, "%g", f);
+        return item;
+    }
+
+/*
+
+=item* get_pmc_keyed
+
+=item* get_pmc_keyed_int
+
+=cut
+
+*/
+
+    VTABLE PMC * get_pmc_keyed(PMC * key) {
+        const FLOATVAL f = VTABLE_get_number_keyed(INTERP, SELF, key);
+        PMC * const item = pmc_new(INTERP, enum_class_Float);
+        VTABLE_set_number_native(INTERP, item, f);
+        return item;
+    }
+
+    VTABLE PMC * get_pmc_keyed_int(INTVAL key) {
+        const FLOATVAL f = VTABLE_get_number_keyed_int(INTERP, SELF, key);
+        PMC * const item = pmc_new(INTERP, enum_class_Float);
+        VTABLE_set_number_native(INTERP, item, f);
+        return item;
+    }
+
+/*
+
+=item* set_number_keyed
+
+=item* set_number_keyed_int
+
+=item* set_integer_keyed
+
+=item* set_integer_keyed_int
+
+=item* set_pmc_keyed
+
+=item* set_pmc_keyed_int
+
+=cut
+
+*/
+
+    VTABLE void set_number_keyed(PMC * key, FLOATVAL value) {
+        Parrot_NumVector_attributes * const attrs = PARROT_NUMVECTOR(SELF);
+        const INTVAL entry = VTABLE_get_integer(INTERP, key);
+        if (entry <= 0 || entry > length)
+            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                "NumVector: Indices out of bounds");
+        attrs->storage[entry - 1] = value;
+    }
+
+    VTABLE void set_number_keyed_int(INTVAL key, FLOATVAL value) {
+        Parrot_NumVector_attributes * const attrs = PARROT_NUMVECTOR(SELF);
+        if (key <= 0 || key > length)
+            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                "NumVector: Indices out of bounds");
+        attrs->storage[key - 1] = value;
+    }
+
+    VTABLE void set_integer_keyed(PMC * key, INTVAL value) {
+        VTABLE_set_number_keyed(INTERP, SELF, key, (FLOATVAL) value);
+    }
+
+    VTABLE void set_integer_keyed_int(INTVAL key, INTVAL value) {
+        VTABLE_set_number_keyed_int(INTERP, SELF, key, (FLOATVAL) value);
+    }
+
+    VTABLE void set_pmc_keyed(PMC * key, PMC * value) {
+        const FLOATVAL v = VTABLE_get_number(INTERP, value);
+        VTABLE_set_number_keyed(INTERP, SELF, key, v);
+    }
+
+    VTABLE void set_pmc_keyed_int(INTVAL key, PMC * value) {
+        const FLOATVAL v = VTABLE_get_number(INTERP, value);
+        VTABLE_set_number_keyed_int(key, v);
+    }
+
+/*
+
+=item* add(NumVector)
+
+=item* add(NumMatrix2D)
+
+=cut
+
+*/
+
+    MULTI PMC * add(NumVector *value, PMC *dest) {
+        INTVAL dim = selfattrs->length;
+        Parrot_NumVector_attributes * const selfattrs = PARROT_NUMVECTOR(SELF);
+        Parrot_NumVector_attributes * const valattrs  = PARROT_NUMVECTOR(value);
+        Parrot_NumVector_attributes * destattrs = NULL;
+
+        if (dim != valattrs->length || GET_VECTOR_TYPE(selfattrs) != GET_VECTOR_TYPE(valattrs)) {
+            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                "NumVector: Dimensions must match in add.");
+        }
+
+        dest = VTABLE_copy(INTERP, self);
+        destattrs = PARROT_NUMVECTOR(dest);
+        cblas_daxpy(dim, 1, destattrs->storage, 0, valattrs->storage, 0);
+
+        return dest;
+    }
+
+    MULTI PMC *add(NumMatrix2D *value, PMC *dest) {
+
+    }
+
+    MULTI void i_add(NumVector *value) {
+        INTVAL dim;
+        Parrot_NumVector_attributes * selfattrs = PARROT_NUMVECTOR(SELF);
+        Parrot_NumVector_attributes * const valattrs = PARROT_NUMVECTOR(value);
+        dim = selfattrs->length;
+
+        if (dim != valattrs->length || GET_VECTOR_TYPE(selfattrs) != GET_VECTOR_TYPE(valattrs)) {
+            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                "NumVector: Dimensions must match in i_add.");
+        }
+
+        cblas_daxpy(dim, 1, valattrs->storage, 0, selfattrs->storage, 0);
+    }
+
+    MULTI PMC * subtract(NumVector *value, PMC *dest) {
+        INTVAL dim;
+        Parrot_NumVector_attributes * const selfattrs = PARROT_NUMVECTOR(SELF);
+        Parrot_NumVector_attributes * const valattrs  = PARROT_NUMVECTOR(value);
+        Parrot_NumVector_attributes * destattrs = NULL;
+        dim = selfattrs->length;
+
+        if (dim != valattrs->length || GET_VECTOR_TYPE(selfattrs) != GET_VECTOR_TYPE(valattrs)) {
+            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                "NumVector: Dimensions must match in subtract.");
+        }
+
+        dest = VTABLE_copy(INTERP, self);
+        destattrs = PARROT_NUMVECTOR(dest);
+        cblas_daxpy(dim, -1, valattrs->storage, 0, destattrs->storage, 0);
+
+        return dest;
+    }
+
+    MULTI void i_subtract(NumVector *value) {
+        INTVAL dim;
+        Parrot_NumVector_attributes * selfattrs = PARROT_NUMVECTOR(SELF);
+        Parrot_NumVector_attributes * const valattrs = PARROT_NUMVECTOR(value);
+        dim = selfattrs->length;
+
+        if (dim != valattrs->length || GET_VECTOR_TYPE(selfattrs) != GET_VECTOR_TYPE(valattrs)) {
+            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                "NumVector: Dimensions must match in i_subtract.");
+        }
+
+        cblas_daxpy(dim, -1, valattrs->storage, 0, selfattrs->storage, 0);
+    }
+
+    MULTI PMC * multiply(INTVAL value, PMC *dest) {
+        Parrot_mmd_invoke(INTERP, "multiply", "PfP->P", SELF, (FLOATVAL) value, dest);
+    }
+
+    MULTI PMC * multiply(FLOATVAL value, PMC *dest) {
+        Parrot_NumVector_attributes const * selfattrs = PARROT_NUMVECTOR(SELF);
+        Parrot_NumVector_attributes * destattrs;
+
+        dest = VTABLE_copy(INTERP, SELF);
+        destattrs = PARROT_NUMVECTOR(dest);
+ 
+        cblas_dscal(destattrs->length, value, destattrs->storage, 0);
+        return dest;
+    }
+
+    MULTI PMC * multiply(NumVector *value, PMC *dest) {
+        INTVAL selftype = 0, valtype = 0, selflength = 0, vallength = 0;
+        Parrot_NumVector_attributes * destattrs = NULL;
+        Parrot_NumVector_attributes const * selfattrs = PARROT_NUMVECTOR(SELF);
+        Parrot_NumVector_attributes const * valattrs = PARROT_NUMVECTOR(value);
+
+        selftype   = GET_VECTOR_TYPE(selfattrs);
+        valtype    = GET_VECTOR_TYPE(valattrs);
+        selflength = selfattrs->length;
+        vallength  = valattrs->length;
+
+        if (selftype == VECTOR_TYPE_COL && valtype == VECTOR_TYPE_ROW) {
+            // Output: Matrix
+        }
+        else if (selflength == vallength) {
+            if (selftype == valtype) {
+                // Output: Floatval
+            }
+            else { /* i.e. selftype == VECTOR_TYPE_ROW && valtype == VECTOR_TYPE_COL */
+                // Output: 1-dimensional vector
+            }
+        }
+        else {
+
+        }
+
+        return dest;       
+    }
+
+    MULTI void i_multiply(INTVAL value) {
+        Parrot_NumVector_attributes * selfattrs = PARROT_NUMVECTOR(SELF);
+        cblas_dscal(selfattrs->length, (FLOATVAL) value, selfattrs->storage, 0); 
+    }
+
+    MULTI void i_multiply(FLOATVAL value) {
+        Parrot_NumVector_attributes * selfattrs = PARROT_NUMVECTOR(SELF);
+        cblas_dscal(selfattrs->length, value, selfattrs->storage, 0); 
+    }
+
+    MULTI PMC * divide(INTVAL value) {
+        Parrot_mmd_invoke(INTERP, "multiply", "PfP->P", SELF, 1. / (FLOATVAL) value, dest);
+    }
+
+    MULTI PMC * divide(FLOATVAL value) {
+        Parrot_mmd_invoke(INTERP, "multiply", "PfP->P", SELF, 1. / value, dest);
+    }
+
+    MULTI void i_divide(INTVAL value) {
+        Parrot_NumVector_attributes * selfattrs = PARROT_NUMVECTOR(SELF);
+        cblas_dscal(selfattrs->length, 1. / (FLOATVAL) value, selfattrs->storage, 0); 
+    }
+
+    MULTI void i_divide(FLOATVAL value) {
+        Parrot_NumVector_attributes * selfattrs = PARROT_NUMVECTOR(SELF);
+        cblas_dscal(selfattrs->length, 1. / value, selfattrs->storage, 0); 
+
+    }
+
+    METHOD FLOATVAL norm1() {
+        Parrot_NumVector_attributes const * selfattrs = PARROT_NUMVECTOR(SELF);
+        return cblas_dasum(selfattrs->length, selfattrs->storage, 0);
+    }
+
+    METHOD FLOATVAL norm2() {
+        Parrot_NumVector_attributes const * selfattrs = PARROT_NUMVECTOR(SELF);
+        return cblas_dnrm2(selfattrs->length, selfattrs->storage, 0);
+    }
+
+    METHOD FLOATVAL normInf() {
+        Parrot_NumVector_attributes const * selfattrs = PARROT_NUMVECTOR(SELF);
+        return cblas_idamax(selfattrs->length, selfattrs->storage, 0);
+    }
+
+    METHOD FLOATVAL dot(NumVector *val) {
+        INTVAL dim = 0;
+        Parrot_NumVector_attributes const * selfattrs = PARROT_NUMVECTOR(SELF);
+        Parrot_NumVector_attributes const * valattrs  = PARROT_NUMVECTOR(val);
+        dim = selfattrs->length;
+
+        if (dim != valattrs->length) {
+            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                "NumVector: Dimensions must match in dot.");
+        }
+
+        return cblas_dddot(dim, selfattrs->storage, 0, valattrs->storage, 0);
+    }
+
+    METHOD void transpose() {
+        Parrot_NumVector_attributes * selfattrs = PARROT_NUMVECTOR(SELF);
+        SWITCH_VECTOR_TYPE(selfattrs);
+    }
+}
+
