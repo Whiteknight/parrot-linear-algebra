@@ -19,11 +19,13 @@ sub MAIN () {
 sub load_linalg_group() {
     Q:PIR {
         .local pmc pla
-        pla = loadlib "./dynext/linalg_group"
+        pla = loadlib "./linalg_group"
         if pla goto has_linalg_group
         ok(0, "loading linalg_group failed")
+	goto _end
      has_linalg_group:
         ok(1, "has linalg_group library available")
+     _end:
     }
 }
 
