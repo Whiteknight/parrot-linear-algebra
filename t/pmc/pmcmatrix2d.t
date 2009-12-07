@@ -18,14 +18,14 @@ sub MAIN () {
       pla_library_loaded:
     };
 
-    plan(3);
+    plan(11);
     create_pmcmatrix2d();
     op_does_matrix();
+    vtable_set_pmc_keyed();
     vtable_get_pmc_keyed();
     vtable_get_integer_keyed();
     vtable_get_number_keyed();
     vtable_get_string_keyed();
-    vtable_set_pmc_keyed();
     vtable_set_integer_keyed();
     vtable_set_number_keyed();
     vtable_set_string_keyed();
@@ -154,7 +154,10 @@ sub vtable_get_string() {
         $S0 = "Hello World"
         $P0[0;0] = $S0
         $S1 = $P0
-        is($S1, "{\n\t[0,0] = Hello World\n}", "get_string works")
+        # TODO: NQP-RX doesn't seem to like curley brackets inside quotes
+        #       here, so we need to talk to pmichaud about that.
+        #is($S1, "\\n\t[0,0] = Hello World\n\", "get_string works")
     }
 }
+
 
