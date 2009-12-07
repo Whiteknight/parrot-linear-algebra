@@ -223,6 +223,8 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
 
 =item* set_pmc_keyed
 
+=item* set_string_keyed
+
 =cut
 
 */
@@ -231,6 +233,12 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
         INTVAL rows, cols;
         GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
         set_complex_pmc_at_xy(INTERP, SELF, value, rows, cols);
+    }
+    
+    VTABLE void set_string_keyed(PMC * key, STRING * value) {
+        PMC * const item = pmc_new(INTERP, enum_class_Complex);
+        VTABLE_set_string_native(INTERP, item, value);
+        VTABLE_set_pmc_keyed(INTERP, SELF, key, item);
     }
 
 /*

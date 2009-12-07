@@ -73,8 +73,18 @@ pmclass PMCMatrix2D dynpmc auto_attrs provides matrix {
         GET_KEY_INDICES_ROWMAJOR(INTERP, key, x, y);
         if (x >= x_size || y >= y_size)
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
-                                        "NumMatrix2d: indices out of bounds");
+                                        "PMCMatrix2d: indices out of bounds");
         return ITEM_XY_ROWMAJOR(attrs->storage, x_size, y_size, x, y);
+    }
+
+    VTABLE PMC * get_pmc_keyed_int(INTVAL key) {
+        Parrot_PMCMatrix2D_attributes * const attrs = PARROT_PMCMATRIX2D(SELF);
+        const INTVAL total_size = attrs->x * attrs->y;
+        if (key >= total_size || key < 0) {
+            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                                        "PMCMatrix2D: indices out of bounds.");
+        }
+        return attrs->storage[key];
     }
 
     VTABLE INTVAL get_integer_keyed(PMC * key) {
@@ -147,5 +157,27 @@ pmclass PMCMatrix2D dynpmc auto_attrs provides matrix {
         pstr = Parrot_str_append(INTERP, pstr, strend);
         pstr = Parrot_str_append(INTERP, pstr, newline);
         return pstr;
+    }
+
+    METHOD initialize_from_array(INTVAL rows_size, INTVAL cols_size, PMC * values) {
+        Parrot_PMCMatrix2D_attributes * const attrs = PARROT_PMCMATRIX2D(SELF);
+        PMC ** s;
+        INTVAL self_rows, self_cols, i, j, num = 0;
+        const INTVAL init_elems = VTABLE_elements(interp, values);
+
+        resize_matrix(interp, SELF, rows_size - 1, cols_size - 1);
+        self_rows = attrs->y;
+        self_cols = attrs->x;
+        s = attrs->storage;
+
+        for (i = 0; i < cols_size; i++) {
+            for (j = 0; j < rows_size; j++) {
+                PMC * const value = VTABLE_get_pmc_keyed_int(interp, values, num);
+                num++;
+                ITEM_XY_ROWMAJOR(s, self_rows, self_cols, j, i) = value;
+                if (num >= init_elems)
+                    return;
+            }
+        }
     }
 }

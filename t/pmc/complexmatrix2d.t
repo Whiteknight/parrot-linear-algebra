@@ -26,6 +26,7 @@ sub MAIN () {
     vtable_get_string_keyed();
     vtable_get_pmc_keyed();
     vtable_set_pmc_keyed();
+    vtable_set_string_keyed();
     vtable_get_string();
     vtable_get_attr_string();
     vtable_clone();
@@ -68,6 +69,7 @@ sub vtable_get_integer_keyed() {}
 sub vtable_get_string_keyed() {}
 sub vtable_get_pmc_keyed() {}
 sub vtable_set_pmc_keyed() {}
+sub vtable_set_string_keyed() {}
 sub vtable_get_string() {}
 sub vtable_get_attr_string() {}
 sub vtable_clone() {}
@@ -78,28 +80,19 @@ sub method_fill() {}
 sub method_transpose() {
     Q:PIR {
         $P0 = new ['ComplexMatrix2D']
-        $P1 = new ['Complex']
-        $P1 = "1+1i"
-        $P0[0;0] = $P1
-        $P1 = "2+2i"
-        $P0[0;1] = $P1
-        $P1 = "3+3i"
-        $P0[1;0] = $P1
-        $P1 = "4+4i"
-        $P0[1;1] = $P1
+        $P0[0;0] = "1+1i"
+        $P0[0;1] = "2+2i"
+        $P0[1;0] = "3+3i"
+        $P0[1;1] = "4+4i"
         
-        $P2 = new ['ComplexMatrix2D']
-        $P1 = "1+1i"
-        $P2[0;0] = $P1
-        $P1 = "3+3i"
-        $P2[0;1] = $P1
-        $P1 = "2+2i"
-        $P2[1;0] = $P1
-        $P1 = "4+4i"
-        $P2[1;1] = $P1
+        $P1 = new ['ComplexMatrix2D']
+        $P1[0;0] = "1+1i"
+        $P1[0;1] = "3+3i"
+        $P1[1;0] = "2+2i"
+        $P1[1;1] = "4+4i"
         
         $P0.'transpose'()
-        $I0 = $P0 == $P2
+        $I0 = $P0 == $P1
         ok($I0, "can transpose a ComplexMatrix2D")
     }
 }
@@ -107,28 +100,19 @@ sub method_transpose() {
 sub method_mem_transpose() {
     Q:PIR {
         $P0 = new ['ComplexMatrix2D']
-        $P1 = new ['Complex']
-        $P1 = "1+1i"
-        $P0[0;0] = $P1
-        $P1 = "2+2i"
-        $P0[0;1] = $P1
-        $P1 = "3+3i"
-        $P0[1;0] = $P1
-        $P1 = "4+4i"
-        $P0[1;1] = $P1
+        $P0[0;0] = "1+1i"
+        $P0[0;1] = "2+2i"
+        $P0[1;0] = "3+3i"
+        $P0[1;1] = "4+4i"
         
-        $P2 = new ['ComplexMatrix2D']
-        $P1 = "1+1i"
-        $P2[0;0] = $P1
-        $P1 = "3+3i"
-        $P2[0;1] = $P1
-        $P1 = "2+2i"
-        $P2[1;0] = $P1
-        $P1 = "4+4i"
-        $P2[1;1] = $P1
+        $P1 = new ['ComplexMatrix2D']
+        $P1[0;0] = "1+1i"
+        $P1[0;1] = "3+3i"
+        $P1[1;0] = "2+2i"
+        $P1[1;1] = "4+4i"
         
         $P0.'mem_transpose'()
-        $I0 = $P0 == $P2
+        $I0 = $P0 == $P1
         ok($I0, "can mem_transpose a ComplexMatrix2D")
     }
 }
@@ -136,28 +120,19 @@ sub method_mem_transpose() {
 sub method_conjugate() {
     Q:PIR {
         $P0 = new ['ComplexMatrix2D']
-        $P1 = new ['Complex']
-        $P1 = "1+1i"
-        $P0[0;0] = $P1
-        $P1 = "2+2i"
-        $P0[0;1] = $P1
-        $P1 = "3+3i"
-        $P0[1;0] = $P1
-        $P1 = "4+4i"
-        $P0[1;1] = $P1
+        $P0[0;0] = "1+1i"
+        $P0[0;1] = "2+2i"
+        $P0[1;0] = "3+3i"
+        $P0[1;1] = "4+4i"
         
-        $P2 = new ['ComplexMatrix2D']
-        $P1 = "1-1i"
-        $P2[0;0] = $P1
-        $P1 = "2-2i"
-        $P2[0;1] = $P1
-        $P1 = "3-3i"
-        $P2[1;0] = $P1
-        $P1 = "4-4i"
-        $P2[1;1] = $P1
+        $P1 = new ['ComplexMatrix2D']
+        $P1[0;0] = "1-1i"
+        $P1[0;1] = "2-2i"
+        $P1[1;0] = "3-3i"
+        $P1[1;1] = "4-4i"
         
         $P0.'conjugate'()
-        $I0 = $P0 == $P2
+        $I0 = $P0 == $P1
         ok($I0, "can conjugate a ComplexMatrix2D")
     }
 }
@@ -165,30 +140,21 @@ sub method_conjugate() {
 sub method_iterate_function_inplace() {
     Q:PIR {
         $P0 = new ['ComplexMatrix2D']
-        $P1 = new ['Complex']
-        $P1 = "1+1i"
-        $P0[0;0] = $P1
-        $P1 = "2+2i"
-        $P0[0;1] = $P1
-        $P1 = "3+3i"
-        $P0[1;0] = $P1
-        $P1 = "4+4i"
-        $P0[1;1] = $P1
+        $P0[0;0] = "1+1i"
+        $P0[0;1] = "2+2i"
+        $P0[1;0] = "3+3i"
+        $P0[1;1] = "4+4i"
         
-        $P2 = new ['ComplexMatrix2D']
-        $P1 = "3.5+1i"
-        $P2[0;0] = $P1
-        $P1 = "4.5+2i"
-        $P2[0;1] = $P1
-        $P1 = "5.5+3i"
-        $P2[1;0] = $P1
-        $P1 = "6.5+4i"
-        $P2[1;1] = $P1
+        $P1 = new ['ComplexMatrix2D']
+        $P1[0;0] = "3.5+1i"
+        $P1[0;1] = "4.5+2i"
+        $P1[1;0] = "5.5+3i"
+        $P1[1;1] = "6.5+4i"
         
         .local pmc helper
         helper = get_global "_iterate_inplace_helper"
         $P0.'iterate_function_inplace'(helper)
-        $I0 = $P0 == $P2
+        $I0 = $P0 == $P1
         ok($I0, "can iterate a function in place with no args")
     }
 }
