@@ -39,9 +39,31 @@ pmclass PMCMatrix2D dynpmc auto_attrs provides matrix {
     ATTR INTVAL y;
 
     VTABLE void init() {
+        PObj_custom_mark_SET(SELF);
         PObj_custom_destroy_SET(SELF);
     }
 
+    VTABLE void destroy() {
+        Parrot_PMCMatrix2D_attributes * const attrs = PARROT_PMCMATRIX2D(SELF);
+        PMC ** const s = attrs->storage;
+        if (s)
+            mem_sys_free(s);
+    }
+
+    VTABLE void mark() {
+        Parrot_PMCMatrix2D_attributes * const attrs = PARROT_PMCMATRIX2D(SELF);
+        PMC ** s = attrs->storage;
+        const INTVAL rows = attrs->y;
+        const INTVAL cols = attrs->x;
+        const INTVAL size = rows * cols;
+        INTVAL i;
+        for (i = 0; i < size; i++) {
+            PMC * const item = s[i];
+            if (!PMC_IS_NULL(item))
+                Parrot_gc_mark_PMC_alive(INTERP, item);
+        }
+    }
+        
     VTABLE PMC * get_pmc_keyed(PMC * key) {
         INTVAL x, y, x_size, y_size;
         Parrot_PMCMatrix2D_attributes * const attrs
