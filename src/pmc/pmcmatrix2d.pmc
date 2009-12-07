@@ -7,36 +7,36 @@ to be accessed, so we must resize the matrix to be able to accomodate those
 indices. Notice that the matrix type is zero-indexed, so the size is one
 plus the highest index that we need to access. */
 static void
-resize_matrix(PARROT_INTERP, PMC * self, INTVAL x, INTVAL y)
+resize_matrix(PARROT_INTERP, PMC * self, INTVAL col, INTVAL row)
 {
     Parrot_PMCMatrix2D_attributes * const attrs = PARROT_PMCMATRIX2D(self);
-    const INTVAL old_x = attrs->x;
-    const INTVAL old_y = attrs->y;
-    const INTVAL new_x = INDEX_MAX(old_x, x + 1);
-    const INTVAL new_y = INDEX_MAX(old_y, y + 1);
-    const INTVAL newsize = new_x * new_y;
+    const INTVAL old_cols = attrs->cols;
+    const INTVAL old_rows = attrs->rows;
+    const INTVAL new_cols = INDEX_MAX(old_cols, col + 1);
+    const INTVAL new_rows = INDEX_MAX(old_rows, row + 1);
+    const INTVAL newsize = new_cols * new_rows;
     PMC ** new_s = (PMC **)mem_sys_allocate_zeroed(newsize * sizeof (PMC *));
     PMC ** old_s = attrs->storage;
-    const INTVAL min_x = INDEX_MIN(old_x, new_x);
-    const INTVAL min_y = INDEX_MIN(old_y, new_y);
+    const INTVAL min_cols = INDEX_MIN(old_cols, new_cols);
+    const INTVAL min_rows = INDEX_MIN(old_rows, new_rows);
     INTVAL i, j;
-    for (i = 0; i < min_x; i++) {
-        for (j = 0; j < min_y; j++) {
-            ITEM_XY_ROWMAJOR(new_s, new_x, new_y, i, j) =
-                ITEM_XY_ROWMAJOR(old_s, old_x, old_y, i, j);
+    for (i = 0; i < min_cols; i++) {
+        for (j = 0; j < min_rows; j++) {
+            ITEM_XY_ROWMAJOR(new_s, new_cols, new_rows, i, j) =
+                ITEM_XY_ROWMAJOR(old_s, old_cols, old_rows, i, j);
         }
     }
     attrs->storage = new_s;
-    attrs->x = new_x;
-    attrs->y = new_y;
+    attrs->cols = new_cols;
+    attrs->rows = new_rows;
     free(old_s);
 }
 
 
 pmclass PMCMatrix2D dynpmc auto_attrs provides matrix {
     ATTR PMC ** storage;
-    ATTR INTVAL x;
-    ATTR INTVAL y;
+    ATTR INTVAL cols;
+    ATTR INTVAL rows;
 
     VTABLE void init() {
         PObj_custom_mark_SET(SELF);
@@ -53,8 +53,8 @@ pmclass PMCMatrix2D dynpmc auto_attrs provides matrix {
     VTABLE void mark() {
         Parrot_PMCMatrix2D_attributes * const attrs = PARROT_PMCMATRIX2D(SELF);
         PMC ** s = attrs->storage;
-        const INTVAL rows = attrs->y;
-        const INTVAL cols = attrs->x;
+        const INTVAL rows = attrs->rows;
+        const INTVAL cols = attrs->cols;
         const INTVAL size = rows * cols;
         INTVAL i;
         for (i = 0; i < size; i++) {
@@ -65,21 +65,20 @@ pmclass PMCMatrix2D dynpmc auto_attrs provides matrix {
     }
         
     VTABLE PMC * get_pmc_keyed(PMC * key) {
-        INTVAL x, y, x_size, y_size;
-        Parrot_PMCMatrix2D_attributes * const attrs
-            = (Parrot_PMCMatrix2D_attributes *) PARROT_PMCMATRIX2D(SELF);
-        x_size = attrs->x;
-        y_size = attrs->y;
-        GET_KEY_INDICES_ROWMAJOR(INTERP, key, x, y);
-        if (x >= x_size || y >= y_size)
+        INTVAL cols, rows, cols_size, rows_size;
+        Parrot_PMCMatrix2D_attributes * const attrs = PARROT_PMCMATRIX2D(SELF);
+        cols_size = attrs->cols;
+        rows_size = attrs->rows;
+        GET_KEY_INDICES_ROWMAJOR(INTERP, key, cols, rows);
+        if (cols >= cols_size || rows >= rows_size)
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
                                         "PMCMatrix2d: indices out of bounds");
-        return ITEM_XY_ROWMAJOR(attrs->storage, x_size, y_size, x, y);
+        return ITEM_XY_ROWMAJOR(attrs->storage, cols_size, rows_size, cols, rows);
     }
 
     VTABLE PMC * get_pmc_keyed_int(INTVAL key) {
         Parrot_PMCMatrix2D_attributes * const attrs = PARROT_PMCMATRIX2D(SELF);
-        const INTVAL total_size = attrs->x * attrs->y;
+        const INTVAL total_size = attrs->cols * attrs->rows;
         if (key >= total_size || key < 0) {
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
                                         "PMCMatrix2D: indices out of bounds.");
@@ -103,18 +102,17 @@ pmclass PMCMatrix2D dynpmc auto_attrs provides matrix {
     }
 
     VTABLE void set_pmc_keyed(PMC * key, PMC * value) {
-        INTVAL x, y, x_size, y_size;
-        Parrot_PMCMatrix2D_attributes * const attrs
-            = (Parrot_PMCMatrix2D_attributes *) PARROT_PMCMATRIX2D(SELF);
-        x_size = attrs->x;
-        y_size = attrs->y;
-        GET_KEY_INDICES_ROWMAJOR(INTERP, key, x, y);
-        if (x >= x_size || y >= y_size) {
-            resize_matrix(INTERP, SELF, x, y);
-            x_size = attrs->x;
-            y_size = attrs->y;
+        INTVAL cols, rows, cols_size, rows_size;
+        Parrot_PMCMatrix2D_attributes * const attrs = PARROT_PMCMATRIX2D(SELF);
+        cols_size = attrs->cols;
+        rows_size = attrs->rows;
+        GET_KEY_INDICES_ROWMAJOR(INTERP, key, cols, rows);
+        if (cols >= cols_size || rows >= rows_size) {
+            resize_matrix(INTERP, SELF, cols, rows);
+            cols_size = attrs->cols;
+            rows_size = attrs->rows;
         }
-        ITEM_XY_ROWMAJOR(attrs->storage, x_size, y_size, x, y) = value;
+        ITEM_XY_ROWMAJOR(attrs->storage, cols_size, rows_size, cols, rows) = value;
     }
 
     VTABLE void set_integer_keyed(PMC * key, INTVAL value) {
@@ -142,8 +140,8 @@ pmclass PMCMatrix2D dynpmc auto_attrs provides matrix {
         STRING * const newline = Parrot_str_new(INTERP, "\n", 1);
         Parrot_PMCMatrix2D_attributes * const attrs = PARROT_PMCMATRIX2D(SELF);
         PMC ** const s = attrs->storage;
-        const INTVAL rows_size = attrs->x;
-        const INTVAL cols_size = attrs->y;
+        const INTVAL rows_size = attrs->rows;
+        const INTVAL cols_size = attrs->cols;
         for (cols = 0; cols < cols_size; ++cols) {
             for (rows = 0; rows < rows_size; ++rows) {
                 PMC * const item = ITEM_XY_ROWMAJOR(s, rows_size, cols_size, rows, cols);
@@ -158,6 +156,26 @@ pmclass PMCMatrix2D dynpmc auto_attrs provides matrix {
         pstr = Parrot_str_append(INTERP, pstr, newline);
         return pstr;
     }
+    
+    VTABLE PMC * get_attr_str(STRING * idx) {
+        Parrot_PMCMatrix2D_attributes * const attrs = PARROT_PMCMATRIX2D(SELF);
+        if (Parrot_str_equal(INTERP, idx, CONST_STRING(INTERP, "rows"))) {
+            PMC * const rows = pmc_new(INTERP, enum_class_Integer);
+            VTABLE_set_integer_native(INTERP, rows, attrs->rows);
+            return rows;
+        }
+        else if (Parrot_str_equal(INTERP, idx, CONST_STRING(INTERP, "cols"))) {
+            PMC * const cols = pmc_new(INTERP, enum_class_Integer);
+            VTABLE_set_integer_native(INTERP, cols, attrs->cols);
+            return cols;
+        }
+        else if (Parrot_str_equal(INTERP, idx, CONST_STRING(INTERP, "size"))) {
+            PMC * const size = pmc_new(INTERP, enum_class_Integer);
+            VTABLE_set_integer_native(INTERP, size, attrs->cols * attrs->rows);
+            return size;
+        }
+        return PMCNULL;
+    }
 
     METHOD initialize_from_array(INTVAL rows_size, INTVAL cols_size, PMC * values) {
         Parrot_PMCMatrix2D_attributes * const attrs = PARROT_PMCMATRIX2D(SELF);
@@ -166,8 +184,8 @@ pmclass PMCMatrix2D dynpmc auto_attrs provides matrix {
         const INTVAL init_elems = VTABLE_elements(interp, values);
 
         resize_matrix(interp, SELF, rows_size - 1, cols_size - 1);
-        self_rows = attrs->y;
-        self_cols = attrs->x;
+        self_rows = attrs->rows;
+        self_cols = attrs->cols;
         s = attrs->storage;
 
         for (i = 0; i < cols_size; i++) {
@@ -181,3 +199,4 @@ pmclass PMCMatrix2D dynpmc auto_attrs provides matrix {
         }
     }
 }
+

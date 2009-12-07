@@ -132,22 +132,22 @@ sub vtable_get_attr_str() {
     Q:PIR {
         $P0 = new 'NumMatrix2D'
         $P0[2;5] = 1.0
-        $P1 = getattribute $P0, "X"
-        is($P1, 3, "get first X")
-        $P2 = getattribute $P0, "Y"
-        is($P2, 6, "get first Y")
+        $P1 = getattribute $P0, "cols"
+        is($P1, 6, "get first cols")
+        $P2 = getattribute $P0, "rows"
+        is($P2, 3, "get first rows")
 
         $P0[2;7] = 2.0
-        $P1 = getattribute $P0, "X"
-        is($P1, 3, "get first X again")
-        $P2 = getattribute $P0, "Y"
-        is($P2, 8, "get resized Y")
+        $P1 = getattribute $P0, "cols"
+        is($P1, 8, "get first cols again")
+        $P2 = getattribute $P0, "rows"
+        is($P2, 3, "get resized rows")
 
         $P0[10;7] = 3.0
-        $P1 = getattribute $P0, "X"
-        is($P1, 11, "get resized X")
-        $P2 = getattribute $P0, "Y"
-        is($P2, 8, "get resized Y again")
+        $P1 = getattribute $P0, "cols"
+        is($P1, 8, "get resized cols")
+        $P2 = getattribute $P0, "rows"
+        is($P2, 11, "get resized rows again")
     }
 }
 
@@ -448,22 +448,22 @@ sub vtable_clone() {
 sub method_resize() {
     Q:PIR {
         $P0 = new ['NumMatrix2D']
-        $P1 = getattribute $P0, "X"
-        $P2 = getattribute $P0, "Y"
-        is($P1, 0, "new matrices are empty, X")
-        is($P2, 0, "new matrices are empty, Y")
+        $P1 = getattribute $P0, "cols"
+        $P2 = getattribute $P0, "rows"
+        is($P1, 0, "new matrices are empty, cols")
+        is($P2, 0, "new matrices are empty, rows")
 
         $P0.'resize'(3, 3)
-        $P1 = getattribute $P0, "X"
-        $P2 = getattribute $P0, "Y"
-        is($P1, 3, "matrices can grow on resize, X")
-        is($P2, 3, "matrices can grow on resize, Y")
+        $P1 = getattribute $P0, "cols"
+        $P2 = getattribute $P0, "rows"
+        is($P1, 3, "matrices can grow on resize, cols")
+        is($P2, 3, "matrices can grow on resize, rows")
 
         $P0.'resize'(1, 1)
-        $P1 = getattribute $P0, "X"
-        $P2 = getattribute $P0, "Y"
-        is($P1, 3, "matrices do not shrink, X")
-        is($P2, 3, "matrices do not shrink, Y")
+        $P1 = getattribute $P0, "cols"
+        $P2 = getattribute $P0, "rows"
+        is($P1, 3, "matrices do not shrink, cols")
+        is($P2, 3, "matrices do not shrink, rows")
     }
 }
 
