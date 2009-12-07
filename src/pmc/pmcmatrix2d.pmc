@@ -51,16 +51,16 @@ pmclass PMCMatrix2D dynpmc auto_attrs provides matrix {
         GET_KEY_INDICES_ROWMAJOR(INTERP, key, x, y);
         if (x >= x_size || y >= y_size)
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
-                                        "NumMatrix2d: indices out of bounds");
+                                        "PMCMatrix2d: indices out of bounds");
         return ITEM_XY_ROWMAJOR(attrs->storage, x_size, y_size, x, y);
     }
 
     VTABLE PMC * get_pmc_keyed_int(INTVAL key) {
         Parrot_PMCMatrix2D_attributes * const attrs = PARROT_PMCMATRIX2D(SELF);
         const INTVAL total_size = attrs->x * attrs->y;
-        if (key >= total_size) {
+        if (key >= total_size || key < 0) {
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
-                                        "PMCMatrix2D: Matrix dimensions must match in add.");
+                                        "PMCMatrix2D: indices out of bounds.");
         }
         return attrs->storage[key];
     }
