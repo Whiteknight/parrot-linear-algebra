@@ -21,6 +21,15 @@ sub MAIN () {
     plan(3);
     create_pmcmatrix2d();
     op_does_matrix();
+    vtable_get_pmc_keyed();
+    vtable_get_integer_keyed();
+    vtable_get_number_keyed();
+    vtable_get_string_keyed();
+    vtable_set_pmc_keyed();
+    vtable_set_integer_keyed();
+    vtable_set_number_keyed();
+    vtable_set_string_keyed();
+    vtable_get_string();
 }
 
 sub create_pmcmatrix2d() {
@@ -47,3 +56,14 @@ sub op_does_matrix() {
         ok($I0, "...and only does matrix")
     }
 }
+
+sub vtable_get_pmc_keyed() {}
+sub vtable_get_integer_keyed() {}
+sub vtable_get_number_keyed() {}
+sub vtable_get_string_keyed() {}
+sub vtable_set_pmc_keyed() {}
+sub vtable_set_integer_keyed() {}
+sub vtable_set_number_keyed() {}
+sub vtable_set_string_keyed() {}
+sub vtable_get_string() {}
+
