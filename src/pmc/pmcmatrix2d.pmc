@@ -69,7 +69,7 @@ pmclass PMCMatrix2D dynpmc auto_attrs provides matrix {
         Parrot_PMCMatrix2D_attributes * const attrs = PARROT_PMCMATRIX2D(SELF);
         cols_size = attrs->cols;
         rows_size = attrs->rows;
-        GET_KEY_INDICES_ROWMAJOR(INTERP, key, cols, rows);
+        GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
         if (cols >= cols_size || rows >= rows_size)
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
                                         "PMCMatrix2d: indices out of bounds");
@@ -106,7 +106,7 @@ pmclass PMCMatrix2D dynpmc auto_attrs provides matrix {
         Parrot_PMCMatrix2D_attributes * const attrs = PARROT_PMCMATRIX2D(SELF);
         cols_size = attrs->cols;
         rows_size = attrs->rows;
-        GET_KEY_INDICES_ROWMAJOR(INTERP, key, cols, rows);
+        GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
         if (cols >= cols_size || rows >= rows_size) {
             resize_matrix(INTERP, SELF, cols, rows);
             cols_size = attrs->cols;
