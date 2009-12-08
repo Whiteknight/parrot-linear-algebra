@@ -8,7 +8,7 @@
    are initialized to 0.0. Parameters x and y are the indices that are trying
    to be accessed, so we must resize the matrix to be able to accomodate those
    indices. Notice that the matrix type is zero-indexed, so the size is one
-   plus the highest index that we need to access. 
+   plus the highest index that we need to access.
 
    This function will not shrink the matrix, only grow it. After the call,
    the matrix will be at least large enough to hold an item at the given
@@ -246,8 +246,8 @@ pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
             }
         }
         else {
-            for (cols = 0; cols < cols_size; ++cols) {
-                for (rows = 0; rows < rows_size; ++rows) {
+            for (rows = 0; rows < rows_size; ++rows) {
+                for (cols = 0; cols < cols_size; ++cols) {
                     const FLOATVAL f = ITEM_XY_ROWMAJOR(s, rows_size, cols_size, rows, cols);
                     STRING * const item = Parrot_sprintf_c(INTERP, "\t%f", f);
                     pstr = Parrot_str_append(INTERP, pstr, item);
