@@ -18,7 +18,7 @@ sub MAIN () {
       pla_library_loaded:
     };
 
-    plan(11);
+    plan(15);
     create_pmcmatrix2d();
     op_does_matrix();
     vtable_set_pmc_keyed();
@@ -30,6 +30,8 @@ sub MAIN () {
     vtable_set_number_keyed();
     vtable_set_string_keyed();
     vtable_get_string();
+    method_initialize_from_array();
+    method_resize();
 }
 
 sub create_pmcmatrix2d() {
@@ -135,7 +137,7 @@ sub vtable_set_number_keyed() {
         $P0[0;0] = $N0
         $N1 = $P0[0;0]
         is($N1, 3.1415, "set_number_keyed works")
-    }    
+    }
 }
 
 sub vtable_set_string_keyed() {
@@ -160,4 +162,19 @@ sub vtable_get_string() {
     }
 }
 
+sub method_initialize_from_array() {}
+sub method_resize() {
+    Q:PIR {
+        $P0 = new ['PMCMatrix2D']
+        $P1 = getattribute $P0, "rows"
+        is($P1, 0)
+        $P1 = getattribute $P0, "cols"
+        is($P1, 0)
+        $P0.'resize'(5, 3)
+        $P1 = getattribute $P0, "rows"
+        is($P1, 5)
+        $P1 = getattribute $P0, "cols"
+        is($P1, 3)
+    }
+}
 
