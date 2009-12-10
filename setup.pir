@@ -56,6 +56,7 @@ SOURCES
     $S0 = pop $P3
     $P2['linalg_group'] = $P3
     $P0['dynpmc'] = $P2
+    'system_linker_settings'($P0)
 
     $P4 = new 'Hash'
     $P4['t/Glue.pbc'] = 't/Glue.pir'
@@ -72,6 +73,29 @@ SOURCES
 
     .tailcall setup(args :flat, $P0 :flat :named)
 .end
+
+.sub 'system_linker_settings'
+    .param pmc config
+    $S0 = sysinfo 4
+    if $S0 == "linux" goto have_linux
+    
+    # don't support other things yet.
+    .return()
+   
+  have_linux:
+    $I0 = spawnw "ldd /usr/lib/libblas.so"
+    if $I0 != 0 goto try_2
+    config['dynpmc_ldflags'] = "-lblas"
+    .return()
+  try_2:
+    $I0 = spawnw "ldd /usr/lib/atlas/libcblas.so"
+    if $I0 != 0 goto try_3
+    config['dynpmc_ldflags'] = "-L/usr/lib/atlas -lcblas"
+  try_3:
+    # There is no try 3
+    .return()
+.end
+    
 
 
 # Local Variables:
