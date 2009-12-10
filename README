@@ -12,7 +12,7 @@ to the BLAS and LAPACK libraries for high-performance operations.
 
 In addition to these core goals, PLA may also provide a series of ancillary
 tools that are similar in implementation to it's high-performance core
-utilities. 
+utilities.
 
 OLD Project Site: http://code.google.com/p/matrixy
 NEW Project Site: http://github.com/Whiteknight/matrixy
@@ -25,18 +25,18 @@ and installation system, and a growing test suite.
 
 == DEPENDENCIES
 
-Currently depends on Parrot (Version 1.6.0 or higher), make, and CBLAS 
+Currently depends on Parrot (Version 1.6.0 or higher), make, and CBLAS
 (or ATLAS with the CBLAS-like bindings). On Ubuntu or other Debian-based
 distros, you can type this incantation:
 
 sudo apt-get install libatlas3-base
 sudo apt-get install libatlas-base-dev
 
-On Fedoa you can type:
+On Fedora you can type:
 
 sudo yum install atlas-devel
 
-Notice that the default vesions of the atlas library are only generally 
+Notice that the default vesions of the atlas library are only generally
 optimized. If you are able try to use a platform-specific variant (such
 as "-sse2" or "-3dnow") for better performance.
 
@@ -45,15 +45,13 @@ as "-sse2" or "-3dnow") for better performance.
 To get, build, test, and install Parrot-Linear-Algebra, follow these steps
 (on Linux):
 
-git clone git://github.com/Whiteknight/parrot-linear-algebra.git pla
-cd pla
-parrot-nqp Configure.nqp
-make && make test && sudo make install
+  git clone git://github.com/Whiteknight/parrot-linear-algebra.git pla
+  cd pla
+  parrot setup.pir
+  parrot setup.pir test
+  parrot setup.pir install
 
-NOTICE: On Fedora yum installs to /usr/lib/atlas. You may need to modify the
-makefile after configuration to include the flag "-L/usr/lib/atlas". You may
-also need to modify the linker arguments to link against "-lcblas" instead of
-"-lblas" on debian-based systems.
+You may need to run the final command with elevated privileges on your system.
 
 == CREDITS
 
