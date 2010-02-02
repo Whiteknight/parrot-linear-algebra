@@ -7,7 +7,7 @@
    are initialized to 0.0. Parameters x and y are the indices that are trying
    to be accessed, so we must resize the matrix to be able to accomodate those
    indices. Notice that the matrix type is zero-indexed, so the size is one
-   plus the highest index that we need to access. 
+   plus the highest index that we need to access.
 
    This function will not shrink the matrix, only grow it. After the call,
    the matrix will be at least large enough to hold an item at the given
@@ -78,7 +78,7 @@ get_complex_pmc_at_xy(PARROT_INTERP, PMC *self, INTVAL rows, INTVAL cols)
 	const INTVAL flags = attrs->flags;
 	FLOATVAL real, imag;
 	FLOATVAL * const s = attrs->storage;
-	
+
 	if (rows >= rows_size || cols >= cols_size)
 	    Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
 		"ComplexMatrix2d: indices out of bounds");
@@ -234,7 +234,7 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
         GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
         set_complex_pmc_at_xy(INTERP, SELF, value, rows, cols);
     }
-    
+
     VTABLE void set_string_keyed(PMC * key, STRING * value) {
         PMC * const item = pmc_new(INTERP, enum_class_Complex);
         VTABLE_set_string_native(INTERP, item, value);
