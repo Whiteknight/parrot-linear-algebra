@@ -2,6 +2,8 @@
 #
 # Usage:
 #     parrot_nqp Configure.nqp
+# TODO: The PARROTREVISON file contains a minimum svn revision of Parrot that is
+#       needed to make this build. Check that we meet that minimum requirement.
 
 our @ARGS;
 our %VM;
