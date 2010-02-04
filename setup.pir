@@ -78,10 +78,10 @@ SOURCES
     .param pmc config
     $S0 = sysinfo 4
     if $S0 == "linux" goto have_linux
-    
+
     # don't support other things yet.
     .return()
-   
+
   have_linux:
     $I0 = spawnw "ldd /usr/lib/libblas.so"
     if $I0 != 0 goto try_2
@@ -95,7 +95,7 @@ SOURCES
     # There is no try 3
     .return()
 .end
-    
+
 
 
 # Local Variables:
