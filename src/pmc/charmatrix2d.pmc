@@ -199,17 +199,17 @@ Sets the character value at coordinates x,y
     VTABLE PMC * get_attr_str(STRING * idx) {
         Parrot_CharMatrix2D_attributes * const attrs = PARROT_CHARMATRIX2D(SELF);
         if (Parrot_str_equal(INTERP, idx, CONST_STRING(INTERP, "cols"))) {
-            PMC * const x = pmc_new(INTERP, enum_class_Integer);
+            PMC * const x = Parrot_pmc_new(INTERP, enum_class_Integer);
             VTABLE_set_integer_native(INTERP, x, attrs->x);
             return x;
         }
         else if (Parrot_str_equal(INTERP, idx, CONST_STRING(INTERP, "rows"))) {
-            PMC * const y = pmc_new(INTERP, enum_class_Integer);
+            PMC * const y = Parrot_pmc_new(INTERP, enum_class_Integer);
             VTABLE_set_integer_native(INTERP, y, attrs->y);
             return y;
         }
         else if (Parrot_str_equal(INTERP, idx, CONST_STRING(INTERP, "size"))) {
-            PMC * const size = pmc_new(INTERP, enum_class_Integer);
+            PMC * const size = Parrot_pmc_new(INTERP, enum_class_Integer);
             VTABLE_set_integer_native(INTERP, size, attrs->y * attrs->x);
             return size;
         }
@@ -217,7 +217,7 @@ Sets the character value at coordinates x,y
     }
 
     VTABLE PMC * clone() {
-        PMC * const c = pmc_new(INTERP, SELF->vtable->base_type);
+        PMC * const c = Parrot_pmc_new(INTERP, SELF->vtable->base_type);
         Parrot_CharMatrix2D_attributes * const old_atts = PARROT_CHARMATRIX2D(SELF);
         Parrot_CharMatrix2D_attributes * const new_atts = PARROT_CHARMATRIX2D(c);
         INTVAL x, y;
@@ -334,7 +334,7 @@ sizes, growing the matrix if needed.
     METHOD initialize_from_mixed_array(INTVAL row, PMC * array) {
         Parrot_CharMatrix2D_attributes * const attrs = PARROT_CHARMATRIX2D(SELF);
         INTVAL i = 0;
-        PMC * iter = pmc_new_init(INTERP, enum_class_ArrayIterator, array);
+        PMC * iter = Parrot_pmc_new_init(INTERP, enum_class_ArrayIterator, array);
         while (VTABLE_get_bool(INTERP, iter)) {
             INTVAL const x_size = attrs->x;
             INTVAL const y_size = attrs->y;
@@ -404,7 +404,7 @@ value with the return value of the called function.
 
     METHOD iterate_function_external(PMC * func, PMC * args :slurpy) {
         Parrot_CharMatrix2D_attributes * const attrs = PARROT_CHARMATRIX2D(SELF);
-        PMC * const new_matrix = pmc_new(INTERP, SELF->vtable->base_type);
+        PMC * const new_matrix = Parrot_pmc_new(INTERP, SELF->vtable->base_type);
         Parrot_CharMatrix2D_attributes * new_attrs;
         const INTVAL x_size = attrs->x;
         const INTVAL y_size = attrs->y;

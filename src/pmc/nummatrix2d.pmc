@@ -140,7 +140,7 @@ pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
 
     VTABLE PMC * get_pmc_keyed(PMC * key) {
         const FLOATVAL f = VTABLE_get_number_keyed(INTERP, SELF, key);
-        PMC * const item = pmc_new(INTERP, enum_class_Float);
+        PMC * const item = Parrot_pmc_new(INTERP, enum_class_Float);
         VTABLE_set_number_native(INTERP, item, f);
         return item;
     }
@@ -182,7 +182,7 @@ pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
 
     VTABLE PMC * get_pmc_keyed_int(INTVAL key) {
         const FLOATVAL f = VTABLE_get_number_keyed_int(INTERP, SELF, key);
-        PMC * const item = pmc_new(INTERP, enum_class_Float);
+        PMC * const item = Parrot_pmc_new(INTERP, enum_class_Float);
         VTABLE_set_number_native(INTERP, item, f);
         return item;
     }
@@ -280,7 +280,7 @@ pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
                      *vstor = valattr->storage;
             FLOATVAL *dstor = NULL;
 
-            dest = pmc_new(interp, VTABLE_type(interp, pmc));
+            dest = Parrot_pmc_new(interp, VTABLE_type(interp, pmc));
             resize_matrix(interp, dest, rows_size - 1, cols_size - 1);
             destattr = (Parrot_NumMatrix2D_attributes *) PARROT_NUMMATRIX2D(dest);
             dstor = destattr->storage;
@@ -324,7 +324,7 @@ pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
         FLOATVAL * dest_s;
         INTVAL i, j;
 
-        dest = pmc_new(INTERP, SELF->vtable->base_type);
+        dest = Parrot_pmc_new(INTERP, SELF->vtable->base_type);
         resize_matrix(INTERP, dest, rows_size - 1, cols_size - 1);
         dest_attrs = PARROT_NUMMATRIX2D(dest);
         dest_s = dest_attrs->storage;
@@ -356,7 +356,7 @@ pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
               "NumMatrix2D:");
         }
 
-        dest = pmc_new(INTERP, VTABLE_type(INTERP, SELF));
+        dest = Parrot_pmc_new(INTERP, VTABLE_type(INTERP, SELF));
         resize_matrix(INTERP, dest, rows_size - 1, cols_size - 1);
         destattr = (Parrot_NumMatrix2D_attributes *) PARROT_NUMMATRIX2D(dest);
 
@@ -465,7 +465,7 @@ pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
         FLOATVAL * dest_s;
         INTVAL i, j;
 
-        dest = pmc_new(INTERP, SELF->vtable->base_type);
+        dest = Parrot_pmc_new(INTERP, SELF->vtable->base_type);
         resize_matrix(INTERP, dest, rows_size - 1, cols_size - 1);
         dest_attrs = PARROT_NUMMATRIX2D(dest);
         dest_s = dest_attrs->storage;
@@ -483,17 +483,17 @@ pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
     VTABLE PMC * get_attr_str(STRING * idx) {
         Parrot_NumMatrix2D_attributes * const attrs = PARROT_NUMMATRIX2D(SELF);
         if (Parrot_str_equal(INTERP, idx, CONST_STRING(INTERP, "rows"))) {
-            PMC * const rows = pmc_new(INTERP, enum_class_Integer);
+            PMC * const rows = Parrot_pmc_new(INTERP, enum_class_Integer);
             VTABLE_set_integer_native(INTERP, rows, attrs->rows);
             return rows;
         }
         else if (Parrot_str_equal(INTERP, idx, CONST_STRING(INTERP, "cols"))) {
-            PMC * const cols = pmc_new(INTERP, enum_class_Integer);
+            PMC * const cols = Parrot_pmc_new(INTERP, enum_class_Integer);
             VTABLE_set_integer_native(INTERP, cols, attrs->cols);
             return cols;
         }
         else if (Parrot_str_equal(INTERP, idx, CONST_STRING(INTERP, "size"))) {
-            PMC * const size = pmc_new(INTERP, enum_class_Integer);
+            PMC * const size = Parrot_pmc_new(INTERP, enum_class_Integer);
             VTABLE_set_integer_native(INTERP, size, attrs->cols * attrs->rows);
             return size;
         }
@@ -501,7 +501,7 @@ pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
     }
 
     VTABLE PMC * clone() {
-        PMC * const c = pmc_new(INTERP, SELF->vtable->base_type);
+        PMC * const c = Parrot_pmc_new(INTERP, SELF->vtable->base_type);
         Parrot_NumMatrix2D_attributes * const old_atts = PARROT_NUMMATRIX2D(SELF);
         Parrot_NumMatrix2D_attributes * const new_atts = PARROT_NUMMATRIX2D(c);
         INTVAL rows, cols;
@@ -753,7 +753,7 @@ value with the return value of the called function.
 
     METHOD iterate_function_external(PMC * func, PMC * args :slurpy) {
         Parrot_NumMatrix2D_attributes * const attrs = PARROT_NUMMATRIX2D(SELF);
-        PMC * const new_matrix = pmc_new(INTERP, SELF->vtable->base_type);
+        PMC * const new_matrix = Parrot_pmc_new(INTERP, SELF->vtable->base_type);
         Parrot_NumMatrix2D_attributes * new_attrs;
         const INTVAL rows_size = attrs->rows;
         const INTVAL cols_size = attrs->cols;
@@ -810,7 +810,7 @@ in order.
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
                 "NumMatrix2D: block boundaries exceed matrix size");
         else {
-            PMC * const new_matrix = pmc_new(INTERP, SELF->vtable->base_type);
+            PMC * const new_matrix = Parrot_pmc_new(INTERP, SELF->vtable->base_type);
             Parrot_NumMatrix2D_attributes * const new_attrs = PARROT_NUMMATRIX2D(new_matrix);
             FLOATVAL * new_s;
             resize_matrix(INTERP, new_matrix, rows_size - 1, cols_size - 1);
