@@ -7,7 +7,7 @@
    are initialized to 0.0. Parameters x and y are the indices that are trying
    to be accessed, so we must resize the matrix to be able to accomodate those
    indices. Notice that the matrix type is zero-indexed, so the size is one
-   plus the highest index that we need to access. 
+   plus the highest index that we need to access.
 
    This function will not shrink the matrix, only grow it. After the call,
    the matrix will be at least large enough to hold an item at the given
@@ -151,26 +151,36 @@ Sets the character value at coordinates x,y
         attrs->storage[key] = (char)value;
     }
 
+    VTABLE void set_number_keyed(PMC * key, FLOATVAL value) {
+        const INTVAL v = (INTVAL)value;
+        VTABLE_set_integer_keyed(INTERP, SELF, key, v);
+    }
+
     VTABLE void set_number_keyed_int(INTVAL key, FLOATVAL value) {
         Parrot_CharMatrix2D_attributes * const attrs = PARROT_CHARMATRIX2D(SELF);
         const INTVAL v = (INTVAL)value;
         attrs->storage[key] = (char)v;
     }
 
-    VTABLE void set_pmc_keyed(PMC * key, PMC * value) {
-        const INTVAL v = VTABLE_get_number(INTERP, value);
-        VTABLE_set_integer_keyed(INTERP, SELF, key, v);
-    }
-
-    VTABLE void set_number_keyed(PMC * key, FLOATVAL value) {
-        const INTVAL v = (INTVAL)value;
-        VTABLE_set_integer_keyed(INTERP, SELF, key, v);
+    VTABLE void set_string_keyed(PMC * key, STRING * value) {
+        INTVAL x, y;
+        GET_KEY_INDICES_ROWMAJOR(INTERP, key, x, y);
+        insert_string_at_row_offset(INTERP, SELF, y, x, value);
     }
 
     VTABLE void set_string_keyed_int(INTVAL key, STRING * str) {
         insert_string_at_row_offset(INTERP, SELF, key, 0, str);
     }
 
+    VTABLE void set_pmc_keyed(PMC * key, PMC * value) {
+        STRING * const s = VTABLE_get_string(INTERP, value);
+        VTABLE_set_string_keyed(INTERP, SELF, key, s);
+    }
+
+    VTABLE void set_pmc_keyed_int(INTVAL key, PMC *value) {
+        STRING * const s = VTABLE_get_string(INTERP, value);
+        VTABLE_set_string_keyed_int(INTERP, SELF, key, s);
+    }
 
 /*
 
