@@ -24,6 +24,6 @@ sub MAIN() {
 
 method test_load_linalg_group() {
     my $pla := pir::loadlib__ps("./linalg_group");
-    assert_not_null($pla, "Can load PLA library, linalg_group");
+    assert_not_instance_of($pla, "Undef", "Cannot load PLA library, linalg_group");
 }
 
