@@ -1,31 +1,29 @@
 #! parrot-nqp
-our @ARGS;
-MAIN();
 
-sub MAIN () {
-    my $num_tests := 18;
-    Q:PIR {
-        .local pmc c
-        load_language 'parrot'
-        c = compreg 'parrot'
-        c.'import'('Test::More')
-    };
-    plan(2);
-    ok(1, "Test harness works");
-
-    load_linalg_group();
+INIT {
+    # Load the Kakapo library
+    pir::load_language('parrot');
+    my $env := pir::new__PS('Env');
+    my $root_dir := $env<HARNESS_ROOT_DIR> || '.';
+    pir::load_bytecode($root_dir ~ '/library/kakapo_full.pbc');
 }
 
-sub load_linalg_group() {
-    Q:PIR {
-        .local pmc pla
-        pla = loadlib "./linalg_group"
-        if pla goto has_linalg_group
-        ok(0, "loading linalg_group failed")
-	goto _end
-     has_linalg_group:
-        ok(1, "has linalg_group library available")
-     _end:
-    }
+class Test::Sanity is UnitTest::Testcase;
+
+INIT {
+    use('UnitTest::Testcase');
+    use('UnitTest::Assertions');
+}
+
+MAIN();
+
+sub MAIN() {
+	my $proto := Opcode::get_root_global(pir::get_namespace__P().get_name);
+	$proto.suite.run;
+}
+
+method test_load_linalg_group() {
+    my $pla := pir::loadlib__ps("./linalg_group");
+    assert_not_null($pla, "Can load PLA library, linalg_group");
 }
 
