@@ -1,83 +1,71 @@
 #! parrot-nqp
-our @ARGS;
+
+INIT {
+    # Load the Kakapo library
+    pir::load_language('parrot');
+    my $env := pir::new__PS('Env');
+    my $root_dir := $env<HARNESS_ROOT_DIR> || '.';
+    pir::load_bytecode($root_dir ~ '/library/kakapo_full.pbc');
+    pir::loadlib__ps("./linalg_group");
+}
+
+class Test::CharMatrix2D is UnitTest::Testcase;
+
+INIT {
+    use('UnitTest::Testcase');
+    use('UnitTest::Assertions');
+}
+
 MAIN();
 
-sub MAIN () {
-    my $num_tests := 18;
-    Q:PIR {
-        .local pmc c
-        load_language 'parrot'
-        c = compreg 'parrot'
-        c.'import'('Test::More')
-
-        .local pmc pla
-        pla = loadlib './linalg_group'
-        if pla goto pla_library_loaded
-        say "Cannot load linalg_group"
-        exit 1
-      pla_library_loaded:
-    };
-
-    plan(10);
-
-    create_charmatrix2d();
-    op_does_matrix();
-    vtable_set_string_keyed_int();
-    vtable_get_string_keyed_int();
-    vtable_set_integer_keyed();
-    vtable_set_number_keyed();
-    vtable_set_pmc_keyed();
+sub MAIN() {
+    my $proto := Opcode::get_root_global(pir::get_namespace__P().get_name);
+    $proto.suite.run;
 }
 
-sub create_charmatrix2d() {
-    Q:PIR {
-        push_eh can_not_create
-        $P0 = new ['CharMatrix2D']
-        $I0 = isnull $P0
-        $I0 = not $I0
-        'ok'($I0, "Can create a new CharMatrix2D")
-        .return()
-      can_not_create:
-        'ok'(0, "Could not create a CharMatrix2D")
-        .return()
+method test_create_charmatrix2d() {
+    try {
+        my $c := pir::new__PS("CharMatrix2D");
+        assert_not_null($c, "didn't get the right type back");
+        CATCH {
+            fail($!);
+        }
     }
 }
 
-sub op_does_matrix() {
-    Q:PIR {
-        $P0 = new ['CharMatrix2D']
-        $I0 = does $P0, 'matrix'
-        ok($I0, "CharMatrix2D does matrix")
-        $I0 = does $P0, 'gobbledegak'
-        $I0 = not $I0
-        ok($I0, "...and only does matrix")
-    }
+method test_op_does_matrix() {
+    my $c := pir::new__PS("CharMatrix2D");
+    assert_true(pir::does($c, "matrix"), "CharMatrix2D does not do matrix");
+    assert_false(pir::does($c, "gobbledegak"), "does gobbledegak");
 }
 
-sub vtable_set_string_keyed_int() {
-    Q:PIR {
-        $P0 = new ['CharMatrix2D']
-        $P0[0] = "ABCD"
-        $P0[1] = "EFGH"
-        $S0 = "ABCD\nEFGH\n"
-        $S1 = $P0
-        is($S0, $S1, "can set row-at-a-time, with equal lengths")
-    }
+method test_vtable_set_string_keyed_int() {
+    my $c := pir::new__PS("CharMatrix2D");
+    $c[0] := "ABCD";
+    $c[1] := "EFGH";
+    assert_equal(~($c), "ABCD\nEFGH\n", "can not set row-at-a-time, with equal lengths");
 }
 
-sub vtable_get_string_keyed_int() {
+method test_vtable_get_string_keyed_int() {
+    my $c := pir::new__PS("CharMatrix2D");
+    $c[0] := "ABCD";
+    $c[1] := "EFGH";
+    my $firstrow;
+    my $secondrow;
     Q:PIR {
-        $P0 = new ['CharMatrix2D']
-        $P0[0] = "ABCD"
-        $P0[1] = "EFGH"
+        $P0 = find_lex "$c"
+        $P1 = find_lex "$firstrow"
+        $P2 = find_lex "$secondrow"
         $S0 = $P0[0]
-        is($S0, "ABCD", "Can get the first row as a string")
+        $P1 = $S0
         $S0 = $P0[1]
-        is($S0, "EFGH", "Can get the second row as a string")
-    }
+        $P2 = $S0
+    };
+    assert_equal($firstrow, "ABCD", "Can not get the first row as a string");
+    assert_equal($secondrow, "EFGH", "Can not get the second row as a string");
 }
 
-sub vtable_set_integer_keyed() {
+method test_vtable_set_integer_keyed() {
     Q:PIR {
         $P0 = new ['CharMatrix2D']
         # TODO: We really need to figure out indexing, because this seems wrong
@@ -90,13 +78,13 @@ sub vtable_set_integer_keyed() {
         $P0[2;1] = 71
         $P0[3;1] = 72
         $S0 = $P0[0]
-        is($S0, "ABCD", "Can set characters by ASCII value, first row")
+        assert_equal($S0, "ABCD", "Can not set characters by ASCII value, first row")
         $S0 = $P0[1]
-        is($S0, "EFGH", "Can set characeters by ASCII value, second row")
-    }
+        assert_equal($S0, "EFGH", "Can not set characters by ASCII value, second row")
+    };
 }
 
-sub vtable_set_number_keyed() {
+method test_vtable_set_number_keyed() {
     Q:PIR {
         $P0 = new ['CharMatrix2D']
         $P0[0;0] = 65.2
@@ -108,10 +96,12 @@ sub vtable_set_number_keyed() {
         $P0[2;1] = 71.8
         $P0[3;1] = 72.9
         $S0 = $P0[0]
-        is($S0, "ABCD", "Can set characters by decimal ASCII value, first row")
+        assert_equal($S0, "ABCD", "Can not set characters by decimal ASCII value, first row")
         $S0 = $P0[1]
-        is($S0, "EFGH", "Can set characeters by decimal ASCII value, second row")
+        assert_equal($S0, "EFGH", "Can not set characeters by decimal ASCII value, second row")
     }
 }
 
-sub vtable_set_pmc_keyed() {}
+method test_vtable_set_pmc_keyed() {
+    verify_that("#TODO");
+}
