@@ -40,6 +40,34 @@ sub matrix2x2($aa, $ab, $ba, $bb) {
     return ($m);
 }
 
+sub matrix3x3($aa, $ab, $ac, $ba, $bb, $bc, $ca, $cb, $cc) {
+    my $m := Parrot::new("NumMatrix2D");
+    Q:PIR {
+        $P0 = find_lex "$m"
+        $P1 = find_lex "$aa"
+        $P2 = find_lex "$ab"
+        $P3 = find_lex "$ac"
+        $P4 = find_lex "$ba"
+        $P5 = find_lex "$bb"
+        $P6 = find_lex "$bc"
+        $P7 = find_lex "$ca"
+        $P8 = find_lex "$cb"
+        $P9 = find_lex "$cc"
+
+        $P0[0;0] = $P1
+        $P0[0;1] = $P2
+        $P0[0;2] = $P3
+        $P0[1;0] = $P4
+        $P0[1;1] = $P5
+        $P0[1;2] = $P6
+        $P0[2;0] = $P7
+        $P0[2;1] = $P8
+        $P0[2;2] = $P9
+    };
+    return ($m);
+}
+
+
 method test_op_new() {
     assert_throws_nothing("Cannot create NumMatrix2D", {
         my $m := Parrot::new("NumMatrix2D");
@@ -53,22 +81,19 @@ method test_op_does_matrix() {
     assert_false(pir::does($m, "gobbledegak"), "Does do gobbledegak");
 }
 
-sub vtable_set_number_keyed() {
-    Q:PIR {
-        push_eh can_not_set
-        $P0 = new 'NumMatrix2D'
-        $P0[2;2] = 3.0
-        $P0[0;0] = 1.0
-        $P0[1;1] = 2.0
-        ok(1, "can set values")
-        goto test_passed
-      can_not_set:
-        ok(0, "Cannot set values")
-      test_passed:
-    }
+method test_vtable_set_number_keyed() {
+    assert_throws_nothing("Canno create NumMatrix2D", {
+        my $m := Parrot::new("NumMatrix2D");
+        Q:PIR {
+            $P0 = find_lex "$m"
+            $P0[2;2] = 3.0
+            $P0[0;0] = 1.0
+            $P0[1;1] = 2.0
+        }
+    });
 }
 
-sub vtable_get_number_keyed() {
+method test_vtable_get_number_keyed() {
     Q:PIR {
         $P0 = new 'NumMatrix2D'
         $P0[2;2] = 3.0
@@ -76,55 +101,62 @@ sub vtable_get_number_keyed() {
         $P0[1;1] = 2.0
 
         $N0 = $P0[0;0]
-        is($N0, 1.0, "Got 0,0")
+        assert_equal($N0, 1.0, "Got 0,0")
 
         $N0 = $P0[0;1]
-        is($N0, 0.0, "Got 0,1")
+        assert_equal($N0, 0.0, "Got 0,1")
 
         $N0 = $P0[0;2]
-        is($N0, 0.0, "Got 0,2")
+        assert_equal($N0, 0.0, "Got 0,2")
 
         $N0 = $P0[1;0]
-        is($N0, 0.0, "Got 1,0")
+        assert_equal($N0, 0.0, "Got 1,0")
 
         $N0 = $P0[1;1]
-        is($N0, 2.0, "Got 1,1")
+        assert_equal($N0, 2.0, "Got 1,1")
 
         $N0 = $P0[1;2]
-        is($N0, 0.0, "Got 1,2")
+        assert_equal($N0, 0.0, "Got 1,2")
 
         $N0 = $P0[2;0]
-        is($N0, 0.0, "Got 2,0")
+        assert_equal($N0, 0.0, "Got 2,0")
 
         $N0 = $P0[2;1]
-        is($N0, 0.0, "Got 2,1")
+        assert_equal($N0, 0.0, "Got 2,1")
 
         $N0 = $P0[2;2]
-        is($N0, 3.0, "Got 2,2")
+        assert_equal($N0, 3.0, "Got 2,2")
     }
 }
 
-sub vtable_get_attr_str() {
+method test_vtable_get_attr_string_empty_matrix() {
+    my $m := Parrot::new("NumMatrix2D");
+    assert_equal(pir::getattribute__PPS($m, "cols"), 0);
+    assert_equal(pir::getattribute__PPS($m, "rows"), 0);
+}
+
+method test_vtable_get_attr_str() {
+    my $m := Parrot::new("NumMatrix2D");
     Q:PIR {
-        $P0 = new 'NumMatrix2D'
+        $P0 = find_lex "$m"
         $P0[2;5] = 1.0
-        $P1 = getattribute $P0, "cols"
-        is($P1, 6, "get first cols")
-        $P2 = getattribute $P0, "rows"
-        is($P2, 3, "get first rows")
+    };
+    assert_equal(pir::getattribute__PPS($m, "cols"), 6);
+    assert_equal(pir::getattribute__PPS($m, "rows"), 3);
 
+    Q:PIR {
+        $P0 = find_lex "$m"
         $P0[2;7] = 2.0
-        $P1 = getattribute $P0, "cols"
-        is($P1, 8, "get first cols again")
-        $P2 = getattribute $P0, "rows"
-        is($P2, 3, "get resized rows")
+    };
+    assert_equal(pir::getattribute__PPS($m, "cols"), 8);
+    assert_equal(pir::getattribute__PPS($m, "rows"), 3);
 
-        $P0[10;7] = 3.0
-        $P1 = getattribute $P0, "cols"
-        is($P1, 8, "get resized cols")
-        $P2 = getattribute $P0, "rows"
-        is($P2, 11, "get resized rows again")
-    }
+    Q:PIR {
+        $P0 = find_lex "$m"
+        $P0[10;7] = 2.0
+    };
+    assert_equal(pir::getattribute__PPS($m, "cols"), 8);
+    assert_equal(pir::getattribute__PPS($m, "rows"), 11);
 }
 
 method test_vtable_get_integer_keyed() {
@@ -271,8 +303,7 @@ method test_vtable_get_pmc_keyed_int() {
         $P0 = find_lex "$m"
 
         $P1 = $P0[0]
-        $S0 = typeof $P1
-        assert_equal($S0, "Float", "got Number PMC from linear index")
+        assert_instance_of($P1, "Float", "got Number PMC from linear index")
         $N0 = $P1
         assert_equal($N0, 4.0, "Got PMC 0 from linear index")
 
@@ -359,167 +390,102 @@ method test_vtable_clone() {
     assert_equal($m, $n, "are not equal");
 }
 
-sub method_resize() {
-    Q:PIR {
-        $P0 = new ['NumMatrix2D']
-        $P1 = getattribute $P0, "cols"
-        $P2 = getattribute $P0, "rows"
-        is($P1, 0, "new matrices are empty, cols")
-        is($P2, 0, "new matrices are empty, rows")
+method test_method_resize() {
+    my $m := Parrot::new("NumMatrix2D");
+    $m.resize(3, 3);
+    assert_equal(pir::getattribute__PPS($m, "cols"), 3, "matrix does not grow");
+    assert_equal(pir::getattribute__PPS($m, "rows"), 3, "matrix does not grow");
 
-        $P0.'resize'(3, 3)
-        $P1 = getattribute $P0, "cols"
-        $P2 = getattribute $P0, "rows"
-        is($P1, 3, "matrices can grow on resize, cols")
-        is($P2, 3, "matrices can grow on resize, rows")
-
-        $P0.'resize'(1, 1)
-        $P1 = getattribute $P0, "cols"
-        $P2 = getattribute $P0, "rows"
-        is($P1, 3, "matrices do not shrink, cols")
-        is($P2, 3, "matrices do not shrink, rows")
-    }
+    $m.resize(1, 1);
+    assert_equal(pir::getattribute__PPS($m, "cols"), 8, "matrix shrinks");
+    assert_equal(pir::getattribute__PPS($m, "rows"), 11, "matrix shrinks");
 }
 
-sub method_fill() {
-    Q:PIR {
-        $P0 = new ['NumMatrix2D']
-        $P0[1;2] = 2.0
-        $P0[1;1] = 2.0
-        $P0[1;0] = 2.0
-        $P0[0;2] = 2.0
-        $P0[0;1] = 2.0
-        $P0[0;0] = 2.0
-
-        $P1 = new ['NumMatrix2D']
-        $P1.'fill'(2.0, 2, 3)
-        $I0 = $P0 == $P1
-        ok($I0, "can fill a matrix to a given size")
-
-        $P0[1;2] = 3.0
-        $P0[1;1] = 3.0
-        $P0[1;0] = 3.0
-        $P0[0;2] = 3.0
-        $P0[0;1] = 3.0
-        $P0[0;0] = 3.0
-
-        $P1.'fill'(3.0)
-        $I0 = $P0 == $P1
-        ok($I0, "can fill a matrix without specifying size")
-    }
+method test_method_fill() {
+    my $m := Parrot::new("NumMatrix2D");
+    my $n := matrix3x3(2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0);
+    my $o := matrix3x3(3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0);
+    $m.fill(2.0, 3, 3);
+    assert_equal($m, $n, "resizing fill does not work");
+    $m.fill(3.0);
+    assert_equal($m, $o, "non-resizing fill does not work");
 }
 
 sub method_transpose() {
-    Q:PIR {
-        $P0 = new 'NumMatrix2D'
-        $P0[1;2] = 6.0
-        $P0[1;1] = 5.0
-        $P0[1;0] = 4.0
-        $P0[0;2] = 3.0
-        $P0[0;1] = 2.0
-        $P0[0;0] = 1.0
-
-        $P1 = new 'NumMatrix2D'
-        $P1[2;1] = 6.0
-        $P1[1;1] = 5.0
-        $P1[0;1] = 4.0
-        $P1[2;0] = 3.0
-        $P1[1;0] = 2.0
-        $P1[0;0] = 1.0
-
-        $P2 = clone $P0
-        $I0 = $P2 == $P0
-        ok($I0, "a clone is not transposed")
-
-        $P2.'transpose'()
-        $I0 = $P1 == $P2
-        ok($I0, "transpose does what it should")
-    }
+    my $m := matrix3x3(1.0, 2.0, 3.0,
+                       4.0, 5.0, 6.0,
+                       7.0, 8.0, 9.0);
+    my $n := matrix3x3(1.0, 4.0, 7.0,
+                       2.0, 5.0, 8.0,
+                       3.0, 6.0, 9.0);
+    $m.transpose();
+    assert_equal($m, $n, "transpose does not work");
 }
 
 sub method_mem_transpose() {
-    Q:PIR {
-        $P0 = new 'NumMatrix2D'
-        $P0[1;2] = 6.0
-        $P0[1;1] = 5.0
-        $P0[1;0] = 4.0
-        $P0[0;2] = 3.0
-        $P0[0;1] = 2.0
-        $P0[0;0] = 1.0
-
-        $P1 = new 'NumMatrix2D'
-        $P1[2;1] = 6.0
-        $P1[1;1] = 5.0
-        $P1[0;1] = 4.0
-        $P1[2;0] = 3.0
-        $P1[1;0] = 2.0
-        $P1[0;0] = 1.0
-
-        $P2 = clone $P0
-        $I0 = $P2 == $P0
-        ok($I0, "a clone is not mem_transposed")
-
-        $P2.'mem_transpose'()
-        $I0 = $P2 == $P1
-        ok($I0, "mem_transpose does what it should")
-    }
+    my $m := matrix3x3(1.0, 2.0, 3.0,
+                       4.0, 5.0, 6.0,
+                       7.0, 8.0, 9.0);
+    my $n := matrix3x3(1.0, 4.0, 7.0,
+                       2.0, 5.0, 8.0,
+                       3.0, 6.0, 9.0);
+    $m.mem_transpose();
+    assert_equal($m, $n, "transpose does not work");
 }
 
-sub method_initialize_from_array() {
-    Q:PIR {
-        $P0 = new ['ResizableFloatArray']
-        $P0[0] = 1.0
-        $P0[1] = 2.0
-        $P0[2] = 3.0
-        $P0[3] = 4.0
-        $P0[4] = 5.0
-        $P0[5] = 6.0
+method test_method_initialize_from_array() {
+    my $m := Parrot::new("NumMatrix2D");
+    my $n := [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0];
+    my $o := matrix3x3(1.0, 2.0, 3.0,
+                       4.0, 5.0, 6.0,
+                       7.0, 8.0, 9.0);
+    $m.initialize_from_array(3, 3, $n);
+    assert_equal($m, $o, "array initialization does not work");
+}
 
-        $P1 = new ['NumMatrix2D']
-        $P1[0;0] = 1.0
-        $P1[1;0] = 2.0
-        $P1[2;0] = 3.0
-        $P1[0;1] = 4.0
-        $P1[1;1] = 5.0
-        $P1[2;1] = 6.0
+method test_method_initialize_from_array_zero_pad() {
+    my $m := Parrot::new("NumMatrix2D");
+    my $n := [1.0, 2.0, 3.0, 4.0, 5.0];
+    my $o := matrix3x3(1.0, 2.0, 3.0,
+                       4.0, 5.0, 0.0,
+                       0.0, 0.0, 0.0);
+    $m.initialize_from_array(3, 3, $n);
+    assert_equal($m, $o, "array initialization zero-padding does not work");
+}
 
-        $P2 = new ['NumMatrix2D']
-        $P2[0;0] = 1.0
-        $P2[1;0] = 2.0
-        $P2[0;1] = 3.0
-        $P2[1;1] = 4.0
-        $P2[0;2] = 5.0
-        $P2[1;2] = 6.0
+method test_method_initialize_from_array_undersize() {
+    my $m := Parrot::new("NumMatrix2D");
+    my $n := [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0];
+    my $o := matrix2x2(1.0, 2.0,
+                       3.0, 4.0);
+    $m.initialize_from_array(2, 2, $n);
+    assert_equal($m, $o, "array initialization does not work");
+}
 
-        $P3 = new ['NumMatrix2D']
-        $P3[0;0] = 1.0
-        $P3[1;0] = 2.0
-        $P3[2;0] = 3.0
-        $P3[3;0] = 4.0
-        $P3[4;0] = 5.0
-        $P3[5;0] = 6.0
-        $P3[0;1] = 0.0
-        $P3[1;1] = 0.0
-        $P3[2;1] = 0.0
-        $P3[3;1] = 0.0
-        $P3[4;1] = 0.0
-        $P3[5;1] = 0.0
+method test_method_initialize_from_array_args() {
+    my $m := Parrot::new("NumMatrix2D");
+    my $n := matrix3x3(1.0, 2.0, 3.0,
+                       4.0, 5.0, 6.0,
+                       7.0, 8.0, 9.0);
+    $m.initialize_from_array_args(3, 3, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
+    assert_equal($m, $n, "array initialization does not work");
+}
 
-        $P9 = new ['NumMatrix2D']
-        $P9.'initialize_from_array'(3, 2, $P0)
-        $I0 = $P9 == $P1
-        ok($I0, "Initialize matrix from array first")
+method test_method_initialize_from_array_args_zero_pad() {
+    my $m := Parrot::new("NumMatrix2D");
+    my $n := matrix3x3(1.0, 2.0, 3.0,
+                       4.0, 5.0, 0.0,
+                       0.0, 0.0, 0.0);
+    $m.initialize_from_array_args(3, 3, 1.0, 2.0, 3.0, 4.0, 5.0);
+    assert_equal($m, $n, "array initialization zero-padding does not work");
+}
 
-        $P9 = new ['NumMatrix2D']
-        $P9.'initialize_from_array'(2, 3, $P0)
-        $I0 = $P9 == $P2
-        ok($I0, "Same initialization array, different dimensions")
-
-        $P9 = new ['NumMatrix2D']
-        $P9.'initialize_from_array'(6, 2, $P0)
-        $I0 = $P9 == $P3
-        ok($I0, "initialization can grow larger then the array")
-    }
+method test_method_initialize_from_array_args_undersize() {
+    my $m := Parrot::new("NumMatrix2D");
+    my $n := matrix2x2(1.0, 2.0,
+                       3.0, 4.0);
+    $m.initialize_from_array_args(2, 2, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
+    assert_equal($m, $n, "array initialization does not work");
 }
 
 sub method_initialize_from_args() {
