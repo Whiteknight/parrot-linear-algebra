@@ -1,80 +1,56 @@
 #! parrot-nqp
-our @ARGS;
+
+INIT {
+    # Load the Kakapo library
+    pir::load_language('parrot');
+    my $env := pir::new__PS('Env');
+    my $root_dir := $env<HARNESS_ROOT_DIR> || '.';
+    pir::load_bytecode($root_dir ~ '/library/kakapo_full.pbc');
+    pir::loadlib__ps("./linalg_group");
+}
+
+class Test::CharMatrix2D is UnitTest::Testcase;
+
+INIT {
+    use('UnitTest::Testcase');
+    use('UnitTest::Assertions');
+}
+
 MAIN();
 
-sub MAIN () {
-    my $num_tests := 18;
-    Q:PIR {
-        .local pmc c
-        load_language 'parrot'
-        c = compreg 'parrot'
-        c.'import'('Test::More')
+sub MAIN() {
+    my $proto := Opcode::get_root_global(pir::get_namespace__P().get_name);
+    $proto.suite.run;
+}
 
-        .local pmc pla
-        pla = loadlib './linalg_group'
-        if pla goto pla_library_loaded
-        say "Cannot load linalg_group"
-        exit 1
-      pla_library_loaded:
+sub matrix2x2($aa, $ab, $ba, $bb) {
+    my $m := Parrot::new("NumMatrix2D");
+    Q:PIR {
+        $P0 = find_lex "$m"
+        $P1 = find_lex "$aa"
+        $P2 = find_lex "$ab"
+        $P3 = find_lex "$ba"
+        $P4 = find_lex "$bb"
+
+        $P0[0;0] = $P1
+        $P0[0;1] = $P2
+        $P0[1;0] = $P3
+        $P0[1;1] = $P4
     };
-
-    plan(84);
-
-    create_nummatrix2d();
-    op_does_matrix();
-    vtable_set_number_keyed();
-    vtable_get_number_keyed();
-    vtable_get_attr_str();
-    vtable_get_integer_keyed();
-    vtable_set_integer_keyed();
-    vtable_get_string();
-    vtable_get_string_keyed();
-    vtable_get_pmc_keyed();
-    vtable_set_pmc_keyed();
-    vtable_get_number_keyed_int();
-    vtable_get_integer_keyed_int();
-    vtable_get_string_keyed_int();
-    vtable_get_pmc_keyed_int();
-    vtable_is_equal();
-    vtable_add_nummatrix2d();
-    vtable_add_float();
-    vtable_multiply_nummatrix2d();
-    vtable_multiply_float();
-    vtable_clone();
-    method_resize();
-    method_fill();
-    method_transpose();
-    method_mem_transpose();
-    method_iterate_function_inplace();
-    method_initialize_from_array();
-    method_initialize_from_args();
-    method_get_block();
-    method_set_block();
+    return ($m);
 }
 
-sub create_nummatrix2d() {
-    Q:PIR {
-        push_eh can_not_create
-        $P0 = new 'NumMatrix2D'
-        $I0 = isnull $P0
-        $I0 = not $I0
-        'ok'($I0, "Can create a new NumMatrix2D")
-        .return()
-      can_not_create:
-        'ok'(0, "Could not create a NumMatrix2D")
-        .return()
-    }
+method test_op_new() {
+    assert_throws_nothing("Cannot create NumMatrix2D", {
+        my $m := Parrot::new("NumMatrix2D");
+        assert_not_null($m, "NumMatrix2D is null");
+    });
 }
 
-sub op_does_matrix() {
-    Q:PIR {
-        $P0 = new ['NumMatrix2D']
-        $I0 = does $P0, 'matrix'
-        ok($I0, "NumMatrix2D does matrix")
-        $I0 = does $P0, 'gobbledegak'
-        $I0 = not $I0
-        ok($I0, "...and only does matrix")
-    }
+method test_op_does_matrix() {
+    my $m := Parrot::new("NumMatrix2D");
+    assert_true(pir::does($m, "matrix"), "Does not do matrix");
+    assert_false(pir::does($m, "gobbledegak"), "Does do gobbledegak");
 }
 
 sub vtable_set_number_keyed() {
@@ -151,298 +127,236 @@ sub vtable_get_attr_str() {
     }
 }
 
-sub vtable_get_integer_keyed() {
+method test_vtable_get_integer_keyed() {
+    my $m := matrix2x2(4.0, 2.0, 3.0, 1.0);
     Q:PIR {
-        $P0 = new 'NumMatrix2D'
-        $P0[1;1] = 1.0
-        $P0[0;1] = 2.0
-        $P0[1;0] = 3.0
-        $P0[0;0] = 4.0
+        $P0 = find_lex "$m"
 
         $I0 = $P0[1;1]
-        is($I0, 1, "get integer 1,1")
+        assert_equal($I0, 1, "get integer 1,1")
 
         $I0 = $P0[0;1]
-        is($I0, 2, "get integer 0,1")
+        assert_equal($I0, 2, "get integer 0,1")
 
         $I0 = $P0[1;0]
-        is($I0, 3, "get integer 1,0")
+        assert_equal($I0, 3, "get integer 1,0")
 
         $I0 = $P0[0;0]
-        is($I0, 4, "get integer 0,0")
-    }
+        assert_equal($I0, 4, "get integer 0,0")
+    };
 }
 
-sub vtable_set_integer_keyed() {
+method test_vtable_set_integer_keyed() {
+    my $m := Parrot::new("NumMatrix2D");
     Q:PIR {
-        $P0 = new 'NumMatrix2D'
+        $P0 = find_lex "$m"
         $P0[1;1] = 1
         $P0[0;1] = 2
         $P0[1;0] = 3
         $P0[0;0] = 4
 
         $N0 = $P0[1;1]
-        is($N0, 1.0, "got 1,1 set as integer")
+        assert_equal($N0, 1.0, "got 1,1 set as integer")
 
         $N0 = $P0[0;1]
-        is($N0, 2.0, "got 0,1 set as integer")
+        assert_equal($N0, 2.0, "got 0,1 set as integer")
 
         $N0 = $P0[1;0]
-        is($N0, 3.0, "got 1,0 set as integer")
+        assert_equal($N0, 3.0, "got 1,0 set as integer")
 
         $N0 = $P0[0;0]
-        is($N0, 4.0, "got 0,0 set as integer")
-    }
+        assert_equal($N0, 4.0, "got 0,0 set as integer")
+    };
 }
 
-# TODO: These!
-sub vtable_get_string() {}
-sub vtable_get_string_keyed() {}
+method test_vtable_get_string() {
+    todo("Tests Needed");
+}
 
-sub vtable_get_pmc_keyed() {
+method test_vtable_get_string_keyed() {
+    todo("Tests Needed");
+}
+
+method test_vtable_get_pmc_keyed() {
+    my $m := matrix2x2(4.0, 2.0, 3.0, 1.0);
     Q:PIR {
-        $P0 = new 'NumMatrix2D'
-        $P0[1;1] = 1.0
-        $P0[0;1] = 2.0
-        $P0[1;0] = 3.0
-        $P0[0;0] = 4.0
+        $P0 = find_lex "$m"
 
         $P1 = $P0[1;1]
         $S0 = typeof $P1
-        is($S0, "Float", "got Number PMC")
+        assert_equal($S0, "Float", "got Number PMC")
         $N0 = $P1
-        is($N0, 1.0, "Got 1,1 as PMC")
+        assert_equal($N0, 1.0, "Got 1,1 as PMC")
 
         $P1 = $P0[0;1]
         $N0 = $P1
-        is($N0, 2.0, "Got 0,1 as PMC")
+        assert_equal($N0, 2.0, "Got 0,1 as PMC")
 
         $P1 = $P0[1;0]
         $N0 = $P1
-        is($N0, 3.0, "Got 1,0 as PMC")
+        assert_equal($N0, 3.0, "Got 1,0 as PMC")
 
         $P1 = $P0[0;0]
         $N0 = $P1
-        is($N0, 4.0, "Got 0,0 as PMC")
+        assert_equal($N0, 4.0, "Got 0,0 as PMC")
     }
 }
 
-sub vtable_set_pmc_keyed() {
+method test_vtable_set_pmc_keyed() {
+    # matrix2x2 does set_pmc_keyed internally.
+    my $m := matrix2x2(4.0, 2.0, 3.0, 1.0);
     Q:PIR {
-        $P0 = new 'NumMatrix2D'
-        $P1 = box 1.0
-        $P0[1;1] = $P1
-        $P1 = box 2.0
-        $P0[0;1] = $P1
-        $P1 = box 3.0
-        $P0[1;0] = $P1
-        $P1 = box 4.0
-        $P0[0;0] = $P1
+        $P0 = find_lex "$m"
 
         $N0 = $P0[1;1]
-        is($N0, 1.0, "got 1,1 set as PMC")
+        assert_equal($N0, 1.0, "got 1,1 set as PMC")
 
         $N0 = $P0[0;1]
-        is($N0, 2.0, "got 0,1 set as PMC")
+        assert_equal($N0, 2.0, "got 0,1 set as PMC")
 
         $N0 = $P0[1;0]
-        is($N0, 3.0, "got 1,0 set as PMC")
+        assert_equal($N0, 3.0, "got 1,0 set as PMC")
 
         $N0 = $P0[0;0]
-        is($N0, 4.0, "got 0,0 set as PMC")
+        assert_equal($N0, 4.0, "got 0,0 set as PMC")
     }
 }
 
 
-sub vtable_get_number_keyed_int() {
+method test_vtable_get_number_keyed_int() {
+    my $m := matrix2x2(4.0, 2.0, 3.0, 1.0);
     Q:PIR {
-        $P0 = new 'NumMatrix2D'
-        $P0[1;1] = 1.0
-        $P0[0;1] = 2.0
-        $P0[1;0] = 3.0
-        $P0[0;0] = 4.0
+        $P0 = find_lex "$m"
 
         $N0 = $P0[0]
-        is($N0, 4.0, "Can get number 0 by linear index")
+        assert_equal($N0, 4.0, "Can get number 0 by linear index")
 
         $N0 = $P0[1]
-        is($N0, 2.0, "Can get number 1 by linear index")
+        assert_equal($N0, 2.0, "Can get number 1 by linear index")
 
         $N0 = $P0[2]
-        is($N0, 3.0, "Can get number 2 by linear index")
+        assert_equal($N0, 3.0, "Can get number 2 by linear index")
 
         $N0 = $P0[3]
-        is($N0, 1.0, "Can get number 3 by linear index")
+        assert_equal($N0, 1.0, "Can get number 3 by linear index")
     }
 }
 
-sub vtable_get_integer_keyed_int() {
+method test_vtable_get_integer_keyed_int() {
+    my $m := matrix2x2(4.0, 2.0, 3.0, 1.0);
     Q:PIR {
-        $P0 = new 'NumMatrix2D'
-        $P0[1;1] = 1.0
-        $P0[0;1] = 2.0
-        $P0[1;0] = 3.0
-        $P0[0;0] = 4.0
+        $P0 = find_lex "$m"
 
         $I0 = $P0[0]
-        is($I0, 4, "Can get integer 0 by linear index")
+        assert_equal($I0, 4, "Can get integer 0 by linear index")
 
         $I0 = $P0[1]
-        is($I0, 2, "Can get integer 1 by linear index")
+        assert_equal($I0, 2, "Can get integer 1 by linear index")
 
         $I0 = $P0[2]
-        is($I0, 3, "Can get integer 2 by linear index")
+        assert_equal($I0, 3, "Can get integer 2 by linear index")
 
         $I0 = $P0[3]
-        is($I0, 1, "Can get integer 3 by linear index")
+        assert_equal($I0, 1, "Can get integer 3 by linear index")
     }
 }
 
-sub vtable_get_string_keyed_int() {}
+method test_vtable_get_string_keyed_int() {
+    todo("Tests Needed");
+}
 
-sub vtable_get_pmc_keyed_int() {
+method test_vtable_get_pmc_keyed_int() {
+    my $m := matrix2x2(4.0, 2.0, 3.0, 1.0);
     Q:PIR {
-        $P0 = new ['NumMatrix2D']
-        $P0[1;1] = 1.0
-        $P0[0;1] = 2.0
-        $P0[1;0] = 3.0
-        $P0[0;0] = 4.0
+        $P0 = find_lex "$m"
 
         $P1 = $P0[0]
         $S0 = typeof $P1
-        is($S0, "Float", "got Number PMC from linear index")
+        assert_equal($S0, "Float", "got Number PMC from linear index")
         $N0 = $P1
-        is($N0, 4.0, "Got PMC 0 from linear index")
+        assert_equal($N0, 4.0, "Got PMC 0 from linear index")
 
         $P1 = $P0[1]
         $N0 = $P1
-        is($N0, 2.0, "Got PMC 1 from linear index")
+        assert_equal($N0, 2.0, "Got PMC 1 from linear index")
 
         $P1 = $P0[2]
         $N0 = $P1
-        is($N0, 3.0, "Got PMC 2 from linear index")
+        assert_equal($N0, 3.0, "Got PMC 2 from linear index")
 
         $P1 = $P0[3]
         $N0 = $P1
-        is($N0, 1.0, "Got PMC 3 from linear index")
+        assert_equal($N0, 1.0, "Got PMC 3 from linear index")
     }
 }
 
-sub vtable_is_equal() {
+method test_vtable_is_equal() {
     Q:PIR {
         $P0 = new ['NumMatrix2D']
         $P1 = new ['NumMatrix2D']
 
-        $I0 = $P0 == $P1
-        ok($I0, "empty matrices are equal")
+        assert_equal($P0, $P1, "empty matrices are equal")
 
         $P0[0;0] = 1.0
         $P1[0;0] = 1.0
-        $I0 = $P0 == $P1
-        ok($I0, "Initialized 1x1 matrices are equal")
+        assert_equal($P0, $P1, "Initialized 1x1 matrices are equal")
 
         $P0[3;5] = 2.0
         $P1[3;5] = 2.0
-        $I0 = $P0 == $P1
-        ok($I0, "Auto-resized matrices are equal")
+        assert_equal($P0, $P1, "Auto-resized matrices are equal")
 
         $P0[3;5] = 3.0
-        $I0 = $P0 == $P1
-        is($I0, 0, "matrices with different values aren't equal")
+        assert_not_equal($P0, $P1, "matrices with different values aren't equal")
         $P1[3;5] = 3.0
-        $I0 = $P0 == $P1
-        ok($I0, "matrices can be made equal again")
+        assert_equal($P0, $P1, "matrices can be made equal again")
 
         $P0[4;7] = 0.0
-        $I0 = $P0 == $P1
-        is($I0, 0, "matrices of different sizes aren't equal")
+        assert_not_equal($P0, $P1, "matrices of different sizes aren't equal")
     }
 }
 
-sub vtable_add_nummatrix2d() {
-    Q:PIR {
-        $P0 = new ['NumMatrix2D']
-        $P0[0;0] = 1.0
-        $P0[1;0] = 2.0
-        $P0[0;1] = 3.0
-        $P0[1;1] = 4.0
-
-        $P1 = new ['NumMatrix2D']
-        $P1[0;0] = 5.0
-        $P1[1;0] = 6.0
-        $P1[0;1] = 7.0
-        $P1[1;1] = 8.0
-
-        $P2 = new ['NumMatrix2D']
-        $P2[0;0] = 6.0
-        $P2[1;0] = 8.0
-        $P2[0;1] = 10.0
-        $P2[1;1] = 12.0
-
-        $P3 = $P0 + $P1
-        $I0 = $P3 == $P2
-        ok($I0, "can add two matrices together of the same size")
-    }
+method test_vtable_add_nummatrix2d() {
+    my $m := matrix2x2(1.0, 3.0, 2.0, 4.0);
+    my $n := matrix2x2(5.0, 7.0, 6.0, 8.0);
+    my $o := matrix2x2(6.0, 10.0, 8.0, 12.0);
+    my $p := pir::add__PPP($m, $n);
+    assert_equal($p, $o, "can add two matrices together of the same size");
 }
 
-sub vtable_add_float() {
-    Q:PIR {
-        $P0 = new ['NumMatrix2D']
-        $P0[0;0] = 1.0
-        $P0[1;0] = 2.0
-        $P0[0;1] = 3.0
-        $P0[1;1] = 4.0
-
-        $P1 = new ['NumMatrix2D']
-        $P1[0;0] = 3.5
-        $P1[1;0] = 4.5
-        $P1[0;1] = 5.5
-        $P1[1;1] = 6.5
-
-        $P2 = box 2.5
-        $P3 = $P0 + $P2
-        $I0 = $P3 == $P1
-        ok($I0, "can add a Float to NumMatrix2D")
-    }
+method test_vtable_add_nummatrix2d_sizefail() {
+    assert_throws("error on sizes not equal", {
+        my $m := matrix2x2(1.0, 3.0, 2.0, 4.0);
+        my $n := Parrot::new("NumMatrix2D");
+        my $o := pir::add__PPP($m, $n);
+        fail("addition worked, apparently");
+    });
 }
 
-sub vtable_multiply_nummatrix2d() {}
-sub vtable_multiply_float() {
-    Q:PIR {
-        $P0 = new ['NumMatrix2D']
-        $P0[0;0] = 1.0
-        $P0[1;0] = 2.0
-        $P0[0;1] = 3.0
-        $P0[1;1] = 4.0
-
-        $P1 = new ['NumMatrix2D']
-        $P1[0;0] = 2.5
-        $P1[1;0] = 5.0
-        $P1[0;1] = 7.5
-        $P1[1;1] = 10.0
-
-        $P2 = box 2.5
-        $P3 = $P0 * $P2
-        $I0 = $P3 == $P1
-        ok($I0, "can multiply a Float with NumMatrix2D")
-    }
+method test_vtable_add_float() {
+    my $m := matrix2x2(1.0, 3.0, 2.0, 4.0);
+    my $n := matrix2x2(3.5, 5.5, 4.5, 6.5);
+    my $o := 2.5;
+    my $p := pir::add__PPP($n, $o);
+    assert_equal($p, $n);
 }
 
-sub vtable_clone() {
-    Q:PIR {
-        $P0 = new 'NumMatrix2D'
-        $P0[1;1] = 1.0
-        $P0[0;1] = 2.0
-        $P0[1;0] = 3.0
-        $P0[0;0] = 4.0
+method test_vtable_multiply_nummatrix2d() {
+    todo("Test Needed");
+}
 
-        $P1 = clone $P0
-        $S0 = typeof $P1
-        is($S0, "NumMatrix2D", "a clone is the right type")
+method test_vtable_multiply_float() {
+    my $m := matrix2x2(1.0, 2.0, 3.0, 4.0);
+    my $n := matrix2x2(2.5, 5.0, 7.5, 10.0);
+    my $p := pir::mul__PPP($m, 2.5);
+    assert_equal($n, $p, "multiply matrix * float");
+}
 
-        $I0 = $P0 == $P1
-        ok($I0, "Clones are equal")
-    }
+method test_vtable_clone() {
+    my $m := matrix2x2(1.0, 2.0, 3.0, 4.0);
+    my $n := pir::clone__PP($m);
+    assert_instance_of($n, "NumMatrix2D", "wrong type");
+    assert_not_same($m, $n, "are same");
+    assert_equal($m, $n, "are not equal");
 }
 
 sub method_resize() {

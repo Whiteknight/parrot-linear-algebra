@@ -23,44 +23,6 @@ sub MAIN() {
     $proto.suite.run;
 }
 
-sub matrix2x2($aa, $ab, $ba, $bb) {
-    my $m := Parrot::new("PMCMatrix2D");
-    Q:PIR {
-        $P0 = find_lex "$m"
-        $P1 = find_lex "$aa"
-        $P2 = find_lex "$ab"
-        $P3 = find_lex "$ba"
-        $P4 = find_lex "$bb"
-
-        $P0[0;0] = $P1
-        $P0[0;1] = $P2
-        $P0[1;0] = $P3
-        $P0[1;1] = $P4
-    };
-    return ($m);
-}
-
-sub matrix2x2str($aa, $ab, $ba, $bb) {
-    my $m := Parrot::new("PMCMatrix2D");
-    Q:PIR {
-        $P0 = find_lex "$m"
-        $P1 = find_lex "$aa"
-        $S1 = $P1
-        $P2 = find_lex "$ab"
-        $S2 = $P2
-        $P3 = find_lex "$ba"
-        $S3 = $P3
-        $P4 = find_lex "$bb"
-        $S4 = $P4
-
-        $P0[0;0] = $S1
-        $P0[0;1] = $S2
-        $P0[1;0] = $S3
-        $P0[1;1] = $S4
-    };
-    return ($m);
-}
-
 method test_op_new() {
     assert_throws_nothing("Cannot create PMCMatrix2D", {
         my $m := Parrot::new("PMCMatrix2D");
