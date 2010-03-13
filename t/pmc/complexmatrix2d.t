@@ -63,13 +63,10 @@ sub matrix2x2str($aa, $ab, $ba, $bb) {
 }
 
 method test_create_complexmatrix2d() {
-    try {
+    assert_throws_nothing("Cannot create ComplexMatrix2D", {
         my $c := Parrot::new("ComplexMatrix2D");
         assert_not_null($c, "Could not create a ComplexMatrix2D");
-        CATCH {
-            fail($!);
-        }
-    }
+    });
 }
 
 method test_sub_op_does_matrix() {
@@ -183,5 +180,4 @@ method test_method_iterate_function_inplace() {
     });
     assert_equal($m, $n, "Cannot iterate function in place");
 }
-
 
