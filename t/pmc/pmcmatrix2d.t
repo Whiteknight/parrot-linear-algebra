@@ -1,180 +1,226 @@
 #! parrot-nqp
-our @ARGS;
+
+INIT {
+    # Load the Kakapo library
+    pir::load_language('parrot');
+    my $env := pir::new__PS('Env');
+    my $root_dir := $env<HARNESS_ROOT_DIR> || '.';
+    pir::load_bytecode($root_dir ~ '/library/kakapo_full.pbc');
+    pir::loadlib__ps("./linalg_group");
+}
+
+class Test::CharMatrix2D is UnitTest::Testcase;
+
+INIT {
+    use('UnitTest::Testcase');
+    use('UnitTest::Assertions');
+}
+
 MAIN();
 
-sub MAIN () {
-    my $num_tests := 18;
-    Q:PIR {
-        .local pmc c
-        load_language 'parrot'
-        c = compreg 'parrot'
-        c.'import'('Test::More')
-
-        .local pmc pla
-        pla = loadlib './linalg_group'
-        if pla goto pla_library_loaded
-        say "Cannot load linalg_group"
-        exit 1
-      pla_library_loaded:
-    };
-
-    plan(15);
-    create_pmcmatrix2d();
-    op_does_matrix();
-    vtable_set_pmc_keyed();
-    vtable_get_pmc_keyed();
-    vtable_get_integer_keyed();
-    vtable_get_number_keyed();
-    vtable_get_string_keyed();
-    vtable_set_integer_keyed();
-    vtable_set_number_keyed();
-    vtable_set_string_keyed();
-    vtable_get_string();
-    method_initialize_from_array();
-    method_resize();
+sub MAIN() {
+    my $proto := Opcode::get_root_global(pir::get_namespace__P().get_name);
+    $proto.suite.run;
 }
 
-sub create_pmcmatrix2d() {
+sub matrix2x2($aa, $ab, $ba, $bb) {
+    my $m := Parrot::new("PMCMatrix2D");
     Q:PIR {
-        push_eh can_not_create
-        $P0 = new ['PMCMatrix2D']
-        $I0 = isnull $P0
-        $I0 = not $I0
-        'ok'($I0, "Can create a new PMCMatrix2D")
-        .return()
-      can_not_create:
-        'ok'(0, "Could not create a PMCMatrix2D")
-        .return()
-    }
-}
+        $P0 = find_lex "$m"
+        $P1 = find_lex "$aa"
+        $P2 = find_lex "$ab"
+        $P3 = find_lex "$ba"
+        $P4 = find_lex "$bb"
 
-sub op_does_matrix() {
-    Q:PIR {
-        $P0 = new ['PMCMatrix2D']
-        $I0 = does $P0, 'matrix'
-        ok($I0, "PMCMatrix2D does matrix")
-        $I0 = does $P0, 'gobbledegak'
-        $I0 = not $I0
-        ok($I0, "...and only does matrix")
-    }
-}
-
-sub vtable_set_pmc_keyed() {
-    Q:PIR {
-        $P0 = new ['PMCMatrix2D']
-        push_eh something_broke
-        $P1 = new ['Integer']
         $P0[0;0] = $P1
-        pop_eh
-        ok(1, "set_pmc_keyed doesn't die")
-        goto done_set_pmc_keyed
-      something_broke:
-        pop_eh
-        ok(0, "set_pmc_keyed dies")
-      done_set_pmc_keyed:
-    }
+        $P0[0;1] = $P2
+        $P0[1;0] = $P3
+        $P0[1;1] = $P4
+    };
+    return ($m);
 }
 
-sub vtable_get_pmc_keyed() {
+sub matrix2x2str($aa, $ab, $ba, $bb) {
+    my $m := Parrot::new("PMCMatrix2D");
     Q:PIR {
-        $P0 = new ['PMCMatrix2D']
-        $P1 = new ['Integer']
-        $P1 = 42
+        $P0 = find_lex "$m"
+        $P1 = find_lex "$aa"
+        $S1 = $P1
+        $P2 = find_lex "$ab"
+        $S2 = $P2
+        $P3 = find_lex "$ba"
+        $S3 = $P3
+        $P4 = find_lex "$bb"
+        $S4 = $P4
+
+        $P0[0;0] = $S1
+        $P0[0;1] = $S2
+        $P0[1;0] = $S3
+        $P0[1;1] = $S4
+    };
+    return ($m);
+}
+
+method test_op_new() {
+    assert_throws_nothing("Cannot create PMCMatrix2D", {
+        my $m := Parrot::new("PMCMatrix2D");
+        assert_not_null($m, "PMCMatrix2D is null for some reason");
+    });
+}
+
+method test_op_does() {
+    my $m := Parrot::new("PMCMatrix2D");
+    assert_true(pir::does($m, "matrix"), "Does not do matrix");
+    assert_false(pir::does($m, "gobbledegak"), "Does do gobbledegak");
+}
+
+method test_vtable_set_pmc_keyed() {
+    assert_throws_nothing("set_pmc_keyed fails", {
+        my $m := Parrot::new("PMCMatrix2D");
+        my $n := 1;
+        Q:PIR {
+            $P0 = find_lex "$m"
+            $P1 = find_lex "$n"
+            $P0[0;0] = $P1
+        };
+    });
+}
+
+method test_vtable_get_pmc_keyed() {
+    my $m := Parrot::new("PMCMatrix2D");
+    my $n := 42;
+    my $o;
+    Q:PIR {
+        $P0 = find_lex "$m"
+        $P1 = find_lex "$n"
         $P0[0;0] = $P1
         $P2 = $P0[0;0]
-        $I0 = $P2
-        is($I0, 42, "get_pmc_keyed works")
-    }
+        store_lex "$o", $P2
+    };
+    assert_equal($o, $n, "they are not equal");
 }
 
-sub vtable_get_integer_keyed() {
+method test_vtable_get_integer_keyed() {
+    my $m := Parrot::new("PMCMatrix2D");
+    my $n := 42;
+    my $o;
     Q:PIR {
-        $P0 = new ['PMCMatrix2D']
-        $P1 = new ['Integer']
-        $P1 = 42
+        $P0 = find_lex "$m"
+        $P1 = find_lex "$n"
         $P0[0;0] = $P1
         $I0 = $P0[0;0]
-        is($I0, 42, "get_integer_keyed works")
-    }
+        $P2 = box $I0
+        store_lex "$o", $P2
+    };
+    assert_equal($n, $o, "get_integer_keyed does not work");
 }
 
-sub vtable_get_number_keyed() {
+method test_vtable_get_number_keyed() {
+    my $m := Parrot::new("PMCMatrix2D");
+    my $n := 42.5;
+    my $o;
     Q:PIR {
-        $P0 = new ['PMCMatrix2D']
-        $P1 = new ['Float']
-        $P1 = 3.1415
+        $P0 = find_lex "$m"
+        $P1 = find_lex "$n"
         $P0[0;0] = $P1
         $N0 = $P0[0;0]
-        is($N0, 3.1415, "get_number_keyed works")
-    }
+        $P2 = box $N0
+        store_lex "$o", $P2
+    };
+    assert_equal($n, $o, "get_number_keyed does not work");
 }
 
-sub vtable_get_string_keyed() {
+method test_vtable_get_string_keyed() {
+    my $m := Parrot::new("PMCMatrix2D");
+    my $n := "Hello World";
+    my $o;
     Q:PIR {
-        $P0 = new ['PMCMatrix2D']
-        $P1 = new ['String']
-        $P1 = "Hello World"
+        $P0 = find_lex "$m"
+        $P1 = find_lex "$n"
         $P0[0;0] = $P1
         $S0 = $P0[0;0]
-        is($S0, "Hello World", "get_string_keyed works")
-    }
+        $P2 = box $S0
+        store_lex "$o", $P2
+    };
+    assert_equal($n, $o, "get_string_keyed does not work");
 }
 
-sub vtable_set_integer_keyed() {
+method test_vtable_set_integer_keyed() {
+    my $m := Parrot::new("PMCMatrix2D");
+    my $n;
     Q:PIR {
-        $P0 = new ['PMCMatrix2D']
+        $P0 = find_lex "$m"
         $I0 = 42
         $P0[0;0] = $I0
         $I1 = $P0[0;0]
-        is($I1, 42, "set_integer_keyed works")
-    }
+        $P1 = box $I1
+        store_lex "$n", $P1
+    };
+    assert_equal($n, 42, "set_integer_keyed does not work");
 }
 
-sub vtable_set_number_keyed() {
+method test_vtable_set_number_keyed() {
+    my $m := Parrot::new("PMCMatrix2D");
+    my $n;
     Q:PIR {
-        $P0 = new ['PMCMatrix2D']
-        $N0 = 3.1415
+        $P0 = find_lex "$m"
+        $N0 = 42.5
         $P0[0;0] = $N0
         $N1 = $P0[0;0]
-        is($N1, 3.1415, "set_number_keyed works")
-    }
+        $P1 = box $N1
+        store_lex "$n", $P1
+    };
+    assert_equal($n, 42.5, "set_number_keyed does not work");
 }
 
-sub vtable_set_string_keyed() {
+method test_vtable_set_string_keyed() {
+    my $m := Parrot::new("PMCMatrix2D");
+    my $n;
     Q:PIR {
-        $P0 = new ['PMCMatrix2D']
+        $P0 = find_lex "$m"
         $S0 = "Hello World"
         $P0[0;0] = $S0
         $S1 = $P0[0;0]
-        is($S1, "Hello World", "set_string_keyed works")
-    }
+        $P1 = box $S1
+        store_lex "$n", $P1
+    };
+    assert_equal($n, "Hello World", "set_integer_keyed does not work");
 }
 
-sub vtable_get_string() {
+method test_vtable_get_string() {
+    my $m := Parrot::new("PMCMatrix2D");
+    my $n;
     Q:PIR {
-        $P0 = new ['PMCMatrix2D']
+        $P0 = find_lex "$m"
         $S0 = "Hello World"
         $P0[0;0] = $S0
-        $S1 = $P0
-        # TODO: NQP-RX doesn't seem to like curley brackets inside quotes
-        #       here, so we need to talk to pmichaud about that.
-        #is($S1, "\\n\t[0,0] = Hello World\n\", "get_string works")
-    }
+        $S1 = $P0[0;0]
+        $P1 = box $S1
+        store_lex "$n", $P1
+    };
+    assert_equal(~($m), '{' ~ "\n\t[0,0] = Hello World\n" ~ '}' ~ "\n", "get_string does not work");
 }
 
-sub method_initialize_from_array() {}
-sub method_resize() {
-    Q:PIR {
-        $P0 = new ['PMCMatrix2D']
-        $P1 = getattribute $P0, "rows"
-        is($P1, 0)
-        $P1 = getattribute $P0, "cols"
-        is($P1, 0)
-        $P0.'resize'(5, 3)
-        $P1 = getattribute $P0, "rows"
-        is($P1, 5)
-        $P1 = getattribute $P0, "cols"
-        is($P1, 3)
-    }
+method test_method_initialize_from_array() {
+    todo("Test Needed");
+}
+
+method test_op_getattribute_null_matrix() {
+    my $m := Parrot::new("PMCMatrix2D");
+    my $rows := pir::getattribute__PPS($m, "rows");
+    my $cols := pir::getattribute__PPS($m, "cols");
+    assert_equal($rows, 0, "rows are not zero");
+    assert_equal($cols, 0, "cols are not zero");
+}
+
+method test_method_resize() {
+    my $m := Parrot::new("PMCMatrix2D");
+    my $rows := pir::getattribute__PPS($m, "rows");
+    my $cols := pir::getattribute__PPS($m, "cols");
+    $m.resize(5, 3);
+    $rows := pir::getattribute__PPS($m, "rows");
+    $cols := pir::getattribute__PPS($m, "cols");
+    assert_equal($rows, 5, "rows are not zero");
+    assert_equal($cols, 3, "cols are not zero");
 }
 
