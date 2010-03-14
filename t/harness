@@ -38,13 +38,14 @@ sub MAIN () {
         $output.shift;  # we don't need the plan anymore
 
         for $output {
-
             my $line := $_;
 
             if ( $line ) {
 
-                my $line_parts := split('ok ',$line);
-                my $test_number:= $line_parts[1];
+                my $line_parts := split('ok ', $line);
+                my $right_side := $line_parts[1];
+                my $right_side_parts := split(' ', $right_side);
+                my $test_number := $right_side_parts[0];
                 # strip out comments
                 unless ($test_number > 0) {
                     my @test_num_parts := split(' -',$test_number);
@@ -79,7 +80,7 @@ sub MAIN () {
         }
     }
     if $total_failed {
-        say("FAILED " ~ $total_failed ~ '/' ~ ($total_passed+$total_failed));	
+        say("FAILED " ~ $total_failed ~ '/' ~ ($total_passed+$total_failed));
 	Q:PIR {
 		exit 1
 	}

@@ -81,7 +81,7 @@ method test_OP_does() {
 }
 
 method test_VTABLE_set_number_keyed() {
-    assert_throws_nothing("Canno create NumMatrix2D", {
+    assert_throws_nothing("Cannot create NumMatrix2D", {
         my $m := Parrot::new("NumMatrix2D");
         Q:PIR {
             $P0 = find_lex "$m"
@@ -216,7 +216,7 @@ method test_VTABLE_get_pmc_keyed() {
         $P0 = find_lex "$m"
 
         $P1 = $P0[1;1]
-        assert_instance_of($P1, "Float", "not a number PMC");
+        assert_instance_of($P1, "Float", "not a number PMC")
         $N0 = $P1
         assert_equal($N0, 1.0, "Got 1,1 as PMC")
 
