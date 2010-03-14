@@ -203,7 +203,11 @@ method test_VTABLE_set_integer_keyed() {
 }
 
 method test_VTABLE_get_string() {
-    todo("Tests Needed");
+
+    my $m := matrix2x2(1.0, 2.0, 3.0, 4.0);
+    my $s := pir::set__SP($m);
+    my $t := pir::sprintf__SSP("\t%f\t%f\n\t%f\t%f\n", [1.0, 2.0, 3.0, 4.0]);
+    assert_equal($s, $t, "cannot get string");
 }
 
 method test_VTABLE_get_string_keyed() {
