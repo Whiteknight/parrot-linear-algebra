@@ -56,11 +56,11 @@ init_from_pmc_array(PARROT_INTERP, PMC * self, INTVAL rows_size, INTVAL cols_siz
     self_cols = attrs->cols;
     s = attrs->storage;
 
-    for (i = 0; i < cols_size; i++) {
-        for (j = 0; j < rows_size; j++) {
+    for (i = 0; i < rows_size; i++) {
+        for (j = 0; j < cols_size; j++) {
             const FLOATVAL value = VTABLE_get_number_keyed_int(interp, values, num);
             num++;
-            ITEM_XY_ROWMAJOR(s, self_rows, self_cols, j, i) = value;
+            ITEM_XY_ROWMAJOR(s, self_rows, self_cols, i, j) = value;
             if (num >= init_elems)
                 return;
         }
