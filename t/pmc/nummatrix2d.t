@@ -203,7 +203,6 @@ method test_VTABLE_set_integer_keyed() {
 }
 
 method test_VTABLE_get_string() {
-
     my $m := matrix2x2(1.0, 2.0, 3.0, 4.0);
     my $s := pir::set__SP($m);
     my $t := pir::sprintf__SSP("\t%f\t%f\n\t%f\t%f\n", [1.0, 2.0, 3.0, 4.0]);
@@ -325,10 +324,25 @@ method test_VTABLE_get_pmc_keyed_int() {
     }
 }
 
-# TODO: This test really checks that matrices auto-resize in a consistant way.
-#       maybe break this up into multiple tests, one for straight equality
-#       and others for resizing behavior
 method test_VTABLE_is_equal() {
+    my $m := matrix2x2(1.0, 2.0, 3.0, 4.0);
+    my $n := matrix2x2(1.0, 2.0, 3.0, 4.0);
+    assert_equal($m, $n, "equal matrices are not equal");
+}
+
+method test_VTABLE_is_equal_FAIL_SIZES() {
+    my $m := matrix2x2(1.0, 2.0, 3.0, 4.0);
+    my $n := matrix2x2(1.0, 2.0, 5.0, 4.0);
+    assert_not_equal($m, $n, "matrices with different elements are equal");
+}
+
+method test_VTABLE_is_equal_FAIL_ELEMENTS() {
+    my $m := matrix2x2(1.0, 2.0, 3.0, 4.0);
+    my $n := matrix3x3(1.0, 2.0, 0.0, 3.0, 4.0, 0.0, 0.0, 0.0, 0.0);
+    assert_not_equal($m, $n, "different-size matrice are equal");
+}
+
+method test_NumMatrix2D_autoresizing() {
     Q:PIR {
         $P0 = new ['NumMatrix2D']
         $P1 = new ['NumMatrix2D']
