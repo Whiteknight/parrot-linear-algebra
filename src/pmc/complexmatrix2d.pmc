@@ -420,7 +420,7 @@ sizes, growing the matrix if needed.
 
         for (rows = 0; rows < rows_size; ++rows) {
             for (cols = 0; cols < cols_size; ++cols) {
-                /*ITEM_XY_ROWMAJOR(s, rows_size, cols_size, rows, cols) = value;*/
+                set_complex_pmc_at_xy(INTERP, SELF, value, rows, cols);
             }
         }
     }

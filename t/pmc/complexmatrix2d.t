@@ -60,7 +60,7 @@ method test_VTABLE_get_string_keyed() {
 
 method test_VTABLE_get_pmc_keyed() {
     my $m := Parrot::new("ComplexMatrix2D");
-    my $a := Parrot::new__PSP("Complex", "1+1i);
+    my $a := pir::new__PSP("Complex", "1+1i");
     $m{Key.new(0,0)} := $a;
     my $b := $m{Key.new(0,0)};
     assert_equal($a, $b, "get_pmc_keyed doesn't work");
@@ -99,24 +99,65 @@ method test_VTABLE_get_string() {
     todo("Tests Needed!");
 }
 
-method test_VTABLE_get_attr_string() {
-    todo("Tests Needed!");
+method test_VTABLE_get_attr_str_EMPTY() {
+    my $m := Parrot::new("ComplexMatrix2D");
+    assert_equal(pir::getattribute__PPS($m, "rows"), 0, "empty matrix has non-zero row count");
+    assert_equal(pir::getattribute__PPS($m, "cols"), 0, "empty matrix has non-zero col count");
+}
+
+method test_VTABLE_get_attr_str() {
+    my $m := Parrot::new("ComplexMatrix2D");
+    $m{Key.new(5,7)} := 1;
+    assert_equal(pir::getattribute__PPS($m, "rows"), 6, "matrix does not have right size");
+    assert_equal(pir::getattribute__PPS($m, "cols"), 8, "matrix does not have right size");
 }
 
 method test_VTABLE_clone() {
-    todo("Tests Needed!");
+    my $m := matrix2x2("1+1i", "2+2i", "3+3i", "4+4i");
+    my $n := pir::clone($m);
+    assert_equal($m, $n, "clones are not equal");
+    assert_not_same($m, $n, "clones are the same PMC!");
 }
 
 method test_VTABLE_is_equal() {
-    todo("Tests Needed!");
+    my $m := matrix2x2("1+1i", "2+2i", "3+3i", "4+4i");
+    my $n := matrix2x2("1+1i", "2+2i", "3+3i", "4+4i");
+    assert_equal($m, $n, "equal matrices are not equal");
+}
+
+method test_VTABLE_is_equal_SIZEFAIL() {
+    my $m := matrix2x2("1+1i", "2+2i", "3+3i", "4+4i");
+    my $n := matrix2x2("1+1i", "2+2i", "3+3i", "4+4i");
+    $n{Key.new(2, 2)} := pir::new__PSP("Complex", "0+0i");
+    assert_not_equal($m, $n, "different sized matrices are equal");
+}
+
+method test_VTABLE_is_equal_ELEMSFAIL() {
+    my $m := matrix2x2("1+1i", "2+2i", "3+3i", "4+4i");
+    my $n := matrix2x2("1+1i", "2+2i", "3+3i", "5+5i");
+    assert_not_equal($m, $n, "non-equal matrices are equal");
 }
 
 method test_METHOD_resize() {
-    todo("Tests Needed!");
+    my $m := Parrot::new("ComplexMatrix2D");
+    $m.resize(3,3);
+    assert_equal(pir::getattribute__PPS($m, "rows"), 3, "matrix does not have right size");
+    assert_equal(pir::getattribute__PPS($m, "cols"), 3, "matrix does not have right size");
+}
+
+method test_METHOD_resize_SHRINK() {
+    my $m := Parrot::new("ComplexMatrix2D");
+    $m.resize(3,3);
+    $m.resize(1,1);
+    assert_equal(pir::getattribute__PPS($m, "rows"), 3, "matrix does not have right size");
+    assert_equal(pir::getattribute__PPS($m, "cols"), 3, "matrix does not have right size");
 }
 
 method test_METHOD_fill() {
-    todo("Tests Needed!");
+    my $m := matrix2x2("1+1i", "1+1i", "1+1i", "1+1i");
+    my $n := Parrot::new("ComplexMatrix2D");
+    $n.fill(pir::new__PSP("Complex", "1+1i"), 2, 2);
+    assert_equal($n, $m, "Cannot fill");
 }
 
 method test_METHOD_transpose() {
