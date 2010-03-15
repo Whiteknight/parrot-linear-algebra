@@ -1,0 +1,208 @@
+# Copyright (C) 2010, Andrew Whitworth. See accompanying LICENSE file, or
+# http://www.opensource.org/licenses/artistic-license-2.0.php for license.
+
+INIT {
+    use('UnitTest::Testcase');
+    use('UnitTest::Assertions');
+}
+
+class Pla::Testcase is UnitTest::Testcase {
+    method default_loader() {
+    	Pla::Loader.new;
+    }
+
+    # A default value which can be set at a particular location and tested
+    method defaultvalue() {
+        return (1);
+    }
+
+    # Create an empty matrix of the given type
+    method matrix() {
+        Exception::MethodNotFound.new(
+            :message("Must subclass matrix in your test class")
+        ).throw;
+    }
+
+    # Create a 2x2 matrix of the type with given values row-first
+    method matrix2x2($aa, $ab, $ba, $bb) {
+        my $m := self.matrix();
+        $m{Key.new(0,0)} := $aa;
+        $m{Key.new(0,1)} := $ab;
+        $m{Key.new(1,0)} := $ba;
+        $m{Key.new(1,1)} := $bb;
+    }
+
+    method defaultmatrix2x2() {
+        return self.matrix2x2(
+            self.defaultvalue(),
+            self.defaultvalue(),
+            self.defaultvalue(),
+            self.defaultvalue()
+        );
+    }
+
+    # Create a 3x3 matrix of the type with given values row-first
+    method matrix3x3($aa, $ab, $ac, $ba, $bb, $bc, $ca, $cb, $cc) {
+        my $m := self.matrix();
+        $m{Key.new(0,0)} := $aa;
+        $m{Key.new(0,1)} := $ab;
+        $m{Key.new(0,2)} := $ac;
+        $m{Key.new(1,0)} := $ba;
+        $m{Key.new(1,1)} := $bb;
+        $m{Key.new(1,2)} := $bc;
+        $m{Key.new(2,0)} := $ca;
+        $m{Key.new(2,1)} := $cb;
+        $m{Key.new(2,2)} := $cc;
+    }
+
+    ### COMMON TESTS ###
+
+    method test_OP_new() {
+        assert_throws_nothing("Cannot create ComplexMatrix2D", {
+            my $m := self.matrix();
+            assert_not_null($m, "Could not create a ComplexMatrix2D");
+        });
+    }
+
+    method test_OP_does() {
+        my $m := self.matrix();
+        assert_true(pir::does($m, "matrix"), "Does not do matrix");
+        assert_false(pir::does($m, "gobbledegak"), "Does gobbledegak");
+    }
+
+    method test_VTABLE_get_pmc_keyed() {
+        my $m := self.matrix();
+        my $a := self.defaultvalue();
+        $m{Key.new(0,0)} := $a;
+        my $b := $m{Key.new(0,0)};
+        assert_equal($a, $b, "get_pmc_keyed doesn't work");
+    }
+
+    method test_VTABLE_set_pmc_keyed() {
+        assert_throws_nothing("Cannot set_pmc_keyed", {
+            my $m := self.matrix();
+            my $a := self.defaultvalue();
+            $m{Key.new(0,0)} := $a;
+        });
+    }
+
+    method test_VTABLE_clone() {
+        my $m := self.defaultmatrix2x2();
+        my $n := pir::clone($m);
+        assert_equal($m, $n, "clones are not equal");
+        assert_not_same($m, $n, "clones are the same PMC!");
+    }
+
+    method test_VTABLE_is_equal() {
+        my $m := self.defaultmatrix2x2();
+        my $n := self.defaultmatrix2x2();
+        assert_equal($m, $n, "equal matrices are not equal");
+    }
+
+    method test_METHOD_resize() {
+        my $m := self.matrix();
+        $m.resize(3,3);
+        assert_equal(pir::getattribute__PPS($m, "rows"), 3, "matrix does not have right size");
+        assert_equal(pir::getattribute__PPS($m, "cols"), 3, "matrix does not have right size");
+    }
+
+    method test_METHOD_resize_SHRINK() {
+        my $m := self.matrix();
+        $m.resize(3,3);
+        $m.resize(1,1);
+        assert_equal(pir::getattribute__PPS($m, "rows"), 3, "matrix does not have right size");
+        assert_equal(pir::getattribute__PPS($m, "cols"), 3, "matrix does not have right size");
+    }
+
+    method test_METHOD_resize_NEGATIVEINDICES() {
+        my $m := self.matrix();
+        $m.resize(-1, -1);
+        assert_equal(pir::getattribute__PPS($m, "cols"), 0, "negative indices silently ignored");
+        assert_equal(pir::getattribute__PPS($m, "rows"), 0, "negative indices silently ignored");
+    }
+
+    method test_VTABLE_get_attr_str() {
+        my $m := self.matrix();
+        $m{Key.new(5,7)} := 1;
+        assert_equal(pir::getattribute__PPS($m, "rows"), 6, "matrix does not have right size");
+        assert_equal(pir::getattribute__PPS($m, "cols"), 8, "matrix does not have right size");
+    }
+
+    method test_VTABLE_get_attr_str_EMPTY() {
+        my $m := self.matrix();
+        assert_equal(pir::getattribute__PPS($m, "rows"), 0, "empty matrix has non-zero row count");
+        assert_equal(pir::getattribute__PPS($m, "cols"), 0, "empty matrix has non-zero col count");
+    }
+
+    method test_METHOD_fill() {
+        my $m := self.defaultmatrix2x2();
+        my $n := self.matrix();
+        $n.fill(self.defaultvalue(), 2, 2);
+        assert_equal($n, $m, "Cannot fill");
+    }
+
+    method test_METHOD_transpose() {
+        todo("Tests Needed!");
+    }
+
+    method test_METHOD_mem_transpose() {
+        todo("Tests Needed!");
+    }
+
+    method test_METHOD_iterate_function_inplace() {
+        todo("Tests Needed!");
+    }
+
+    method test_METHOD_iterate_function_external() {
+        todo("Tests Needed!");
+    }
+
+    method test_METHOD_initialize_from_array() {
+        todo("Tests Needed!");
+    }
+
+    method test_METHOD_initialize_from_args() {
+        todo("Tests Needed!");
+    }
+
+    method test_METHOD_get_block() {
+        todo("Tests Needed!");
+    }
+
+    method test_METHOD_set_block() {
+        todo("Tests Needed!");
+    }
+}
+
+class Pla::Loader is UnitTest::Loader ;
+
+method order_tests(@tests) {
+    my $test_method := 'test_METHOD';
+    my $test_op := 'test_OP';
+    my $test_vtable := 'test_VTABLE';
+
+    my $len := $test_op.length;	# The shortest
+
+    my %partition;
+    for <test_METHOD test_OP test_VTABLE MISC> {
+    	%partition{$_} := [ ];
+    }
+
+    for @tests -> $name {
+    	my $name_lc := $name.downcase.substr(0, $len);
+
+    	if %partition.contains( $name_lc ) {
+            %partition{$name_lc}.push: $name;
+    	}
+    	else {
+            %partition<MISC>.push: $name;
+    	}
+    }
+
+    my @result;
+    for <test_OP test_VTABLE test_METHOD MISC> {
+    	@result.append: %partition{$_}.unsort;
+    }
+
+    @result;
+}
