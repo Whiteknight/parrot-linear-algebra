@@ -27,6 +27,15 @@ sub MAIN() {
 method matrix() {
     return (Parrot::new("CharMatrix2D"));
 }
+method defaultvalue() {
+    return "A";
+}
+method nullvalue() {
+    return " ";
+}
+method fancyvalue() {
+    return "Z";
+}
 
 method test_VTABLE_set_string_keyed_int() {
     my $c := self.matrix();
@@ -93,4 +102,27 @@ method test_VTABLE_set_number_keyed() {
 
 method test_VTABLE_set_pmc_keyed() {
     todo("Tests Needed!");
+}
+
+method test_METHOD_fill() {
+    my $m := self.defaultmatrix2x2();
+    my $n := self.matrix2x2(
+        self.fancyvalue(),
+        self.fancyvalue(),
+        self.fancyvalue(),
+        self.fancyvalue()
+    );
+    $m.fill(90);
+    assert_equal($n, $m, "Cannot fill");
+}
+method test_METHOD_fill_RESIZE() {
+    my $m := self.matrix();
+    my $n := self.matrix2x2(
+        self.fancyvalue(),
+        self.fancyvalue(),
+        self.fancyvalue(),
+        self.fancyvalue()
+    );
+    $m.fill(90, 2, 2);
+    assert_equal($n, $m, "Cannot fill");
 }

@@ -186,8 +186,6 @@ class Pla::Testcase is UnitTest::Testcase {
             self.fancyvalue(),
             self.fancyvalue()
         );
-        pir::say($m);
-        pir::say($n);
         $m.fill(self.fancyvalue());
         assert_equal($n, $m, "Cannot fill");
     }
