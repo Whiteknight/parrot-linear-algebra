@@ -25,18 +25,10 @@ sub MAIN() {
 
 sub matrix2x2($aa, $ab, $ba, $bb) {
     my $m := Parrot::new("NumMatrix2D");
-    Q:PIR {
-        $P0 = find_lex "$m"
-        $P1 = find_lex "$aa"
-        $P2 = find_lex "$ab"
-        $P3 = find_lex "$ba"
-        $P4 = find_lex "$bb"
-
-        $P0[0;0] = $P1
-        $P0[0;1] = $P2
-        $P0[1;0] = $P3
-        $P0[1;1] = $P4
-    };
+    $m{Key.new(0,0)} := $aa;
+    $m{Key.new(0,1)} := $ab;
+    $m{Key.new(1,0)} := $ba;
+    $m{Key.new(1,1)} := $bb;
     return ($m);
 }
 
@@ -376,7 +368,7 @@ method test_VTABLE_add_nummatrix2d() {
 }
 
 method test_VTABLE_add_NUMMATRIX2D_SIZEFAIL() {
-    assert_throws("Exception", "error on sizes not equal", {
+    assert_throws(Exception::OutOfBounds, "error on sizes not equal", {
         my $m := matrix2x2(1.0, 3.0, 2.0, 4.0);
         my $n := Parrot::new("NumMatrix2D");
         my $o := pir::add__PPP($m, $n);
