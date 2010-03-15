@@ -26,98 +26,66 @@ sub MAIN() {
 
 sub matrix2x2($aa, $ab, $ba, $bb) {
     my $m := Parrot::new("ComplexMatrix2D");
-    Q:PIR {
-        $P0 = find_lex "$m"
-        $P1 = find_lex "$aa"
-        $P2 = find_lex "$ab"
-        $P3 = find_lex "$ba"
-        $P4 = find_lex "$bb"
-
-        $P0[0;0] = $P1
-        $P0[0;1] = $P2
-        $P0[1;0] = $P3
-        $P0[1;1] = $P4
-    };
+    $m{Key.new(0,0)} := pir::new__PSP("Complex", $aa);
+    $m{Key.new(0,1)} := pir::new__PSP("Complex", $ab);
+    $m{Key.new(1,0)} := pir::new__PSP("Complex", $ba);
+    $m{Key.new(1,1)} := pir::new__PSP("Complex", $bb);
     return ($m);
 }
 
-sub matrix2x2str($aa, $ab, $ba, $bb) {
-    my $m := Parrot::new("ComplexMatrix2D");
-    Q:PIR {
-        $P0 = find_lex "$m"
-        $P1 = find_lex "$aa"
-        $S1 = $P1
-        $P2 = find_lex "$ab"
-        $S2 = $P2
-        $P3 = find_lex "$ba"
-        $S3 = $P3
-        $P4 = find_lex "$bb"
-        $S4 = $P4
-
-        $P0[0;0] = $S1
-        $P0[0;1] = $S2
-        $P0[1;0] = $S3
-        $P0[1;1] = $S4
-    };
-    return ($m);
-}
-
-method test_create_complexmatrix2d() {
+method test_OP_new() {
     assert_throws_nothing("Cannot create ComplexMatrix2D", {
         my $c := Parrot::new("ComplexMatrix2D");
         assert_not_null($c, "Could not create a ComplexMatrix2D");
     });
 }
 
-method test_sub_op_does_matrix() {
+method test_OP_does() {
     my $c := Parrot::new("ComplexMatrix2D");
     assert_true(pir::does($c, "matrix"), "Does not do matrix");
     assert_false(pir::does($c, "gobbledegak"), "Does gobbledegak");
 }
 
-method test_sub_vtable_get_number_keyed() {
+method test_VTABLE_get_number_keyed() {
     todo("Tests Needed!");
 }
 
-method test_vtable_get_integer_keyed() {
+method test_VTABLE_get_integer_keyed() {
     todo("Tests Needed!");
 }
 
-method test_sub_vtable_get_string_keyed() {
+method test_VTABLE_get_string_keyed() {
     todo("Tests Needed!");
 }
 
-method test_vtable_get_pmc_keyed() {
+method test_VTABLE_get_pmc_keyed() {
     my $m := Parrot::new("ComplexMatrix2D");
-    my $a := Parrot::new("Complex");
-    pir::assign__vPS($a, "1+1i");
-    my $b;
-    Q:PIR {
-        $P0 = find_lex "$m"
-        $P1 = find_lex "$a"
-        $P0[0;0] = $P1
-        $P2 = $P0[0;0]
-        store_lex "$b", $P2
-    };
+    my $a := Parrot::new__PSP("Complex", "1+1i);
+    $m{Key.new(0,0)} := $a;
+    my $b := $m{Key.new(0,0)};
     assert_equal($a, $b, "get_pmc_keyed doesn't work");
 }
 
-method test_vtable_set_pmc_keyed() {
+method test_VTABLE_set_pmc_keyed() {
     assert_throws_nothing("Cannot set_pmc_keyed", {
         my $m := Parrot::new("ComplexMatrix2D");
-        my $a := Parrot::new("Complex");
-        pir::assign__vPS($a, "1+1i");
-        Q:PIR {
-            $P0 = find_lex "$m"
-            $P1 = find_lex "$a"
-            $P0[0;0] = $P1
-        };
+        my $a := pir::new__PSP("Complex", "1+1i");
+        $m{Key.new(0,0)} := $a;
     });
 }
 
-method test_vtable_set_string_keyed() {
+method test_VTABLE_set_pmc_keyed_TYPEFAIL() {
+    assert_throws(Exception::OutOfBounds, "Cannot set_pmc_keyed", {
+        my $m := Parrot::new("ComplexMatrix2D");
+        my $a := "1+1i";  # a String PMC, not a Complex
+        $m{Key.new(0,0)} := $a;
+    });
+}
+
+method test_VTABLE_set_string_keyed() {
     my $m := Parrot::new("ComplexMatrix2D");
     my $a := Parrot::new("Complex");
+    # Keep this as raw PIR for now to make sure we are calling the correct vtable
     Q:PIR {
         $P0 = find_lex "$m"
         $P0[0;0] = "1+1i"
@@ -127,54 +95,54 @@ method test_vtable_set_string_keyed() {
     assert_equal($a, "1+1i", "set_string_keyed doesn't work");
 }
 
-method test_vtable_get_string() {
+method test_VTABLE_get_string() {
     todo("Tests Needed!");
 }
 
-method test_vtable_get_attr_string() {
+method test_VTABLE_get_attr_string() {
     todo("Tests Needed!");
 }
 
-method test_vtable_clone() {
+method test_VTABLE_clone() {
     todo("Tests Needed!");
 }
 
-method test_vtable_is_equal() {
+method test_VTABLE_is_equal() {
     todo("Tests Needed!");
 }
 
-method test_method_resize() {
+method test_METHOD_resize() {
     todo("Tests Needed!");
 }
 
-method test_method_fill() {
+method test_METHOD_fill() {
     todo("Tests Needed!");
 }
 
-method test_method_transpose() {
-    my $m := matrix2x2str("1+1i", "2+2i", "3+3i", "4+4i");
-    my $n := matrix2x2str("1+1i", "3+3i", "2+2i", "4+4i");
+method test_METHOD_transpose() {
+    my $m := matrix2x2("1+1i", "2+2i", "3+3i", "4+4i");
+    my $n := matrix2x2("1+1i", "3+3i", "2+2i", "4+4i");
     $m.transpose();
     assert_equal($m, $n, "transpose does not work");
 }
 
-method test_method_mem_transpose() {
-    my $m := matrix2x2str("1+1i", "2+2i", "3+3i", "4+4i");
-    my $n := matrix2x2str("1+1i", "3+3i", "2+2i", "4+4i");
+method test_METHOD_mem_transpose() {
+    my $m := matrix2x2("1+1i", "2+2i", "3+3i", "4+4i");
+    my $n := matrix2x2("1+1i", "3+3i", "2+2i", "4+4i");
     $m.mem_transpose();
     assert_equal($m, $n, "mem_transpose does not work");
 }
 
-method test_method_conjugate() {
-    my $m := matrix2x2str("1+1i", "2+2i", "3+3i", "4+4i");
-    my $n := matrix2x2str("1-1i", "2-2i", "3-3i", "4-4i");
+method test_METHOD_conjugate() {
+    my $m := matrix2x2("1+1i", "2+2i", "3+3i", "4+4i");
+    my $n := matrix2x2("1-1i", "2-2i", "3-3i", "4-4i");
     $m.conjugate();
     assert_equal($m, $n, "conjugate does not work");
 }
 
-method test_method_iterate_function_inplace() {
-    my $m := matrix2x2str("1+1i", "2+2i", "3+3i", "4+4i");
-    my $n := matrix2x2str("3.5+1i", "4.5+1i", "5.5+1i", "6.5+1i");
+method test_METHOD_iterate_function_inplace() {
+    my $m := matrix2x2("1+1i", "2+2i", "3+3i", "4+4i");
+    my $n := matrix2x2("3.5+1i", "4.5+1i", "5.5+1i", "6.5+1i");
     $m.iterate_function_inplace(-> $matrix, $value, $row, $col {
         return ($value + 2.5);
     });
