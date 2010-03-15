@@ -33,8 +33,8 @@ method defaultvalue() {
 method nullvalue() {
     return " ";
 }
-method fancyvalue() {
-    return "Z";
+method fancyvalue($idx) {
+    return ["W", "X", "Y", "Z"][$idx];
 }
 
 method test_VTABLE_set_string_keyed_int() {

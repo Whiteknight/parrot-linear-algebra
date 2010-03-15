@@ -22,8 +22,8 @@ class Pla::Testcase is UnitTest::Testcase {
     }
 
     # A novel value which can be used to flag interesting changes in tests.
-    method fancyvalue() {
-        return (2);
+    method fancyvalue($idx) {
+        return ([5, 6, 7, 8][$idx]);
     }
 
     # Create an empty matrix of the given type
@@ -49,6 +49,15 @@ class Pla::Testcase is UnitTest::Testcase {
             self.defaultvalue(),
             self.defaultvalue(),
             self.defaultvalue()
+        );
+    }
+
+    method fancymatrix2x2() {
+        return self.matrix2x2(
+            self.fancyvalue(0),
+            self.fancyvalue(1),
+            self.fancyvalue(2),
+            self.fancyvalue(3)
         );
     }
 
@@ -124,7 +133,7 @@ class Pla::Testcase is UnitTest::Testcase {
     method test_VTABLE_is_equal_ELEMSFAIL() {
         my $m := self.defaultmatrix2x2();
         my $n := self.defaultmatrix2x2();
-        $n{Key.new(1,1)} := self.fancyvalue();
+        $n{Key.new(1,1)} := self.fancyvalue(0);
         assert_not_equal($m, $n, "non-equal matrices are equal");
     }
 
@@ -139,6 +148,14 @@ class Pla::Testcase is UnitTest::Testcase {
         my $m := self.matrix();
         assert_equal(pir::getattribute__PPS($m, "rows"), 0, "empty matrix has non-zero row count");
         assert_equal(pir::getattribute__PPS($m, "cols"), 0, "empty matrix has non-zero col count");
+    }
+
+    method test_VTABLE_freeze() {
+        todo("Tests Needed!");
+    }
+
+    method test_VTABLE_thaw() {
+        todo("Tests Needed!");
     }
 
     # TODO: Add tests that get_pmc_keyed_int and set_pmc_keyed_int share a
@@ -181,38 +198,88 @@ class Pla::Testcase is UnitTest::Testcase {
     method test_METHOD_fill() {
         my $m := self.defaultmatrix2x2();
         my $n := self.matrix2x2(
-            self.fancyvalue(),
-            self.fancyvalue(),
-            self.fancyvalue(),
-            self.fancyvalue()
+            self.fancyvalue(0),
+            self.fancyvalue(0),
+            self.fancyvalue(0),
+            self.fancyvalue(0)
         );
-        $m.fill(self.fancyvalue());
+        $m.fill(self.fancyvalue(0));
         assert_equal($n, $m, "Cannot fill");
     }
 
 
     # Test transposing square matrices
     method test_METHOD_transpose() {
-        todo("Tests Needed!");
+        my $m := self.matrix2x2(
+            self.fancyvalue(0),
+            self.fancyvalue(1),
+            self.fancyvalue(2),
+            self.fancyvalue(3)
+        );
+        my $n := self.matrix2x2(
+            self.fancyvalue(0),
+            self.fancyvalue(2),
+            self.fancyvalue(1),
+            self.fancyvalue(3)
+        );
+        $m.transpose();
+        assert_equal($n, $m, "cannot transpose matrix");
     }
 
     # Test transposing non-square matrices
     method test_METHOD_transpose_DIMCHANGE() {
-        todo("Tests Needed!");
+        my $m := self.matrix();
+        $m{Key.new(0,0)} := self.fancyvalue(0);
+        $m{Key.new(0,1)} := self.fancyvalue(1);
+        $m{Key.new(0,2)} := self.fancyvalue(2);
+        $m{Key.new(0,3)} := self.fancyvalue(3);
+
+        my $n := self.matrix();
+        $n{Key.new(0,0)} := self.fancyvalue(0);
+        $n{Key.new(1,0)} := self.fancyvalue(1);
+        $n{Key.new(2,0)} := self.fancyvalue(2);
+        $n{Key.new(3,0)} := self.fancyvalue(3);
+
+        $m.transpose();
+        assert_equal($m, $n, "cannot transpose with non-square dimensions");
     }
 
     # Test transposing square matrices
     method test_METHOD_mem_transpose() {
-        todo("Tests Needed!");
+        my $m := self.matrix2x2(
+            self.fancyvalue(0),
+            self.fancyvalue(1),
+            self.fancyvalue(2),
+            self.fancyvalue(3)
+        );
+        my $n := self.matrix2x2(
+            self.fancyvalue(0),
+            self.fancyvalue(2),
+            self.fancyvalue(1),
+            self.fancyvalue(3)
+        );
+        $m.mem_transpose();
+        assert_equal($n, $m, "cannot mem_transpose matrix");
     }
 
     # Test transposing non-square matrices
     method test_METHOD_mem_transpose_DIMCHANGE() {
-        todo("Tests Needed!");
+        my $m := self.matrix();
+        $m{Key.new(0,0)} := self.fancyvalue(0);
+        $m{Key.new(0,1)} := self.fancyvalue(1);
+        $m{Key.new(0,2)} := self.fancyvalue(2);
+        $m{Key.new(0,3)} := self.fancyvalue(3);
+
+        my $n := self.matrix();
+        $n{Key.new(0,0)} := self.fancyvalue(0);
+        $n{Key.new(1,0)} := self.fancyvalue(1);
+        $n{Key.new(2,0)} := self.fancyvalue(2);
+        $n{Key.new(3,0)} := self.fancyvalue(3);
+
+        $m.mem_transpose();
+        assert_equal($m, $n, "cannot mem_transpose with non-square dimensions");
     }
 
-    # TODO: Come up with a good way to test that we are iterating and all values
-    #       are correct
     method test_METHOD_iterate_function_inplace() {
         todo("Tests Needed!");
     }

@@ -33,8 +33,12 @@ method nullvalue() {
     return (pir::new__PSP("Complex", "0+0i"));
 }
 
-method fancyvalue() {
-    return (pir::new__PSP("Complex", "9+9i"));
+method fancyvalue($idx) {
+    return (
+        pir::new__PSP("Complex",
+            ["6+6i", "7+7i", "8+8i", "9+9i"][$idx]
+        )
+    );
 }
 
 method matrix() {
