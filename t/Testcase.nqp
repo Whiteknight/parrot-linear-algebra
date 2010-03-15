@@ -313,6 +313,18 @@ class Pla::Testcase is UnitTest::Testcase {
     method test_METHOD_set_block_OVERFLOW() {
         todo("Tests Needed!");
     }
+
+    # TODO: Setup a test here to check the case where we set_block with a "block"
+    #       that is not a matrix.
+    method test_METHOD_set_block_SCALAR() {
+        todo("Tests Needed!");
+    }
+
+    # TODO: We should probably create a few tests to check set_block when using
+    #       various matrix types. For instance,
+    #       NumMatrix2d.set_block(PMCMatrix2D) should work, and vice-versa. We
+    #       can test [almost] all combinations.
+
 }
 
 class Pla::Loader is UnitTest::Loader ;
