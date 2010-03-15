@@ -7,9 +7,10 @@ INIT {
     my $root_dir := $env<HARNESS_ROOT_DIR> || '.';
     pir::load_bytecode($root_dir ~ '/library/kakapo_full.pbc');
     pir::loadlib__ps("./linalg_group");
+    Nqp::compile_file( 't/Testcase.nqp' );
 }
 
-class Test::CharMatrix2D is UnitTest::Testcase;
+class Test::CharMatrix2D is Pla::Testcase;
 
 INIT {
     use('UnitTest::Testcase');
@@ -23,46 +24,11 @@ sub MAIN() {
     $proto.suite.run;
 }
 
-method test_op_new() {
-    assert_throws_nothing("Cannot create PMCMatrix2D", {
-        my $m := Parrot::new("PMCMatrix2D");
-        assert_not_null($m, "PMCMatrix2D is null for some reason");
-    });
+method matrix() {
+    return (Parrot::new("PMCMatrix2D"));
 }
 
-method test_op_does() {
-    my $m := Parrot::new("PMCMatrix2D");
-    assert_true(pir::does($m, "matrix"), "Does not do matrix");
-    assert_false(pir::does($m, "gobbledegak"), "Does do gobbledegak");
-}
-
-method test_vtable_set_pmc_keyed() {
-    assert_throws_nothing("set_pmc_keyed fails", {
-        my $m := Parrot::new("PMCMatrix2D");
-        my $n := 1;
-        Q:PIR {
-            $P0 = find_lex "$m"
-            $P1 = find_lex "$n"
-            $P0[0;0] = $P1
-        };
-    });
-}
-
-method test_vtable_get_pmc_keyed() {
-    my $m := Parrot::new("PMCMatrix2D");
-    my $n := 42;
-    my $o;
-    Q:PIR {
-        $P0 = find_lex "$m"
-        $P1 = find_lex "$n"
-        $P0[0;0] = $P1
-        $P2 = $P0[0;0]
-        store_lex "$o", $P2
-    };
-    assert_equal($o, $n, "they are not equal");
-}
-
-method test_vtable_get_integer_keyed() {
+method test_VTABLE_get_integer_keyed() {
     my $m := Parrot::new("PMCMatrix2D");
     my $n := 42;
     my $o;
@@ -77,7 +43,7 @@ method test_vtable_get_integer_keyed() {
     assert_equal($n, $o, "get_integer_keyed does not work");
 }
 
-method test_vtable_get_number_keyed() {
+method test_VTABLE_get_number_keyed() {
     my $m := Parrot::new("PMCMatrix2D");
     my $n := 42.5;
     my $o;
@@ -92,7 +58,7 @@ method test_vtable_get_number_keyed() {
     assert_equal($n, $o, "get_number_keyed does not work");
 }
 
-method test_vtable_get_string_keyed() {
+method test_VTABLE_get_string_keyed() {
     my $m := Parrot::new("PMCMatrix2D");
     my $n := "Hello World";
     my $o;
@@ -107,7 +73,7 @@ method test_vtable_get_string_keyed() {
     assert_equal($n, $o, "get_string_keyed does not work");
 }
 
-method test_vtable_set_integer_keyed() {
+method test_VTABLE_set_integer_keyed() {
     my $m := Parrot::new("PMCMatrix2D");
     my $n;
     Q:PIR {
@@ -121,7 +87,7 @@ method test_vtable_set_integer_keyed() {
     assert_equal($n, 42, "set_integer_keyed does not work");
 }
 
-method test_vtable_set_number_keyed() {
+method test_VTABLE_set_number_keyed() {
     my $m := Parrot::new("PMCMatrix2D");
     my $n;
     Q:PIR {
@@ -135,7 +101,7 @@ method test_vtable_set_number_keyed() {
     assert_equal($n, 42.5, "set_number_keyed does not work");
 }
 
-method test_vtable_set_string_keyed() {
+method test_VTABLE_set_string_keyed() {
     my $m := Parrot::new("PMCMatrix2D");
     my $n;
     Q:PIR {
@@ -149,7 +115,7 @@ method test_vtable_set_string_keyed() {
     assert_equal($n, "Hello World", "set_integer_keyed does not work");
 }
 
-method test_vtable_get_string() {
+method test_VTABLE_get_string() {
     my $m := Parrot::new("PMCMatrix2D");
     my $n;
     Q:PIR {
@@ -161,28 +127,5 @@ method test_vtable_get_string() {
         store_lex "$n", $P1
     };
     assert_equal(~($m), '{' ~ "\n\t[0,0] = Hello World\n" ~ '}' ~ "\n", "get_string does not work");
-}
-
-method test_method_initialize_from_array() {
-    todo("Test Needed");
-}
-
-method test_op_getattribute_null_matrix() {
-    my $m := Parrot::new("PMCMatrix2D");
-    my $rows := pir::getattribute__PPS($m, "rows");
-    my $cols := pir::getattribute__PPS($m, "cols");
-    assert_equal($rows, 0, "rows are not zero");
-    assert_equal($cols, 0, "cols are not zero");
-}
-
-method test_method_resize() {
-    my $m := Parrot::new("PMCMatrix2D");
-    my $rows := pir::getattribute__PPS($m, "rows");
-    my $cols := pir::getattribute__PPS($m, "cols");
-    $m.resize(5, 3);
-    $rows := pir::getattribute__PPS($m, "rows");
-    $cols := pir::getattribute__PPS($m, "cols");
-    assert_equal($rows, 5, "rows are not zero");
-    assert_equal($cols, 3, "cols are not zero");
 }
 

@@ -26,6 +26,13 @@ resize_matrix(PARROT_INTERP, PMC * self, INTVAL row, INTVAL col)
                 ITEM_XY_ROWMAJOR(old_s, old_cols, old_rows, i, j);
         }
     }
+    for (i = 0; i < new_cols; i++) {
+        for (j = 0; j < new_rows; j++) {
+            PMC * const v = ITEM_XY_ROWMAJOR(new_s, new_cols, new_rows, i, j);
+            if (v == NULL)
+                ITEM_XY_ROWMAJOR(new_s, new_cols, new_rows, i, j) = PMCNULL;
+        }
+    }
     attrs->storage = new_s;
     attrs->cols = new_cols;
     attrs->rows = new_rows;
@@ -145,8 +152,12 @@ pmclass PMCMatrix2D dynpmc auto_attrs provides matrix {
         for (rows = 0; rows < rows_size; ++rows) {
             for (cols = 0; cols < cols_size; ++cols) {
                 PMC * const item = ITEM_XY_ROWMAJOR(s, rows_size, cols_size, rows, cols);
-                STRING * const str = VTABLE_get_string(INTERP, item);
                 STRING * const index = Parrot_sprintf_c(INTERP, "\t[%d,%d] = ", rows, cols);
+                STRING * str;
+                if (PMC_IS_NULL(item))
+                    str = CONST_STRING(INTERP, "<NULL>");
+                else
+                    str = VTABLE_get_string(INTERP, item);
                 pstr = Parrot_str_append(INTERP, pstr, index);
                 pstr = Parrot_str_append(INTERP, pstr, str);
                 pstr = Parrot_str_append(INTERP, pstr, newline);
@@ -196,13 +207,45 @@ pmclass PMCMatrix2D dynpmc auto_attrs provides matrix {
         for (i = 0; i < self_rows; i++) {
             for (j = 0; j < self_cols; j++) {
                 PMC * const ovalue = VTABLE_get_pmc_keyed_int(interp, other, num);
-                PMC * const mvalue = ITEM_XY_ROWMAJOR(s, self_rows, self_cols, j, i);
-                if (!VTABLE_is_equal(INTERP, mvalue, ovalue))
-                    return 0;
+                PMC * const mvalue = ITEM_XY_ROWMAJOR(s, self_rows, self_cols, i, j);
+                if (PMC_IS_NULL(mvalue)) {
+                    if (!PMC_IS_NULL(ovalue))
+                        return 0;
+                }
+                else {
+                    if (!VTABLE_is_equal(INTERP, mvalue, ovalue))
+                        return 0;
+                }
                 num++;
             }
         }
         return 1;
+    }
+
+    VTABLE PMC* clone() {
+        PMC * const other = Parrot_pmc_new(INTERP, SELF->vtable->base_type);
+        Parrot_PMCMatrix2D_attributes * const attrs = PARROT_PMCMATRIX2D(SELF);
+        Parrot_PMCMatrix2D_attributes * const oattr = PARROT_PMCMATRIX2D(other);
+        PMC ** s, ** o;
+        INTVAL self_rows, self_cols, i, j, o_rows, o_cols;
+
+        self_rows = attrs->rows;
+        self_cols = attrs->cols;
+        resize_matrix(INTERP, other, self_rows - 1, self_cols - 1);
+        o_rows = oattr->rows;
+        o_cols = oattr->cols;
+        PARROT_ASSERT(self_rows == o_rows);
+        PARROT_ASSERT(self_cols == o_cols);
+        s = attrs->storage;
+        o = oattr->storage;
+
+        for (i = 0; i < self_rows; i++) {
+            for (j = 0; j < self_cols; j++) {
+                ITEM_XY_ROWMAJOR(s, self_rows, self_cols, i, j) =
+                    ITEM_XY_ROWMAJOR(o, o_rows, o_cols, i, j);
+            }
+        }
+        return other;
     }
 
     METHOD initialize_from_array(INTVAL rows_size, INTVAL cols_size, PMC * values) {
