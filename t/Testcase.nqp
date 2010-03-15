@@ -281,31 +281,49 @@ class Pla::Testcase is UnitTest::Testcase {
     }
 
     method test_METHOD_iterate_function_inplace() {
-        todo("Tests Needed!");
+        my $m := self.defaultmatrix2x2();
+        my $n := self.matrix();
+        $n{Key.new(0,0)} := self.fancyvalue(0);
+        $n{Key.new(0,1)} := self.fancyvalue(1);
+        $n{Key.new(1,0)} := self.fancyvalue(2);
+        $n{Key.new(1,1)} := self.fancyvalue(3);
+        my $count := -1;
+        my $sub := pir::newclosure__PP(-> $matrix, $value, $x, $y {
+            $count++;
+            return (self.fancyvalue($count));
+        });
+        $m.iterate_function_inplace($sub);
+        assert_equal($count, 4, "iteration did not happen for all elements");
     }
 
-    # TODO: Come up with a good consistant way to test that we are hitting all
-    #       the coords, and hitting each only once.
     method test_METHOD_iterate_function_inplace_COORDS() {
-        todo("Tests Needed!");
-        #my $m := self.defaultmatrix2x2();
-        #my $n := matrix2x2(0.0, 1.0, 1.0, 2.0);
-        #$m.iterate_function_inplace(-> $matrix, $value, $x, $y{
-        #    return ($x + $y);
-        #});
-        #assert_equal($m, $n, "Cannot iterate with args");
+        my $m := self.fancymatrix2x2();
+        my $count := 0;
+        my $x_ords := [0, 0, 1, 1];
+        my $y_ords := [0, 1, 0, 1];
+        my $sub := pir::newclosure__PP(-> $matrix, $value, $x, $y {
+            assert_equal($x, $x_ords[$count], "x coordinate is correct");
+            assert_equal($y, $y_ords[$count], "y coordinate is correct");
+            $count++;
+            return (self.defaultvalue());
+        });
+        $m.iterate_function_inplace($sub);
+        assert_equal($count, 4, "iteration did not happen for all elements");
     }
 
-    # TODO: Come up with a good consistant way to test that we are hitting all
-    #       the coords, and can pass constant args to each.
     method test_METHOD_iterate_function_inplace_ARGS() {
-        todo("Tests Needed!");
-        #my $m := matrix2x2(1.0, 2.0, 3.0, 4.0);
-        #my $n := matrix2x2(1.0, 4.0, 9.0, 16.0);
-        #$m.iterate_function_inplace(-> $matrix, $value, $x, $y, $a, $b {
-        #    return ($value * $value);
-        #}, 5, 2);
-        #assert_equal($m, $n, "Cannot iterate with args");
+        my $m := self.fancymatrix2x2();
+        my $count := 0;
+        my $first := 5;
+        my $second := 2;
+        my $sub := pir::newclosure__PP(-> $matrix, $value, $x, $y, $a, $b {
+            assert_equal($x, $first, "first arg is not equal");
+            assert_equal($y, $second, "second arg is not equal");
+            $count++;
+            return (self.defaultvalue());
+        });
+        $m.iterate_function_inplace($sub, $first, $second);
+        assert_equal($count, 4, "iteration did not happen for all elements");
     }
 
     method test_METHOD_iterate_function_external() {
@@ -342,7 +360,7 @@ class Pla::Testcase is UnitTest::Testcase {
     method test_METHOD_initialize_from_args() {
         my $m := self.matrix2x2(self.fancyvalue(0), self.fancyvalue(1), self.fancyvalue(2), self.fancyvalue(3));
         my $n := self.matrix();
-        $n.initialize_from_array(2, 2, self.fancyvalue(0), self.fancyvalue(1), self.fancyvalue(2), self.fancyvalue(3));
+        $n.initialize_from_args(2, 2, self.fancyvalue(0), self.fancyvalue(1), self.fancyvalue(2), self.fancyvalue(3));
         assert_equal($n, $m, "cannot initialize_from_args");
     }
 
@@ -351,7 +369,7 @@ class Pla::Testcase is UnitTest::Testcase {
                                 self.fancyvalue(3), 0,                  0,
                                 0,                  0,                  0);
         my $n := self.matrix();
-        $n.initialize_from_array(3, 3, self.fancyvalue(0), self.fancyvalue(1), self.fancyvalue(2), self.fancyvalue(3));
+        $n.initialize_from_args(3, 3, self.fancyvalue(0), self.fancyvalue(1), self.fancyvalue(2), self.fancyvalue(3));
         assert_equal($n, $m, "cannot initalize from args with zero padding");
     }
 
@@ -359,7 +377,7 @@ class Pla::Testcase is UnitTest::Testcase {
         my $m := self.matrix();
         $m{Key.new(0,0)} := self.fancyvalue(0);
         my $n := self.matrix();
-        $n.initialize_from_array(1, 1, self.fancyvalue(0), self.fancyvalue(1), self.fancyvalue(2), self.fancyvalue(3));
+        $n.initialize_from_args(1, 1, self.fancyvalue(0), self.fancyvalue(1), self.fancyvalue(2), self.fancyvalue(3));
         assert_equal($n, $m, "cannot initialize from args undersized");
     }
 

@@ -233,32 +233,6 @@ method test_VTABLE_multiply_FLOAT() {
     assert_equal($n, $p, "multiply matrix * float");
 }
 
-method test_METHOD_initialize_from_args() {
-    my $m := self.matrix();
-    my $n := self.matrix3x3(1.0, 2.0, 3.0,
-                            4.0, 5.0, 6.0,
-                            7.0, 8.0, 9.0);
-    $m.initialize_from_args(3, 3, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
-    assert_equal($m, $n, "array initialization does not work");
-}
-
-method test_METHOD_initialize_from_args_ZEROPAD() {
-    my $m := self.matrix();
-    my $n := self.matrix3x3(1.0, 2.0, 3.0,
-                            4.0, 5.0, 0.0,
-                            0.0, 0.0, 0.0);
-    $m.initialize_from_args(3, 3, 1.0, 2.0, 3.0, 4.0, 5.0);
-    assert_equal($m, $n, "array initialization zero-padding does not work");
-}
-
-method test_METHOD_initialize_from_args_UNDERSIZE() {
-    my $m := self.matrix();
-    my $n := self.matrix2x2(1.0, 2.0,
-                            3.0, 4.0);
-    $m.initialize_from_args(2, 2, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
-    assert_equal($m, $n, "array initialization does not work");
-}
-
 method test_METHOD_iterate_function_inplace_VALUE_ONLY() {
     my $m := self.matrix2x2(1.0, 2.0, 3.0, 4.0);
     my $n := self.matrix2x2(1.0, 4.0, 9.0, 16.0);
