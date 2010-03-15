@@ -100,20 +100,6 @@ method test_VTABLE_get_string() {
     todo("Tests Needed!");
 }
 
-method test_METHOD_transpose() {
-    my $m := self.matrix2x2("1+1i", "2+2i", "3+3i", "4+4i");
-    my $n := self.matrix2x2("1+1i", "3+3i", "2+2i", "4+4i");
-    $m.transpose();
-    assert_equal($m, $n, "transpose does not work");
-}
-
-method test_METHOD_mem_transpose() {
-    my $m := self.matrix2x2("1+1i", "2+2i", "3+3i", "4+4i");
-    my $n := self.matrix2x2("1+1i", "3+3i", "2+2i", "4+4i");
-    $m.mem_transpose();
-    assert_equal($m, $n, "mem_transpose does not work");
-}
-
 method test_METHOD_conjugate() {
     my $m := self.matrix2x2("1+1i", "2+2i", "3+3i", "4+4i");
     my $n := self.matrix2x2("1-1i", "2-2i", "3-3i", "4-4i");

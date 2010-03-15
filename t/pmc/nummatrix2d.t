@@ -233,57 +233,6 @@ method test_VTABLE_multiply_FLOAT() {
     assert_equal($n, $p, "multiply matrix * float");
 }
 
-method test_METHOD_transpose() {
-    my $m := self.matrix3x3(1.0, 2.0, 3.0,
-                            4.0, 5.0, 6.0,
-                            7.0, 8.0, 9.0);
-    my $n := self.matrix3x3(1.0, 4.0, 7.0,
-                            2.0, 5.0, 8.0,
-                            3.0, 6.0, 9.0);
-    $m.transpose();
-    assert_equal($m, $n, "transpose does not work");
-}
-
-method test_METHOD_mem_transpose() {
-    my $m := self.matrix3x3(1.0, 2.0, 3.0,
-                            4.0, 5.0, 6.0,
-                            7.0, 8.0, 9.0);
-    my $n := self.matrix3x3(1.0, 4.0, 7.0,
-                            2.0, 5.0, 8.0,
-                            3.0, 6.0, 9.0);
-    $m.mem_transpose();
-    assert_equal($m, $n, "transpose does not work");
-}
-
-method test_METHOD_initialize_from_array() {
-    my $m := self.matrix();
-    my $n := [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0];
-    my $o := self.matrix3x3(1.0, 2.0, 3.0,
-                            4.0, 5.0, 6.0,
-                            7.0, 8.0, 9.0);
-    $m.initialize_from_array(3, 3, $n);
-    assert_equal($m, $o, "array initialization does not work");
-}
-
-method test_METHOD_initialize_from_array_ZEROPAD() {
-    my $m := self.matrix();
-    my $n := [1.0, 2.0, 3.0, 4.0, 5.0];
-    my $o := self.matrix3x3(1.0, 2.0, 3.0,
-                            4.0, 5.0, 0.0,
-                            0.0, 0.0, 0.0);
-    $m.initialize_from_array(3, 3, $n);
-    assert_equal($m, $o, "array initialization zero-padding does not work");
-}
-
-method test_METHOD_initialize_from_array_UNDERSIZE() {
-    my $m := self.matrix();
-    my $n := [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0];
-    my $o := self.matrix2x2(1.0, 2.0,
-                            3.0, 4.0);
-    $m.initialize_from_array(2, 2, $n);
-    assert_equal($m, $o, "array initialization does not work");
-}
-
 method test_METHOD_initialize_from_args() {
     my $m := self.matrix();
     my $n := self.matrix3x3(1.0, 2.0, 3.0,

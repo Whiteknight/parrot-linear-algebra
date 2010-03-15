@@ -313,27 +313,54 @@ class Pla::Testcase is UnitTest::Testcase {
     }
 
     method test_METHOD_initialize_from_array() {
-        todo("Tests Needed!");
+        my $a := [self.fancyvalue(0), self.fancyvalue(1), self.fancyvalue(2), self.fancyvalue(3)];
+        my $m := self.matrix2x2(self.fancyvalue(0), self.fancyvalue(1), self.fancyvalue(2), self.fancyvalue(3));
+        my $n := self.matrix();
+        $n.initialize_from_array(2, 2, $a);
+        assert_equal($n, $m, "cannot initialize_from_array");
     }
 
     method test_METHOD_initialize_from_array_ZEROPAD() {
-        todo("Tests Needed!");
+        my $a := [self.fancyvalue(0), self.fancyvalue(1), self.fancyvalue(2), self.fancyvalue(3)];
+        my $m := self.matrix3x3(self.fancyvalue(0), self.fancyvalue(1), self.fancyvalue(2),
+                                self.fancyvalue(3), 0,                  0,
+                                0,                  0,                  0);
+        my $n := self.matrix();
+        $n.initialize_from_array(3, 3, $a);
+        assert_equal($n, $m, "cannot initalize from array with zero padding");
     }
 
     method test_METHOD_initialize_from_array_UNDERSIZE() {
-        todo("Tests Needed!");
+        my $a := [self.fancyvalue(0), self.fancyvalue(1), self.fancyvalue(2), self.fancyvalue(3)];
+        my $m := self.matrix();
+        $m{Key.new(0,0)} := self.fancyvalue(0);
+        my $n := self.matrix();
+        $n.initialize_from_array(1, 1, $a);
+        assert_equal($n, $m, "cannot initialize from array undersized");
     }
 
     method test_METHOD_initialize_from_args() {
-        todo("Tests Needed!");
+        my $m := self.matrix2x2(self.fancyvalue(0), self.fancyvalue(1), self.fancyvalue(2), self.fancyvalue(3));
+        my $n := self.matrix();
+        $n.initialize_from_array(2, 2, self.fancyvalue(0), self.fancyvalue(1), self.fancyvalue(2), self.fancyvalue(3));
+        assert_equal($n, $m, "cannot initialize_from_args");
     }
 
     method test_METHOD_initialize_from_args_ZEROPAD() {
-        todo("Tests Needed!");
+        my $m := self.matrix3x3(self.fancyvalue(0), self.fancyvalue(1), self.fancyvalue(2),
+                                self.fancyvalue(3), 0,                  0,
+                                0,                  0,                  0);
+        my $n := self.matrix();
+        $n.initialize_from_array(3, 3, self.fancyvalue(0), self.fancyvalue(1), self.fancyvalue(2), self.fancyvalue(3));
+        assert_equal($n, $m, "cannot initalize from args with zero padding");
     }
 
     method test_METHOD_initialize_from_args_UNDERSIZE() {
-        todo("Tests Needed!");
+        my $m := self.matrix();
+        $m{Key.new(0,0)} := self.fancyvalue(0);
+        my $n := self.matrix();
+        $n.initialize_from_array(1, 1, self.fancyvalue(0), self.fancyvalue(1), self.fancyvalue(2), self.fancyvalue(3));
+        assert_equal($n, $m, "cannot initialize from args undersized");
     }
 
     method test_METHOD_get_block() {
