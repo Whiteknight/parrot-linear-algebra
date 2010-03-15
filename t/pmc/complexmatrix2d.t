@@ -29,6 +29,14 @@ method defaultvalue() {
     return (pir::new__PSP("Complex", "1+1i"));
 }
 
+method nullvalue() {
+    return (pir::new__PSP("Complex", "0+0i"));
+}
+
+method fancyvalue() {
+    return (pir::new__PSP("Complex", "9+9i"));
+}
+
 method matrix() {
     my $m := Parrot::new("ComplexMatrix2D");
     return ($m);
@@ -36,10 +44,14 @@ method matrix() {
 
 method matrix2x2($aa, $ab, $ba, $bb) {
     my $m := self.matrix();
-    $m{Key.new(0,0)} := pir::new__PSP("Complex", $aa);
-    $m{Key.new(0,1)} := pir::new__PSP("Complex", $ab);
-    $m{Key.new(1,0)} := pir::new__PSP("Complex", $ba);
-    $m{Key.new(1,1)} := pir::new__PSP("Complex", $bb);
+    if (pir::typeof__SP($aa) eq "String") { $aa := pir::new__PSP("Complex", $aa); }
+    if (pir::typeof__SP($ab) eq "String") { $ab := pir::new__PSP("Complex", $ab); }
+    if (pir::typeof__SP($ba) eq "String") { $ba := pir::new__PSP("Complex", $ba); }
+    if (pir::typeof__SP($bb) eq "String") { $bb := pir::new__PSP("Complex", $bb); }
+    $m{Key.new(0,0)} := $aa;
+    $m{Key.new(0,1)} := $ab;
+    $m{Key.new(1,0)} := $ba;
+    $m{Key.new(1,1)} := $bb;
     return ($m);
 }
 
@@ -83,20 +95,6 @@ method test_VTABLE_set_string_keyed() {
 method test_VTABLE_get_string() {
     todo("Tests Needed!");
 }
-
-method test_VTABLE_is_equal_SIZEFAIL() {
-    my $m := self.matrix2x2("1+1i", "2+2i", "3+3i", "4+4i");
-    my $n := self.matrix2x2("1+1i", "2+2i", "3+3i", "4+4i");
-    $n{Key.new(2, 2)} := pir::new__PSP("Complex", "0+0i");
-    assert_not_equal($m, $n, "different sized matrices are equal");
-}
-
-method test_VTABLE_is_equal_ELEMSFAIL() {
-    my $m := self.matrix2x2("1+1i", "2+2i", "3+3i", "4+4i");
-    my $n := self.matrix2x2("1+1i", "2+2i", "3+3i", "5+5i");
-    assert_not_equal($m, $n, "non-equal matrices are equal");
-}
-
 
 method test_METHOD_transpose() {
     my $m := self.matrix2x2("1+1i", "2+2i", "3+3i", "4+4i");
