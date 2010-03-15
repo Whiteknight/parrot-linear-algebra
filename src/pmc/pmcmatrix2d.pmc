@@ -273,5 +273,49 @@ pmclass PMCMatrix2D dynpmc auto_attrs provides matrix {
     METHOD resize(INTVAL rows, INTVAL cols) {
         resize_matrix(INTERP, SELF, rows - 1, cols - 1);
     }
+
+    /*
+
+=item fill()
+
+Fill the matrix with a single value. if sizes are provided, fill to those
+sizes, growing the matrix if needed.
+
+=cut
+
+*/
+
+    METHOD fill(PMC * value,
+                INTVAL x_size :optional, INTVAL has_rows_size :opt_flag,
+                INTVAL y_size :optional, INTVAL has_cols_size :opt_flag
+               ) {
+        Parrot_PMCMatrix2D_attributes * const attrs = PARROT_PMCMATRIX2D(SELF);
+        PMC ** s  = attrs->storage;
+        INTVAL const curr_rows_size = attrs->rows;
+        INTVAL const curr_cols_size = attrs->cols;
+        INTVAL rows, cols;
+
+        if (!has_rows_size)
+            x_size = curr_rows_size;
+        if (!has_cols_size)
+            y_size = curr_cols_size;
+
+        if ((has_rows_size && x_size > curr_rows_size) ||
+            (has_cols_size && y_size > curr_cols_size)) {
+            resize_matrix(INTERP, SELF, x_size - 1, y_size - 1);
+            s = attrs->storage;
+        }
+
+        for (rows = 0; rows < x_size; ++rows) {
+            for (cols = 0; cols < y_size; ++cols) {
+                PMC * v;
+                if (PMC_IS_NULL(value))
+                    v = PMCNULL;
+                else
+                    v = VTABLE_clone(INTERP, value);
+                ITEM_XY_ROWMAJOR(s, x_size, y_size, rows, cols) = v;
+            }
+        }
+    }
 }
 
