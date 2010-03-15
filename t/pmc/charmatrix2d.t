@@ -104,6 +104,10 @@ method test_VTABLE_set_pmc_keyed() {
     todo("Tests Needed!");
 }
 
+method test_VTABLE_get_pmc_keyed() {
+    todo("Implement this and test it");
+}
+
 method test_METHOD_fill() {
     my $m := self.defaultmatrix2x2();
     my $n := self.matrix2x2(
