@@ -442,14 +442,14 @@ class Pla::Testcase is UnitTest::Testcase {
 class Pla::Loader is UnitTest::Loader ;
 
 method order_tests(@tests) {
-    my $test_method := 'test_METHOD';
+    my $test_method := 'test_ME';
     my $test_op := 'test_OP';
-    my $test_vtable := 'test_VTABLE';
+    my $test_vtable := 'test_VT';
 
     my $len := $test_op.length;	# The shortest
 
     my %partition;
-    for <test_METHOD test_OP test_VTABLE MISC> {
+    for <test_me test_op test_vt MISC> {
     	%partition{$_} := [ ];
     }
 
@@ -465,7 +465,7 @@ method order_tests(@tests) {
     }
 
     my @result;
-    for <test_OP test_VTABLE test_METHOD MISC> {
+    for <test_op test_vt test_me MISC> {
     	@result.append: %partition{$_}.unsort;
     }
 
