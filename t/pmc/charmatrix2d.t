@@ -7,9 +7,10 @@ INIT {
     my $root_dir := $env<HARNESS_ROOT_DIR> || '.';
     pir::load_bytecode($root_dir ~ '/library/kakapo_full.pbc');
     pir::loadlib__ps("./linalg_group");
+    Nqp::compile_file( 't/Testcase.nqp' );
 }
 
-class Test::CharMatrix2D is UnitTest::Testcase;
+class Test::CharMatrix2D is Pla::Testcase;
 
 INIT {
     use('UnitTest::Testcase');
@@ -23,31 +24,19 @@ sub MAIN() {
     $proto.suite.run;
 }
 
-method test_create_charmatrix2d() {
-    try {
-        my $c := pir::new__PS("CharMatrix2D");
-        assert_not_null($c, "didn't get the right type back");
-        CATCH {
-            fail($!);
-        }
-    }
+method matrix() {
+    return (Parrot::new("CharMatrix2D"));
 }
 
-method test_op_does_matrix() {
-    my $c := pir::new__PS("CharMatrix2D");
-    assert_true(pir::does($c, "matrix"), "CharMatrix2D does not do matrix");
-    assert_false(pir::does($c, "gobbledegak"), "does gobbledegak");
-}
-
-method test_vtable_set_string_keyed_int() {
-    my $c := pir::new__PS("CharMatrix2D");
+method test_VTABLE_set_string_keyed_int() {
+    my $c := self.matrix();
     $c[0] := "ABCD";
     $c[1] := "EFGH";
     assert_equal(~($c), "ABCD\nEFGH\n", "can not set row-at-a-time, with equal lengths");
 }
 
-method test_vtable_get_string_keyed_int() {
-    my $c := pir::new__PS("CharMatrix2D");
+method test_VTABLE_get_string_keyed_int() {
+    my $c := self.matrix();
     $c[0] := "ABCD";
     $c[1] := "EFGH";
     my $firstrow;
@@ -65,7 +54,7 @@ method test_vtable_get_string_keyed_int() {
     assert_equal($secondrow, "EFGH", "Can not get the second row as a string");
 }
 
-method test_vtable_set_integer_keyed() {
+method test_VTABLE_set_integer_keyed() {
     Q:PIR {
         $P0 = new ['CharMatrix2D']
         # TODO: We really need to figure out indexing, because this seems wrong
@@ -84,7 +73,7 @@ method test_vtable_set_integer_keyed() {
     };
 }
 
-method test_vtable_set_number_keyed() {
+method test_VTABLE_set_number_keyed() {
     Q:PIR {
         $P0 = new ['CharMatrix2D']
         $P0[0;0] = 65.2
@@ -102,6 +91,6 @@ method test_vtable_set_number_keyed() {
     }
 }
 
-method test_vtable_set_pmc_keyed() {
-    verify_that("#TODO");
+method test_VTABLE_set_pmc_keyed() {
+    todo("Tests Needed!");
 }
