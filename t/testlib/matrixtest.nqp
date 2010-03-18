@@ -158,12 +158,27 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         todo("Tests Needed!");
     }
 
-    # TODO: Add tests that get_pmc_keyed_int and set_pmc_keyed_int share a
-    #       correct linear relationship with get_pmc_keyed and set_pmc_keyed.
-
     # Test to show that autoresizing behavior of the type is consistent.
-    method test_autoresizing() {
-        todo("Tests Needed!");
+    method test_MISC_autoresizing() {
+        my $m := self.matrix();
+        assert_equal(pir::getattribute__PPS($m, "rows"), 0, "matrix does not have right size");
+        assert_equal(pir::getattribute__PPS($m, "cols"), 0, "matrix does not have right size");
+
+        $m{Key.new(3, 4)} := self.defaultvalue;
+        assert_equal(pir::getattribute__PPS($m, "rows"), 4, "matrix does not have right size");
+        assert_equal(pir::getattribute__PPS($m, "cols"), 5, "matrix does not have right size");
+
+        $m{Key.new(7, 11)} := self.defaultvalue;
+        assert_equal(pir::getattribute__PPS($m, "rows"), 8, "matrix does not have right size");
+        assert_equal(pir::getattribute__PPS($m, "cols"), 12, "matrix does not have right size");
+    }
+
+    method test_MISC_linearindexing() {
+        my $m := self.fancymatrix2x2();
+        assert_equal($m[0], $m{Key.new(0,0)}, "cannot get first element linearly");
+        assert_equal($m[1], $m{Key.new(0,1)}, "cannot get first element linearly");
+        assert_equal($m[2], $m{Key.new(1,0)}, "cannot get first element linearly");
+        assert_equal($m[3], $m{Key.new(1,1)}, "cannot get first element linearly");
     }
 
     method test_METHOD_resize() {
