@@ -71,12 +71,34 @@ method test_VTABLE_get_string_keyed() {
     todo("Tests Needed!");
 }
 
-method test_VTABLE_set_pmc_keyed_TYPEFAIL() {
-    assert_throws(Exception::OutOfBounds, "Cannot set_pmc_keyed", {
-        my $m := Parrot::new("ComplexMatrix2D");
-        my $a := "1+1i";  # a String PMC, not a Complex
-        $m{Key.new(0,0)} := $a;
-    });
+method test_VTABLE_set_pmc_keyed_STRING() {
+    my $m := Parrot::new("ComplexMatrix2D");
+    my $a := "1+1i";  # a String PMC, not a Complex
+    $m{Key.new(0,0)} := $a;
+    my $b := $m{Key.new(0,0)};
+    assert_instance_of($b, "Complex", "Cannot set_pmc_keyed<String>");
+    my $c := pir::new__PSP("Complex", "1+1i");
+    assert_equal($b, $c, "did not get the correct value back");
+}
+
+method test_VTABLE_set_pmc_keyed_INTEGER() {
+    my $m := Parrot::new("ComplexMatrix2D");
+    my $a := pir::box__PI(1);
+    $m{Key.new(0,0)} := $a;
+    my $b := $m{Key.new(0,0)};
+    assert_instance_of($b, "Complex", "Cannot set_pmc_keyed<Integer>");
+    my $c := pir::new__PSP("Complex", "1+0i");
+    assert_equal($b, $c, "did not get the correct value back");
+}
+
+method test_VTABLE_set_pmc_keyed_FLOAT() {
+    my $m := Parrot::new("ComplexMatrix2D");
+    my $a := pir::box__PN(3.5);
+    $m{Key.new(0,0)} := $a;
+    my $b := $m{Key.new(0,0)};
+    assert_instance_of($b, "Complex", "Cannot set_pmc_keyed<Float>");
+    my $c := pir::new__PSP("Complex", "3.5+0i");
+    assert_equal($b, $c, "did not get the correct value back");
 }
 
 method test_VTABLE_set_string_keyed() {

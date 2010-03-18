@@ -317,8 +317,8 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         my $first := 5;
         my $second := 2;
         my $sub := pir::newclosure__PP(-> $matrix, $value, $x, $y, $a, $b {
-            assert_equal($x, $first, "first arg is not equal");
-            assert_equal($y, $second, "second arg is not equal");
+            assert_equal($a, $first, "first arg is not equal: " ~ $x);
+            assert_equal($b, $second, "second arg is not equal: " ~ $y);
             $count++;
             return (self.defaultvalue());
         });
