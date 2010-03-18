@@ -126,3 +126,11 @@ method test_METHOD_fill_RESIZE() {
     $m.fill(90, 2, 2);
     assert_equal($n, $m, "Cannot fill");
 }
+
+method test_MISC_linearindexing() {
+    todo("Whatever");
+}
+
+method test_MISC_autoresizing() {
+    todo("Test causes glibc corruption");
+}

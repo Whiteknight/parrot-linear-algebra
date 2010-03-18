@@ -23,6 +23,10 @@ method matrix() {
     return (Parrot::new("PMCMatrix2D"));
 }
 
+method nullvalue() {
+    return (pir::null__P());
+}
+
 method test_VTABLE_get_integer_keyed() {
     my $m := Parrot::new("PMCMatrix2D");
     my $n := 42;

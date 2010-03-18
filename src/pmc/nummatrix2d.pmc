@@ -480,6 +480,7 @@ pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
         return dest;
     }
 
+    /* TODO: Update this to account for transpositions */
     VTABLE PMC * get_attr_str(STRING * idx) {
         Parrot_NumMatrix2D_attributes * const attrs = PARROT_NUMMATRIX2D(SELF);
         if (Parrot_str_equal(INTERP, idx, CONST_STRING(INTERP, "rows"))) {
