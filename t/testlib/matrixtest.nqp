@@ -6,9 +6,9 @@ INIT {
     use('UnitTest::Assertions');
 }
 
-class Pla::Testcase is UnitTest::Testcase {
+class Pla::Matrix::Testcase is UnitTest::Testcase {
     method default_loader() {
-    	Pla::Loader.new;
+    	Pla::Matrix::Loader.new;
     }
 
     # A default value which can be set at a particular location and tested
@@ -439,7 +439,7 @@ class Pla::Testcase is UnitTest::Testcase {
 
 }
 
-class Pla::Loader is UnitTest::Loader ;
+class Pla::Matrix::Loader is UnitTest::Loader ;
 
 method order_tests(@tests) {
     my $test_method := 'test_ME';

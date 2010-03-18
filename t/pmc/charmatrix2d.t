@@ -1,16 +1,12 @@
 #! parrot-nqp
 
 INIT {
-    # Load the Kakapo library
-    pir::load_language('parrot');
-    my $env := pir::new__PS('Env');
-    my $root_dir := $env<HARNESS_ROOT_DIR> || '.';
-    pir::load_bytecode($root_dir ~ '/library/kakapo_full.pbc');
+    pir::load_bytecode('./library/kakapo_full.pbc');
     pir::loadlib__ps("./linalg_group");
-    Nqp::compile_file( 't/Testcase.nqp' );
+    Nqp::compile_file('t/testlib/matrixtest.nqp');
 }
 
-class Test::CharMatrix2D is Pla::Testcase;
+class Test::CharMatrix2D is Pla::Matrix::Testcase;
 
 INIT {
     use('UnitTest::Testcase');
