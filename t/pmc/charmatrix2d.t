@@ -1,11 +1,3 @@
-#! parrot-nqp
-
-INIT {
-    pir::load_bytecode('./library/kakapo_full.pbc');
-    pir::loadlib__ps("./linalg_group");
-    Nqp::compile_file('t/testlib/matrixtest.nqp');
-}
-
 class Test::CharMatrix2D is Pla::Matrix::Testcase;
 
 INIT {
