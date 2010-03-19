@@ -19,8 +19,9 @@ class MyProgram is Program {
 INIT {
     Program::instance(
         MyProgram.new( :from_parrot )
-    ).run;
+    );
 }
 
+Program::instance().run;
 
 
