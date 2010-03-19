@@ -191,13 +191,14 @@ pmclass PMCMatrix2D dynpmc auto_attrs provides matrix {
         STRING * const newline = Parrot_str_new(INTERP, "\n", 1);
         Parrot_PMCMatrix2D_attributes * const attrs = PARROT_PMCMATRIX2D(SELF);
         PMC ** const s = attrs->storage;
+        const INTVAL flags = attrs->flags;
         const INTVAL rows_size = attrs->rows;
         const INTVAL cols_size = attrs->cols;
         for (rows = 0; rows < rows_size; ++rows) {
             for (cols = 0; cols < cols_size; ++cols) {
-                PMC * const item = ITEM_XY_ROWMAJOR(s, rows_size, cols_size, rows, cols);
-                STRING * const index = Parrot_sprintf_c(INTERP, "\t[%d,%d] = ", rows, cols);
+                PMC * const item = ITEM_XY(s, flags, rows_size, cols_size, rows, cols);
                 STRING * str;
+                STRING * const index = Parrot_sprintf_c(INTERP, "\t[%d,%d] = ", rows, cols);
                 if (PMC_IS_NULL(item))
                     str = CONST_STRING(INTERP, "<NULL>");
                 else
@@ -245,19 +246,13 @@ pmclass PMCMatrix2D dynpmc auto_attrs provides matrix {
         if (other->vtable->base_type != SELF->vtable->base_type)
             return 0;
 
-        if (sflags == oflags) {
-            if (self_rows != oattr->rows || self_cols != oattr->cols)
-                return 0;
-        }
-        else {
-            if (self_rows != oattr->cols || self_cols != oattr->rows)
-                return 0;
-        }
+        if (self_rows != oattr->rows || self_cols != oattr->cols)
+            return 0;
 
         for (i = 0; i < self_rows; i++) {
             for (j = 0; j < self_cols; j++) {
-                PMC * const ovalue = ITEM_XY(o, sflags, self_rows, self_cols, i, j);
-                PMC * const mvalue = ITEM_XY(s, oflags, self_rows, self_cols, i, j);
+                PMC * const ovalue = ITEM_XY(o, oflags, self_rows, self_cols, i, j);
+                PMC * const mvalue = ITEM_XY(s, sflags, self_rows, self_cols, i, j);
                 if (PMC_IS_NULL(mvalue)) {
                     if (!PMC_IS_NULL(ovalue))
                         return 0;
