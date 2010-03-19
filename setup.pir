@@ -24,13 +24,6 @@ See F<runtime/library/distutils.pir>.
     $S0 = shift args
     load_bytecode 'distutils.pbc'
 
-    $I0 = probe_include('cblas.h', 0 :named('verbose'))
-    if $I0 == 0 goto L1
-    say "no cblas.h"
-    say "install libatlas-base-dev"
-    end
-  L1:
-
     $P0 = new 'Hash'
     $P0['name'] = 'parrot-linear-algebra'
     $P0['abstract'] = 'Linear Algebra Package for Parrot VM'
@@ -46,6 +39,16 @@ See F<runtime/library/distutils.pir>.
     $P0['project_uri'] = 'http://github.com/Whiteknight/parrot-linear-algebra'
 
     # build
+    $I0 = elements args
+    if $I0 == 0 goto probe_files
+    $S0 = args[0]
+    if $S0 == "build" goto probe_files
+    goto no_probe
+  probe_files:
+    'system_linker_settings'($P0)
+    'probe for cblas.h'()
+  no_probe:
+
     $P2 = new 'Hash'
     $P3 = split "\n", <<'SOURCES'
 src/pmc/nummatrix2d.pmc
@@ -56,16 +59,12 @@ SOURCES
     $S0 = pop $P3
     $P2['linalg_group'] = $P3
     $P0['dynpmc'] = $P2
-    'system_linker_settings'($P0)
 
-    $P4 = new 'Hash'
-    $P4['t/Glue.pbc'] = 't/Glue.pir'
-    $P0['pbc_pir'] = $P4
 
     # test
     $S0 = get_nqp()
     $P0['harness_exec'] = $S0
-    $P0['harness_files'] = 't/*.t t/pmc/*.t'
+    $P0['harness_files'] = ''
 
     # dist
     $P5 = glob('src/pmc/pla_matrix_types.h src/*.pir src/*.m examples/*.pir tools/nci/*.pl')
@@ -94,6 +93,15 @@ SOURCES
   try_3:
     # There is no try 3
     .return()
+.end
+
+.sub 'probe for cblas.h'
+    $I0 = probe_include('cblas.h', 0 :named('verbose'))
+    if $I0 == 0 goto L1
+    say "no cblas.h"
+    say "install libatlas-base-dev"
+    end
+  L1:
 .end
 
 

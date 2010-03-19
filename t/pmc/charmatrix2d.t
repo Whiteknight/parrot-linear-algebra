@@ -1,11 +1,3 @@
-#! parrot-nqp
-
-INIT {
-    pir::load_bytecode('./library/kakapo_full.pbc');
-    pir::loadlib__ps("./linalg_group");
-    Nqp::compile_file('t/testlib/matrixtest.nqp');
-}
-
 class Test::CharMatrix2D is Pla::Matrix::Testcase;
 
 INIT {
@@ -118,10 +110,10 @@ method test_METHOD_fill() {
 method test_METHOD_fill_RESIZE() {
     my $m := self.matrix();
     my $n := self.matrix2x2(
-        self.fancyvalue(),
-        self.fancyvalue(),
-        self.fancyvalue(),
-        self.fancyvalue()
+        self.fancyvalue(4),
+        self.fancyvalue(4),
+        self.fancyvalue(4),
+        self.fancyvalue(4)
     );
     $m.fill(90, 2, 2);
     assert_equal($n, $m, "Cannot fill");

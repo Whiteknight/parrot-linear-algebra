@@ -23,39 +23,131 @@ Parrot:           http://www.parrot.org
 PLA is being actively developed. It has core PMC types that build, a build
 and installation system, and a growing test suite.
 
+PLA currently provides these PMC types:
+
+=over 4
+
+=item NumMatrix2D
+
+A 2-D matrix containing floating point values.
+
+=item PMCMatrix2D
+
+A 2-D matrix containing PMC pointers
+
+=item ComplexMatrix2D
+
+A 2-D matrix containing Complex values, optimized to store complex values
+directly instead of using an array of Parrot's Complex PMC type.
+
+=item CharMatrix2D
+
+A 2-D character matrix that doubles as an array of strings with fixed-row-length
+storage.
+
+=back
+
+PLA does not yet offer matrix or tensor types with more than two dimensions.
+
 == DEPENDENCIES
 
-Currently depends on Parrot (Version 1.6.0 or higher), make, and CBLAS
-(or ATLAS with the CBLAS-like bindings). On Ubuntu or other Debian-based
-distros, you can type this incantation:
+PLA has several dependencies. To help manage dependencies, you may want
+to install Plumage
 
-sudo apt-get install libatlas3-base
-sudo apt-get install libatlas-base-dev
+http://gitorious.org/parrot-plumage
+
+This is not a dependency, just a convenience.
+
+Here are a list of dependencies for PLA:
+
+=over 4
+
+=item Parrot 2.2.0
+
+PLA will be built and tested against the 2.2.0 release of Parrot. Get the 2.2.0
+release here:
+
+https://svn.parrot.org/parrot/tags/RELEASE_2_2_0
+
+PLA will not build at all with older releases. PLA will not build with the
+long-term supported 2.0.0 release.
+
+Starting April 2010 PLA will be tracking Parrot's supported releases which are
+made public every 3 months. The 2.3.0 release will be in April 2010, and PLA
+will be built and tested against that release until the 2.6.0 release in July,
+then the 2.9.0 release in October, and then the 3.0.0 release in January.
+
+PLA expects a built and installed Parrot. For more information about the
+installation process
+
+=item CBLAS or ATLAS
+
+PLA depends on either CBLAS or ATLAS. The BLAS library is written in Fortran,
+so C language bindings are all translations of the Fortran interface.
+Unfortunately there is not a good, standard way of translating the Fortran
+source to C API bindings, so not all libraries that provide a C API for BLAS
+will have an interface compatible with PLA. We are working to be more accepting
+of small differences in various interfaces, but this work is moving slowly.
+
+We recommend the ATLAS library for current development and testing work. On
+Ubuntu or other Debian-based distros, you can type this incantation to get it
+automatically:
+
+    sudo apt-get install libatlas3-base
+    sudo apt-get install libatlas-base-dev
 
 On Fedora you can type:
 
-sudo yum install atlas-devel
+    sudo yum install atlas-devel
 
 Notice that the default vesions of the atlas library are only generally
 optimized. If you are able try to use a platform-specific variant (such
-as "-sse2" or "-3dnow") for better performance.
+as "-sse2" or "-3dnow") for better performance. See the ATLAS homepage for more
+information:
+
+http://math-atlas.sourceforge.net/
+
+=item Kakapo Release-10
+
+Kakapo is a framework library for the NQP language. PLA currently uses Kakapo to
+implement it's unit testing suite. You can build and install PLA without Kakapo,
+but you will need the framework to run the test suite. You can obtain Kakapo
+from it's source code repository on Gitorious, and get documentation from its
+project page on Google Code:
+
+http://gitorious.org/kakapo
+http://code.google.com/p/kakapo-parrot/
+
+=item Other
+
+Currently, PLA is only tested to build and work on Linux and other Unix-like
+systems with all the aforementioned prerequisites. The setup process pulls
+configuration information from your installed version of Parrot, so it will
+attempt to use the same compiler with the same compilation options as Parrot
+was compiled with. If another compiler absolutely needs to be used, there may
+be a way to specify that, but no documentation about the process exists.
+
+=back
 
 == BUILDING
 
 To get, build, test, and install Parrot-Linear-Algebra, follow these steps
 (on Linux):
 
-  git clone git://github.com/Whiteknight/parrot-linear-algebra.git pla
-  cd pla
-  parrot setup.pir
-  parrot setup.pir test
-  parrot setup.pir install
+    git clone git://github.com/Whiteknight/parrot-linear-algebra.git pla
+    cd pla
+    parrot setup.pir build
+    parrot setup.pir test
+    parrot setup.pir install
 
-You may need to run the final command with elevated privileges on your system.
+Testing only works if you have Kakapo installed on your system. To install, you
+may need root privileges on your system. There is currently no known way to
+build or deploy PLA on Windows.
 
 == CREDITS
 
 Original versions were developed as part of the Matrixy project by Blairuk.
+Some parts of the test suite were provided by Austin Hastings.
 See the file CREDITS for updated information about contributors.
 
 
