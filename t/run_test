@@ -1,0 +1,26 @@
+#! parrot-nqp
+
+INIT {
+    pir::load_bytecode('./library/kakapo_full.pbc');
+    Nqp::compile_file('t/testlib/matrixtest.nqp');
+    pir::loadlib__ps("./linalg_group");
+}
+
+class MyProgram is Program {
+    method main(*@args) {
+        for @args {
+            my $test := $_;
+            my $sub := Nqp::compile_file("t/pmc/" ~ $test);
+            $sub[0]();
+        }
+    }
+}
+
+INIT {
+    Program::instance(
+        MyProgram.new( :from_parrot )
+    ).run;
+}
+
+
+
