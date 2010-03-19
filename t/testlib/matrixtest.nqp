@@ -342,7 +342,36 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
     }
 
     method test_METHOD_iterate_function_external() {
-        todo("Tests Needed!");
+        my $m := self.fancymatrix2x2();
+        my $sub := pir::newclosure__PP(-> $matrix, $value, $x, $y {
+            return ($value);
+        });
+        my $o := $m.iterate_function_external($sub);
+        assert_equal($o, $m, "Cannot copy by iterating external");
+    }
+
+    method test_METHOD_iterate_function_external_COORDS() {
+        my $m := self.matrix2x2(self.nullvalue, self.nullvalue,
+                                self.nullvalue, self.nullvalue);
+        my $n := self.matrix2x2(self.fancyvalue(0), self.fancyvalue(1),
+                                self.fancyvalue(1), self.fancyvalue(2));
+        my $sub := pir::newclosure__PP(-> $matrix, $value, $x, $y {
+            return (self.fancyvalue($x + $y));
+        });
+        my $o := $m.iterate_function_external($sub);
+        assert_equal($o, $n, "cannot iterate external with proper coords");
+    }
+
+    method test_METHOD_iterate_function_external_ARGS() {
+        my $m := self.matrix2x2(self.nullvalue, self.nullvalue,
+                                self.nullvalue, self.nullvalue);
+        my $n := self.matrix2x2(self.fancyvalue(3), self.fancyvalue(3),
+                                self.fancyvalue(3), self.fancyvalue(3));
+        my $sub := pir::newclosure__PP(-> $matrix, $value, $x, $y, $a, $b {
+            return (self.fancyvalue($a + $b));
+        });
+        my $o := $m.iterate_function_external($sub, 1, 2);
+        assert_equal($o, $n, "cannot iterate external with args");
     }
 
     method test_METHOD_initialize_from_array() {

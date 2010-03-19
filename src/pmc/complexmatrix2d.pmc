@@ -545,14 +545,35 @@ value with the return value of the called function.
         const INTVAL cols_size = attrs->cols;
         INTVAL i, j;
 
-        for (j = 0; j < cols_size; j++) {
-            for (i = 0; i < rows_size; i++) {
+        for (i = 0; i < rows_size; i++) {
+            for (j = 0; j < cols_size; j++) {
                 PMC * const item_xy = get_complex_pmc_at_xy(INTERP, SELF, i, j);
                 PMC * result = PMCNULL;
                 Parrot_ext_call(INTERP, func, "PPIIPf->P", SELF, item_xy, i, j, args, &result);
                 set_complex_pmc_at_xy(INTERP, SELF, result, i, j);
             }
         }
+    }
+
+    METHOD iterate_function_external(PMC * func, PMC * args :slurpy) {
+        Parrot_ComplexMatrix2D_attributes * const attrs = PARROT_COMPLEXMATRIX2D(SELF);
+        PMC * const new_matrix = Parrot_pmc_new(INTERP, SELF->vtable->base_type);
+        const INTVAL rows_size = attrs->rows;
+        const INTVAL cols_size = attrs->cols;
+        INTVAL i, j;
+
+        resize_matrix(INTERP, new_matrix, rows_size - 1, cols_size - 1);
+
+        for (i = 0; i < rows_size; i++) {
+            for (j = 0; j < cols_size; j++) {
+                PMC * const item_xy = get_complex_pmc_at_xy(INTERP, SELF, i, j);
+                PMC * result = PMCNULL;
+                Parrot_ext_call(INTERP, func, "PPIIPf->P", SELF, item_xy, i, j, args, &result);
+                VTABLE_set_pmc_keyed_int(INTERP, new_matrix,
+                    INDEX_XY_ROWMAJOR(rows_size, cols_size, i, j), result);
+            }
+        }
+        RETURN(PMC * new_matrix);
     }
 
     METHOD initialize_from_array(INTVAL rows_size, INTVAL cols_size, PMC *values) {
