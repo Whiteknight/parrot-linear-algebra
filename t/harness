@@ -59,7 +59,7 @@ sub MAIN () {
             }
         }
         if $failed {
-            pir::say('failed ' ~ $failed ~ '/' ~ $num_tests ~ ' tests');
+            pir::say('not ok (' ~ $failed ~ '/' ~ $num_tests ~ ' failed)');
         }
         else {
             if @plan_parts[0] != 1 || $num_tests < 0 {
@@ -67,7 +67,7 @@ sub MAIN () {
                 $failed_files++;
             }
             else {
-                pir::say('passed ' ~ $curr_test ~ ' tests');
+                pir::say('ok');
             }
         }
         $total_passed := $total_passed + $passed;
@@ -123,7 +123,7 @@ sub run_test($filename) {
     my $sub := Nqp::compile_file($filename);
     my $stdout := Parrot::new("StringHandle");
     $stdout.open("blah", "rw");
-    my %save_handles := Program::swap_handles(:stdout($stdout));
+    my %save_handles := Program::swap_handles(:stdout($stdout), :stderr($stdout));
     $sub[0]();
     Program::swap_handles(|%save_handles);
     return ($stdout.readall().split("\n"));
