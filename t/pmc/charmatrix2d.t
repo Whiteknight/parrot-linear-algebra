@@ -110,10 +110,10 @@ method test_METHOD_fill() {
 method test_METHOD_fill_RESIZE() {
     my $m := self.matrix();
     my $n := self.matrix2x2(
-        self.fancyvalue(),
-        self.fancyvalue(),
-        self.fancyvalue(),
-        self.fancyvalue()
+        self.fancyvalue(4),
+        self.fancyvalue(4),
+        self.fancyvalue(4),
+        self.fancyvalue(4)
     );
     $m.fill(90, 2, 2);
     assert_equal($n, $m, "Cannot fill");

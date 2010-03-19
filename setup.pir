@@ -58,10 +58,6 @@ SOURCES
     $P0['dynpmc'] = $P2
     'system_linker_settings'($P0)
 
-    $P4 = new 'Hash'
-    $P4['t/Glue.pbc'] = 't/Glue.pir'
-    $P0['pbc_pir'] = $P4
-
     # test
     $S0 = get_nqp()
     $P0['harness_exec'] = $S0
