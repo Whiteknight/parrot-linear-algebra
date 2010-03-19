@@ -43,6 +43,7 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         return ($m);
     }
 
+    # Create a 2x2 matrix completely filled with a single default value
     method defaultmatrix2x2() {
         return self.matrix2x2(
             self.defaultvalue(),
@@ -52,6 +53,7 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         );
     }
 
+    # Create a 2x2 matrix with interesting values in each slot.
     method fancymatrix2x2() {
         return self.matrix2x2(
             self.fancyvalue(0),
