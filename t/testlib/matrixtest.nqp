@@ -8,7 +8,7 @@ INIT {
 
 class Pla::Matrix::Testcase is UnitTest::Testcase {
     method default_loader() {
-    	Pla::Matrix::Loader.new;
+        Pla::Matrix::Loader.new;
     }
 
     # A default value which can be set at a particular location and tested
@@ -453,11 +453,70 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
     }
 
     method test_METHOD_set_block() {
-        todo("Tests Needed!");
+        my $m := self.fancymatrix2x2();
+        my $n := self.matrix();
+        $n{Key.new(2,2)} := self.nullvalue;
+        $n.set_block(1, 1, $m);
+
+        # First, prove that we haven't resized it
+        assert_equal(pir::getattribute__PPS($n, "rows"), 3, "matrix does not have right size");
+        assert_equal(pir::getattribute__PPS($n, "cols"), 3, "matrix does not have right size");
+
+        # Second, let's prove that nothing was set where it doesn't belong.
+        assert_equal($n{Key.new(0,0)}, self.nullvalue, "value was set in wrong place");
+        assert_equal($n{Key.new(0,1)}, self.nullvalue, "value was set in wrong place");
+        assert_equal($n{Key.new(0,2)}, self.nullvalue, "value was set in wrong place");
+        assert_equal($n{Key.new(1,0)}, self.nullvalue, "value was set in wrong place");
+        assert_equal($n{Key.new(2,0)}, self.nullvalue, "value was set in wrong place");
+
+        # Third, prove that the block was set properly
+        assert_equal($n{Key.new(0,1)}, $m{Key.new(0,0)}, "value was set in wrong place");
+        assert_equal($n{Key.new(0,2)}, $m{Key.new(0,1)}, "value was set in wrong place");
+        assert_equal($n{Key.new(1,1)}, $m{Key.new(1,0)}, "value was set in wrong place");
+        assert_equal($n{Key.new(1,2)}, $m{Key.new(1,1)}, "value was set in wrong place");
     }
 
+    # TODO: More tests for this method and coordinate combinations, including
+    #       boundary-checking issues
+
     method test_METHOD_set_block_ZEROSIZE() {
-        todo("Tests Needed!");
+        my $m := self.fancymatrix2x2();
+        my $n := pir::clone__PP($m);
+        my $o := self.matrix();
+        $m.set_block(0, 0, $o);
+        assert_equal($m, $n, "zero-size block insert changes the matrix");
+    }
+
+    # set_block with a zero-sized block resizes the matrix, but to one less
+    # than might otherwise be expected. The first element of the block would
+    # go to the specified coordinates, but there is no first element so there
+    # is no item at the specified coordinates. Think of the block as a
+    # zero-sized point to the upper-left of the coordinate.
+    method test_METHOD_set_block_ZERO_RESIZE() {
+        my $m := self.defaultmatrix2x2();
+        my $o := self.matrix();
+        $m.set_block(3, 3, $o);
+        assert_equal(pir::getattribute__PPS($m, "rows"), 3, "matrix does not have right size");
+        assert_equal(pir::getattribute__PPS($m, "cols"), 3, "matrix does not have right size");
+        assert_equal($m{Key.new(2,0)}, self.nullvalue, "value was set in wrong place");
+        assert_equal($m{Key.new(2,1)}, self.nullvalue, "value was set in wrong place");
+        assert_equal($m{Key.new(2,2)}, self.nullvalue, "value was set in wrong place");
+        assert_equal($m{Key.new(0,2)}, self.nullvalue, "value was set in wrong place");
+        assert_equal($m{Key.new(1,2)}, self.nullvalue, "value was set in wrong place");
+    }
+
+    method test_METHOD_set_block_RESIZE() {
+        my $m := self.defaultmatrix2x2();
+        my $o := self.matrix();
+        $o{Key.new(0, 0)} := self.fancyvalue(2);
+        $m.set_block(2, 2, $o);
+        assert_equal(pir::getattribute__PPS($m, "rows"), 3, "matrix does not have right size");
+        assert_equal(pir::getattribute__PPS($m, "cols"), 3, "matrix does not have right size");
+        assert_equal($m{Key.new(2,0)}, self.nullvalue, "value was set in wrong place");
+        assert_equal($m{Key.new(2,1)}, self.nullvalue, "value was set in wrong place");
+        assert_equal($m{Key.new(0,2)}, self.nullvalue, "value was set in wrong place");
+        assert_equal($m{Key.new(1,2)}, self.nullvalue, "value was set in wrong place");
+        assert_equal($m{Key.new(2,2)}, self.fancyvalue(2), "value was set in wrong place");
     }
 
     method test_METHOD_set_block_NEGINDICES() {
@@ -469,7 +528,26 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
     }
 
     method test_METHOD_set_block_OVERFLOW() {
-        todo("Tests Needed!");
+        my $m := self.fancymatrix2x2();
+        my $n := self.matrix();
+        $n.set_block(1, 1, $m);
+
+        # First, prove that we haven't resized it
+        assert_equal(pir::getattribute__PPS($n, "rows"), 3, "matrix does not have right size");
+        assert_equal(pir::getattribute__PPS($n, "cols"), 3, "matrix does not have right size");
+
+        # Second, let's prove that nothing was set where it doesn't belong.
+        assert_equal($n{Key.new(0,0)}, self.nullvalue, "value was set in wrong place 1");
+        assert_equal($n{Key.new(1,0)}, self.nullvalue, "value was set in wrong place 2");
+        assert_equal($n{Key.new(2,0)}, self.nullvalue, "value was set in wrong place 3");
+        assert_equal($n{Key.new(0,1)}, self.nullvalue, "value was set in wrong place 4");
+        assert_equal($n{Key.new(0,2)}, self.nullvalue, "value was set in wrong place 5");
+
+        # Third, prove that the block was set properly
+        assert_equal($n{Key.new(1,1)}, $m{Key.new(0,0)}, "value was set in wrong place 6");
+        assert_equal($n{Key.new(1,2)}, $m{Key.new(0,1)}, "value was set in wrong place 7");
+        assert_equal($n{Key.new(2,1)}, $m{Key.new(1,0)}, "value was set in wrong place 8");
+        assert_equal($n{Key.new(2,2)}, $m{Key.new(1,1)}, "value was set in wrong place 9");
     }
 
     # TODO: Setup a test here to check the case where we set_block with a "block"

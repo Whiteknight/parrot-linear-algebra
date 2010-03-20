@@ -9,7 +9,6 @@ MAIN();
 
 sub MAIN() {
     my $proto := Opcode::get_root_global(pir::get_namespace__P().get_name);
-    #pir::trace(4);
     $proto.suite.run;
 }
 
@@ -219,33 +218,6 @@ method test_VTABLE_multiply_FLOAT() {
     my $n := self.matrix2x2(2.5, 5.0, 7.5, 10.0);
     my $p := pir::mul__PPP($m, 2.5);
     assert_equal($n, $p, "multiply matrix * float");
-}
-
-method test_METHOD_iterate_function_inplace_VALUE_ONLY() {
-    my $m := self.matrix2x2(1.0, 2.0, 3.0, 4.0);
-    my $n := self.matrix2x2(1.0, 4.0, 9.0, 16.0);
-    $m.iterate_function_inplace(-> $matrix, $value, $x, $y {
-        return ($value * $value);
-    });
-    assert_equal($m, $n, "cannot iterate over values");
-}
-
-method test_METHOD_iterate_function_inplace_ARGS() {
-    my $m := self.matrix2x2(1.0, 2.0, 3.0, 4.0);
-    my $n := self.matrix2x2(1.0, 4.0, 9.0, 16.0);
-    $m.iterate_function_inplace(-> $matrix, $value, $x, $y, $a, $b {
-        return ($value * $value);
-    }, 5, 2);
-    assert_equal($m, $n, "Cannot iterate with args");
-}
-
-method test_METHOD_iterate_function_inplace_COORDS() {
-    my $m := self.defaultmatrix2x2();
-    my $n := self.matrix2x2(0.0, 1.0, 1.0, 2.0);
-    $m.iterate_function_inplace(-> $matrix, $value, $x, $y{
-        return ($x + $y);
-    });
-    assert_equal($m, $n, "Cannot iterate with args");
 }
 
 method test_METHOD_set_block() {
