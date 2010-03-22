@@ -72,6 +72,25 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
             "matrix does not have correct number of columns. $cols expected, $real_cols actual");
     }
 
+    method AssertNullValueAt($m, $row, $col) {
+        my $nullval := self.nullvalue;
+        my $val := $m{Key.new($row, $col)};
+        if pir::isnull__IP($nullval) == 1 {
+            assert_instance_of($val, "Undef", "Expected null value at position ($row,$col). Had $val.");
+        } else {
+            assert_equal($val, $nullval, "Expected default value $nullval at position ($row,$col). Had $val");
+        }
+    }
+
+    method AssertValueAtIs($m, $row, $col, $expected) {
+        my $val := $m{Key.new($row, $col)};
+        if pir::isnull__IP($expected) {
+            assert_null($val, "Value not null at ($row,$col). Have $val");
+        } else {
+            assert_equal($val, $expected, "Values not equal at ($row,$col). Had $val, wanted $expected");
+        }
+    }
+
     # Create a 3x3 matrix of the type with given values row-first
     method matrix3x3($aa, $ab, $ac, $ba, $bb, $bc, $ca, $cb, $cc) {
         my $m := self.matrix();
@@ -494,6 +513,9 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         });
     }
 
+
+
+
     method test_METHOD_set_block() {
         my $m := self.fancymatrix2x2();
         my $n := self.matrix();
@@ -501,20 +523,20 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         $n.set_block(1, 1, $m);
 
         # First, prove that we haven't resized it
-        self.AssertSize($m, 3, 3);
+        self.AssertSize($n, 3, 3);
 
         # Second, let's prove that nothing was set where it doesn't belong.
-        assert_equal($n{Key.new(0,0)}, self.nullvalue, "value was set in wrong place");
-        assert_equal($n{Key.new(0,1)}, self.nullvalue, "value was set in wrong place");
-        assert_equal($n{Key.new(0,2)}, self.nullvalue, "value was set in wrong place");
-        assert_equal($n{Key.new(1,0)}, self.nullvalue, "value was set in wrong place");
-        assert_equal($n{Key.new(2,0)}, self.nullvalue, "value was set in wrong place");
+        self.AssertNullValueAt($n, 0, 0);
+        self.AssertNullValueAt($n, 1, 0);
+        self.AssertNullValueAt($n, 2, 0);
+        self.AssertNullValueAt($n, 0, 1);
+        self.AssertNullValueAt($n, 0, 2);
 
         # Third, prove that the block was set properly
-        assert_equal($n{Key.new(0,1)}, $m{Key.new(0,0)}, "value was set in wrong place");
-        assert_equal($n{Key.new(0,2)}, $m{Key.new(0,1)}, "value was set in wrong place");
-        assert_equal($n{Key.new(1,1)}, $m{Key.new(1,0)}, "value was set in wrong place");
-        assert_equal($n{Key.new(1,2)}, $m{Key.new(1,1)}, "value was set in wrong place");
+        assert_equal($n{Key.new(1,1)}, $m{Key.new(0,0)}, "value was set in wrong place");
+        assert_equal($n{Key.new(1,2)}, $m{Key.new(0,1)}, "value was set in wrong place");
+        assert_equal($n{Key.new(2,1)}, $m{Key.new(1,0)}, "value was set in wrong place");
+        assert_equal($n{Key.new(2,2)}, $m{Key.new(1,1)}, "value was set in wrong place");
     }
 
     # TODO: More tests for this method and coordinate combinations, including
@@ -538,11 +560,15 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         my $o := self.matrix();
         $m.set_block(3, 3, $o);
         self.AssertSize($m, 3, 3);
-        assert_equal($m{Key.new(2,0)}, self.nullvalue, "value was set in wrong place");
-        assert_equal($m{Key.new(2,1)}, self.nullvalue, "value was set in wrong place");
-        assert_equal($m{Key.new(2,2)}, self.nullvalue, "value was set in wrong place");
-        assert_equal($m{Key.new(0,2)}, self.nullvalue, "value was set in wrong place");
-        assert_equal($m{Key.new(1,2)}, self.nullvalue, "value was set in wrong place");
+        self.AssertNullValueAt($m, 2, 0);
+        self.AssertNullValueAt($m, 2, 1);
+        self.AssertNullValueAt($m, 2, 2);
+        self.AssertNullValueAt($m, 1, 2);
+
+        self.AssertValueAtIs($m, 0, 0, self.defaultvalue);
+        self.AssertValueAtIs($m, 0, 1, self.defaultvalue);
+        self.AssertValueAtIs($m, 1, 0, self.defaultvalue);
+        self.AssertValueAtIs($m, 1, 1, self.defaultvalue);
     }
 
     method test_METHOD_set_block_RESIZE() {
@@ -551,11 +577,18 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         $o{Key.new(0, 0)} := self.fancyvalue(2);
         $m.set_block(2, 2, $o);
         self.AssertSize($m, 3, 3);
-        assert_equal($m{Key.new(2,0)}, self.nullvalue, "value was set in wrong place");
-        assert_equal($m{Key.new(2,1)}, self.nullvalue, "value was set in wrong place");
-        assert_equal($m{Key.new(0,2)}, self.nullvalue, "value was set in wrong place");
-        assert_equal($m{Key.new(1,2)}, self.nullvalue, "value was set in wrong place");
-        assert_equal($m{Key.new(2,2)}, self.fancyvalue(2), "value was set in wrong place");
+
+        self.AssertValueAtIs($m, 0, 0, self.defaultvalue);
+        self.AssertValueAtIs($m, 0, 1, self.defaultvalue);
+        self.AssertValueAtIs($m, 1, 0, self.defaultvalue);
+        self.AssertValueAtIs($m, 1, 1, self.defaultvalue);
+
+        self.AssertNullValueAt($m, 2, 0);
+        self.AssertNullValueAt($m, 2, 1);
+        self.AssertNullValueAt($m, 0, 2);
+        self.AssertNullValueAt($m, 1, 2);
+
+        self.AssertValueAtIs($m, 2, 2, self.fancyvalue(2));
     }
 
     method test_METHOD_set_block_NEGINDICES() {
@@ -576,11 +609,11 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         self.AssertSize($n, 3, 3);
 
         # Second, let's prove that nothing was set where it doesn't belong.
-        assert_equal($n{Key.new(0,0)}, self.nullvalue, "value was set in wrong place 1");
-        assert_equal($n{Key.new(1,0)}, self.nullvalue, "value was set in wrong place 2");
-        assert_equal($n{Key.new(2,0)}, self.nullvalue, "value was set in wrong place 3");
-        assert_equal($n{Key.new(0,1)}, self.nullvalue, "value was set in wrong place 4");
-        assert_equal($n{Key.new(0,2)}, self.nullvalue, "value was set in wrong place 5");
+        self.AssertNullValueAt($n, 0, 0);
+        self.AssertNullValueAt($n, 1, 0);
+        self.AssertNullValueAt($n, 2, 0);
+        self.AssertNullValueAt($n, 0, 1);
+        self.AssertNullValueAt($n, 0, 2);
 
         # Third, prove that the block was set properly
         assert_equal($n{Key.new(1,1)}, $m{Key.new(0,0)}, "value was set in wrong place 6");

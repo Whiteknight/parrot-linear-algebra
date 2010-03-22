@@ -1,6 +1,7 @@
 #include "pla_matrix_types.h"
 
 #define ALLOCATE_STORAGE(s) (PMC **)mem_sys_allocate_zeroed(s * sizeof (PMC *))
+#define PLATYPENAME "PMCMatrix2D"
 
 
 /* Resize the matrix internal storage to be able to hold a point at position
@@ -469,6 +470,73 @@ value with the return value of the called function.
             }
         }
         RETURN(PMC * new_matrix);
+    }
+
+    METHOD get_block(INTVAL rows_idx, INTVAL cols_idx, INTVAL rows_size, INTVAL cols_size) {
+        Parrot_PMCMatrix2D_attributes * const attrs = PARROT_PMCMATRIX2D(SELF);
+        PMC ** const s = attrs->storage;
+        const INTVAL rows = attrs->rows;
+        const INTVAL cols = attrs->cols;
+        INTVAL i, j;
+
+        if ((rows < rows_idx + rows_size) || (cols < cols_idx + cols_size))
+            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                PLATYPENAME ": Block boundaries exceed matrix size");
+        if (rows_idx < 0 || cols_idx < 0)
+            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                PLATYPENAME ": Can not get block at negative location");
+        if (rows_size < 0 || cols_size < 0)
+            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                PLATYPENAME ": Can not get block with negative size");
+        else {
+            PMC * const new_matrix = Parrot_pmc_new(INTERP, SELF->vtable->base_type);
+            Parrot_PMCMatrix2D_attributes * const new_attrs = PARROT_PMCMATRIX2D(new_matrix);
+            PMC ** new_s;
+            resize_matrix(INTERP, new_matrix, rows_size - 1, cols_size - 1);
+            new_s = new_attrs->storage;
+            for (i = 0; i < cols_size; i++) {
+                for (j = 0; j < rows_size; j++) {
+                    ITEM_XY_ROWMAJOR(new_s, rows_size, cols_size, j, i) =
+                        ITEM_XY_ROWMAJOR(s, rows, cols, j + rows_idx, i + cols_idx);
+                }
+            }
+            RETURN(PMC * new_matrix);
+        }
+    }
+
+    METHOD set_block(INTVAL rows_idx, INTVAL cols_idx, PMC * blck) {
+        Parrot_PMCMatrix2D_attributes * const self_attrs = PARROT_PMCMATRIX2D(SELF);
+        Parrot_PMCMatrix2D_attributes * const blck_attrs = PARROT_PMCMATRIX2D(blck);
+        PMC ** self_s = self_attrs->storage;
+        PMC ** const blck_s = blck_attrs->storage;
+        INTVAL self_rows = self_attrs->rows;
+        INTVAL self_cols = self_attrs->cols;
+        const INTVAL blck_rows = blck_attrs->rows;
+        const INTVAL blck_cols = blck_attrs->cols;
+        INTVAL i, j;
+
+        if (rows_idx < 0 || cols_idx < 0)
+            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                PLATYPENAME ": Can not set_block with negative indices");
+
+        if (!VTABLE_does(INTERP, blck, CONST_STRING(interp, "matrix")))
+            /* TODO: In this case, we should be able to do a .fill over the block
+                     dimensions with VTABLE_get_number on the scalar value */
+            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                PLATYPENAME ": Can not set_block on a non-matrix value");
+
+        if (blck_rows + rows_idx > self_rows || blck_cols + cols_idx > self_cols) {
+            resize_matrix(INTERP, SELF, blck_rows + rows_idx - 1, blck_cols + cols_idx - 1);
+            self_s = self_attrs->storage;
+            self_rows = self_attrs->rows;
+            self_cols = self_attrs->cols;
+        }
+        for (i = 0; i < blck_cols; i++) {
+            for (j = 0; j < blck_rows; j++) {
+                ITEM_XY_ROWMAJOR(self_s, self_rows, self_cols, j + rows_idx, i + cols_idx) =
+                    ITEM_XY_ROWMAJOR(blck_s, blck_rows, blck_cols, j, i);
+            }
+        }
     }
 }
 
