@@ -63,6 +63,15 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         );
     }
 
+    method AssertSize($m, $rows, $cols) {
+        my $real_rows := pir::getattribute__PPS($m, "rows");
+        my $real_cols := pir::getattribute__PPS($m, "cols");
+        assert_equal($real_rows, $rows,
+            "matrix does not have correct number of rows. $rows expected, $real_rows actual");
+        assert_equal($real_cols, $cols,
+            "matrix does not have correct number of columns. $cols expected, $real_cols actual");
+    }
+
     # Create a 3x3 matrix of the type with given values row-first
     method matrix3x3($aa, $ab, $ac, $ba, $bb, $bc, $ca, $cb, $cc) {
         my $m := self.matrix();
@@ -142,14 +151,12 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
     method test_VTABLE_get_attr_str() {
         my $m := self.matrix();
         $m{Key.new(5,7)} := self.defaultvalue;
-        assert_equal(pir::getattribute__PPS($m, "rows"), 6, "matrix does not have right size");
-        assert_equal(pir::getattribute__PPS($m, "cols"), 8, "matrix does not have right size");
+        self.AssertSize($m, 6, 8);
     }
 
     method test_VTABLE_get_attr_str_EMPTY() {
         my $m := self.matrix();
-        assert_equal(pir::getattribute__PPS($m, "rows"), 0, "empty matrix has non-zero row count");
-        assert_equal(pir::getattribute__PPS($m, "cols"), 0, "empty matrix has non-zero col count");
+        self.AssertSize($m, 0, 0);
     }
 
     method test_VTABLE_freeze() {
@@ -163,16 +170,13 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
     # Test to show that autoresizing behavior of the type is consistent.
     method test_MISC_autoresizing() {
         my $m := self.matrix();
-        assert_equal(pir::getattribute__PPS($m, "rows"), 0, "matrix does not have right size");
-        assert_equal(pir::getattribute__PPS($m, "cols"), 0, "matrix does not have right size");
+        self.AssertSize($m, 0, 0);
 
         $m{Key.new(3, 4)} := self.defaultvalue;
-        assert_equal(pir::getattribute__PPS($m, "rows"), 4, "matrix does not have right size");
-        assert_equal(pir::getattribute__PPS($m, "cols"), 5, "matrix does not have right size");
+        self.AssertSize($m, 4, 5);
 
         $m{Key.new(7, 11)} := self.defaultvalue;
-        assert_equal(pir::getattribute__PPS($m, "rows"), 8, "matrix does not have right size");
-        assert_equal(pir::getattribute__PPS($m, "cols"), 12, "matrix does not have right size");
+        self.AssertSize($m, 8, 12);
     }
 
     method test_MISC_linearindexing() {
@@ -186,23 +190,20 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
     method test_METHOD_resize() {
         my $m := self.matrix();
         $m.resize(3,3);
-        assert_equal(pir::getattribute__PPS($m, "rows"), 3, "matrix does not have right size");
-        assert_equal(pir::getattribute__PPS($m, "cols"), 3, "matrix does not have right size");
+        self.AssertSize($m, 3, 3);
     }
 
     method test_METHOD_resize_SHRINK() {
         my $m := self.matrix();
         $m.resize(3,3);
         $m.resize(1,1);
-        assert_equal(pir::getattribute__PPS($m, "rows"), 3, "matrix does not have right size");
-        assert_equal(pir::getattribute__PPS($m, "cols"), 3, "matrix does not have right size");
+        self.AssertSize($m, 3, 3);
     }
 
     method test_METHOD_resize_NEGATIVEINDICES() {
         my $m := self.matrix();
         $m.resize(-1, -1);
-        assert_equal(pir::getattribute__PPS($m, "cols"), 0, "negative indices silently ignored");
-        assert_equal(pir::getattribute__PPS($m, "rows"), 0, "negative indices silently ignored");
+        self.AssertSize($m, 0, 0);
     }
 
     method test_METHOD_fill_RESIZE() {
@@ -428,28 +429,69 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
     }
 
     method test_METHOD_get_block() {
-        todo("Tests Needed!");
+        my $m := self.fancymatrix2x2();
+        my $n := $m.get_block(0, 0, 1, 1);
+        self.AssertSize($n, 1, 1);
+        assert_equal($n{Key.new(0, 0)}, $m{Key.new(0, 0)}, "Cannot get_block with correct values");
+
+        $n := $m.get_block(0, 0, 1, 2);
+        self.AssertSize($n, 1, 2);
+        assert_equal($n{Key.new(0, 0)}, $m{Key.new(0, 0)}, "Cannot get_block with correct values");
+        assert_equal($n{Key.new(0, 1)}, $m{Key.new(0, 1)}, "Cannot get_block with correct values");
+
+        $n := $m.get_block(0, 1, 2, 1);
+        self.AssertSize($n, 2, 1);
+        assert_equal($n{Key.new(0, 0)}, $m{Key.new(0, 1)}, "Cannot get_block with correct values");
+        assert_equal($n{Key.new(1, 0)}, $m{Key.new(1, 1)}, "Cannot get_block with correct values");
+    }
+
+    method test_METHOD_get_block_COPY() {
+        my $m := self.fancymatrix2x2();
+        my $n := $m.get_block(0, 0, 2, 2);
+        assert_equal($m, $n, "We cannot use get_block to create a faithful copy");
     }
 
     # Test that get_block(0,0,0,0) returns a zero-size matrix
     method test_METHOD_get_block_ZEROSIZE() {
-        todo("Tests Needed!");
+        my $m := self.defaultmatrix2x2();
+        my $n := $m.get_block(0, 0, 0, 0);
+        self.AssertSize($n, 0, 0);
     }
 
     # Test that get_block(-1,-1,0,0) throws the proper exception
     method test_METHOD_get_block_NEGINDICES() {
-        todo("Tests Needed!");
+        assert_throws(Exception::OutOfBounds, "Can get_block with negative indices",
+        {
+            my $m := self.defaultmatrix2x2();
+            my $n := $m.get_block(-1, -1, 1, 1);
+        });
     }
 
     # Test that get_block(0,0,-1,-1) throws the proper exception
     method test_METHOD_get_block_NEGSIZES() {
-        todo("Tests Needed!");
+        assert_throws(Exception::OutOfBounds, "Can get_block with negative indices",
+        {
+            my $m := self.defaultmatrix2x2();
+            my $n := $m.get_block(1, 1, -1, -1);
+        });
     }
 
     # Test the behavior of get_block when we request a block crossing or outside
     # the boundaries of the matrix
-    method test_METHOD_get_block_OVERFLOW() {
-        todo("Tests Needed!");
+    method test_METHOD_get_block_BOUNDS_CROSSED() {
+        assert_throws(Exception::OutOfBounds, "Can get_block crossing boundaries of matrix",
+        {
+            my $m := self.defaultmatrix2x2();
+            my $n := $m.get_block(1, 1, 2, 2);
+        });
+    }
+
+    method test_METHOD_get_block_OUTSIDE() {
+        assert_throws(Exception::OutOfBounds, "Can get_block outside boundaries of matrix",
+        {
+            my $m := self.defaultmatrix2x2();
+            my $n := $m.get_block(9, 9, 2, 2);
+        });
     }
 
     method test_METHOD_set_block() {
@@ -459,8 +501,7 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         $n.set_block(1, 1, $m);
 
         # First, prove that we haven't resized it
-        assert_equal(pir::getattribute__PPS($n, "rows"), 3, "matrix does not have right size");
-        assert_equal(pir::getattribute__PPS($n, "cols"), 3, "matrix does not have right size");
+        self.AssertSize($m, 3, 3);
 
         # Second, let's prove that nothing was set where it doesn't belong.
         assert_equal($n{Key.new(0,0)}, self.nullvalue, "value was set in wrong place");
@@ -496,8 +537,7 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         my $m := self.defaultmatrix2x2();
         my $o := self.matrix();
         $m.set_block(3, 3, $o);
-        assert_equal(pir::getattribute__PPS($m, "rows"), 3, "matrix does not have right size");
-        assert_equal(pir::getattribute__PPS($m, "cols"), 3, "matrix does not have right size");
+        self.AssertSize($m, 3, 3);
         assert_equal($m{Key.new(2,0)}, self.nullvalue, "value was set in wrong place");
         assert_equal($m{Key.new(2,1)}, self.nullvalue, "value was set in wrong place");
         assert_equal($m{Key.new(2,2)}, self.nullvalue, "value was set in wrong place");
@@ -510,8 +550,7 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         my $o := self.matrix();
         $o{Key.new(0, 0)} := self.fancyvalue(2);
         $m.set_block(2, 2, $o);
-        assert_equal(pir::getattribute__PPS($m, "rows"), 3, "matrix does not have right size");
-        assert_equal(pir::getattribute__PPS($m, "cols"), 3, "matrix does not have right size");
+        self.AssertSize($m, 3, 3);
         assert_equal($m{Key.new(2,0)}, self.nullvalue, "value was set in wrong place");
         assert_equal($m{Key.new(2,1)}, self.nullvalue, "value was set in wrong place");
         assert_equal($m{Key.new(0,2)}, self.nullvalue, "value was set in wrong place");
@@ -520,11 +559,12 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
     }
 
     method test_METHOD_set_block_NEGINDICES() {
-        todo("Tests Needed!");
-    }
-
-    method test_METHOD_set_block_NEGSIZE() {
-        todo("Tests Needed!");
+        assert_throws(Exception::OutOfBounds, "Can set_block with negative indices",
+        {
+            my $m := self.defaultmatrix2x2();
+            my $o := self.matrix();
+            $m.set_block(-1, -1, $o);
+        });
     }
 
     method test_METHOD_set_block_OVERFLOW() {
@@ -533,8 +573,7 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         $n.set_block(1, 1, $m);
 
         # First, prove that we haven't resized it
-        assert_equal(pir::getattribute__PPS($n, "rows"), 3, "matrix does not have right size");
-        assert_equal(pir::getattribute__PPS($n, "cols"), 3, "matrix does not have right size");
+        self.AssertSize($n, 3, 3);
 
         # Second, let's prove that nothing was set where it doesn't belong.
         assert_equal($n{Key.new(0,0)}, self.nullvalue, "value was set in wrong place 1");

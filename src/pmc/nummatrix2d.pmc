@@ -2,6 +2,7 @@
 #include <cblas.h>
 
 #define ALLOCATE_STORAGE(s) (FLOATVAL *)mem_sys_allocate_zeroed(s * sizeof (FLOATVAL))
+#define PLATYPENAME "NumMatrix2D"
 
 /* Resize the matrix internal storage to be able to hold a point at position
    (x, y). The matrix grows but does not shrink. New spaces in the matrix
@@ -809,7 +810,13 @@ in order.
 
         if ((rows < rows_idx + rows_size) || (cols < cols_idx + cols_size))
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
-                "NumMatrix2D: block boundaries exceed matrix size");
+                PLATYPENAME ": Block boundaries exceed matrix size");
+        if (rows_idx < 0 || cols_idx < 0)
+            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                PLATYPENAME ": Can not get block at negative location");
+        if (rows_size < 0 || cols_size < 0)
+            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                PLATYPENAME ": Can not get block with negative size");
         else {
             PMC * const new_matrix = Parrot_pmc_new(INTERP, SELF->vtable->base_type);
             Parrot_NumMatrix2D_attributes * const new_attrs = PARROT_NUMMATRIX2D(new_matrix);
@@ -837,12 +844,15 @@ in order.
         const INTVAL blck_cols = blck_attrs->cols;
         INTVAL i, j;
 
-        if (!VTABLE_does(INTERP, blck, CONST_STRING(interp, "matrix"))) {
+        if (rows_idx < 0 || cols_idx < 0)
+            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                PLATYPENAME ": Can not set_block with negative indices");
+
+        if (!VTABLE_does(INTERP, blck, CONST_STRING(interp, "matrix")))
             /* TODO: In this case, we should be able to do a .fill over the block
                      dimensions with VTABLE_get_number on the scalar value */
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
-                "NumMatrix2D: Cannot set_block on a non-matrix value");
-        }
+                PLATYPENAME ": Can not set_block on a non-matrix value");
 
         if (blck_rows + rows_idx > self_rows || blck_cols + cols_idx > self_cols) {
             resize_matrix(INTERP, SELF, blck_rows + rows_idx - 1, blck_cols + cols_idx - 1);
