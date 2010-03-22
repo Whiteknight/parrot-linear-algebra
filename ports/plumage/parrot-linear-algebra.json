@@ -1,0 +1,64 @@
+{
+    "meta-spec"    : {
+        "version"  : 1,
+        "uri"      : "https://trac.parrot.org/parrot/wiki/ModuleEcosystem"
+    },
+    "general"      : {
+        "name"     : "parrot-linear-algebra",
+        "abstract" : "Linear Algebra Package for Parrot VM",
+        "authority": "http://github.com/Whiteknight",
+        "version"  : "HEAD",
+        "license"  : {
+            "type" : "Artistic License 2.0",
+            "uri"  : "http://www.perlfoundation.org/artistic_license_2_0"
+        },
+        "copyright_holder" : "Blair Sutton and Andrew Whitworth",
+        "generated_by"     : "distutils",
+        "keywords"         : ["matrix", "linear", "algebra", "gsl", "atlas", "blas", "cblas"],
+        "description"      : "Linear Algebra Package for Parrot VM."
+    },
+    "instructions" : {
+        "fetch"    : {
+            "type" : "repository"
+        },
+        "update"   : {
+            "type" : "parrot_setup"
+        },
+        "build"    : {
+            "type" : "parrot_setup"
+        },
+        "test"     : {
+            "type" : "parrot_setup"
+        },
+        "smoke"    : {
+            "type" : "parrot_setup"
+        },
+        "install"  : {
+            "type" : "parrot_setup"
+        },
+        "uninstall": {
+            "type" : "parrot_setup"
+        },
+        "clean"    : {
+            "type" : "parrot_setup"
+        }
+    },
+    "dependency-info"  : {
+        "provides"     : ["parrot-linear-algebra"],
+        "requires"     : {
+            "fetch"    : ["git"],
+            "build"    : [],
+            "test"     : ["kakapo"],
+            "install"  : [],
+            "runtime"  : []
+        }
+    },
+    "resources"            : {
+        "repository"       : {
+             "type"        : "git",
+             "checkout_uri": "git://github.com/Whiteknight/parrot-linear-algebra.git",
+             "browser_uri" : "http://github.com/Whiteknight/parrot-linear-algebra",
+             "project_uri" : "http://github.com/Whiteknight/parrot-linear-algebra"
+        }
+    }
+}
