@@ -80,9 +80,7 @@ sub MAIN () {
     }
     if $total_failed {
         pir::say("FAILED " ~ $total_failed ~ '/' ~ ($total_passed+$total_failed));
-	Q:PIR {
-		exit 1
-	}
+	pir::exit(1);
     } elsif $failed_files {
         pir::say("FAILED " ~ $failed_files ~ " files, PASSED " ~ $total_passed ~ ' tests');
     } else {

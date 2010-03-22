@@ -1,9 +1,5 @@
 #! parrot-nqp
 
-INIT {
-    pir::load_bytecode('./library/kakapo_full.pbc');
-}
-
 class Test::Sanity is UnitTest::Testcase;
 
 INIT {

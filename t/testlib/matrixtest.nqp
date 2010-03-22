@@ -112,9 +112,9 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
     #       methods in the various types and enforce the behavior.
 
     method test_OP_new() {
-        assert_throws_nothing("Cannot create ComplexMatrix2D", {
+        assert_throws_nothing("Cannot create new matrix", {
             my $m := self.matrix();
-            assert_not_null($m, "Could not create a ComplexMatrix2D");
+            assert_not_null($m, "Could not create a matrix");
         });
     }
 
