@@ -59,9 +59,9 @@ Here are a list of dependencies for PLA:
 * Parrot 2.2.0
 
     PLA is an extension for Parrot and requires Parrot to build and run.
-    Releases of PLA will target supported releases of Parrot. Supported releases
-    are typically X.0, X.3, X.6, X.9. Releases for Parrot can be retrieved
-    from
+    Releases of PLA will target supported releases of Parrot. Supported
+    releases are typically X.0, X.3, X.6, X.9. Releases for Parrot can be
+    retrieved from
 
     http://www.parrot.org
 
@@ -77,14 +77,14 @@ Here are a list of dependencies for PLA:
     PLA depends on either CBLAS or ATLAS. The BLAS library is written in
     Fortran, so C language bindings are all translations of the Fortran
     interface. Unfortunately there is not a good, standard way of translating
-    the Fortran source to C API bindings, so not all libraries that provide a C
-    API for BLAS will have an interface compatible with PLA. We are working to
-    be more accepting of small differences in various interfaces, but this work
-    is moving slowly.
+    the Fortran source to C API bindings, so not all libraries that provide a
+    C API for BLAS will have an interface compatible with PLA. We are working
+    to be more accepting of small differences in various interfaces, but this
+    work is moving slowly.
 
-    We recommend the ATLAS library for current development and testing work. On
-    Ubuntu or other Debian-based distros, you can type this incantation to get
-    it automatically:
+    We recommend the ATLAS library for current development and testing work.
+    On Ubuntu or other Debian-based distros, you can type this incantation to
+    get it automatically:
 
         sudo apt-get install libatlas3-base
         sudo apt-get install libatlas-base-dev
@@ -113,12 +113,13 @@ Here are a list of dependencies for PLA:
 
 * Other
 
-    Currently, PLA is only tested to build and work on Linux and other Unix-like
-    systems with all the aforementioned prerequisites. The setup process pulls
-    configuration information from your installed version of Parrot, so it will
-    attempt to use the same compiler with the same compilation options as Parrot
-    was compiled with. If another compiler absolutely needs to be used, there
-    may be a way to specify that, but no documentation about the process exists.
+    Currently, PLA is only tested to build and work on Linux and other
+    Unix-like systems with all the aforementioned prerequisites. The setup
+    process pulls configuration information from your installed version of
+    Parrot, so it will attempt to use the same compiler with the same
+    compilation options as Parrot was compiled with. If another compiler
+    absolutely needs to be used, there may be a way to specify that, but no
+    documentation about the process exists.
 
 == BUILDING ==
 
@@ -131,9 +132,9 @@ To get, build, test, and install Parrot-Linear-Algebra, follow these steps
     parrot setup.pir test
     parrot setup.pir install
 
-Testing only works if you have Kakapo installed on your system. To install, you
-may need root privileges on your system. There is currently no known way to
-build or deploy PLA on Windows.
+Testing only works if you have Kakapo installed on your system. To install,
+you may need root privileges on your system. There is currently no known way
+to build or deploy PLA on Windows.
 
 == CREDITS ==
 

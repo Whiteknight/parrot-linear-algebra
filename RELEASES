@@ -6,3 +6,4 @@ TBA : Release 0.1
         - Add stable types ComplexMatrix2D, NumMatrix2D, PMCMatrix2D
     Known Issues:
         - CharMatrix2D is incomplete and fails tests
+        - Very few bindings with BLAS, very little arithmetic support
