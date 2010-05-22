@@ -33,10 +33,11 @@ See F<runtime/library/distutils.pir>.
     $P0['keywords'] = $P1
     $P0['license_type'] = 'Artistic License 2.0'
     $P0['license_uri'] = 'http://www.perlfoundation.org/artistic_license_2_0'
-    $P0['copyright_holder'] = 'Blair Sutton and Andrew Whitworth'
+    $P0['copyright_holder'] = 'PLA Contributors'
     $P0['checkout_uri'] = 'git://github.com/Whiteknight/parrot-linear-algebra.git'
     $P0['browser_uri'] = 'http://github.com/Whiteknight/parrot-linear-algebra'
     $P0['project_uri'] = 'http://github.com/Whiteknight/parrot-linear-algebra'
+    $P0['version'] = "0.1"
 
     # build
     $I0 = elements args
@@ -74,7 +75,7 @@ SOURCES
 
 
     # dist
-    $P5 = glob('src/pmc/pla_matrix_types.h src/*.pir src/*.m examples/*.pir tools/nci/*.pl')
+    $P5 = glob('src/pmc/pla_matrix_types.h src/*.pir src/*.m examples/*.pir')
     $P0['manifest_includes'] = $P5
 
     .tailcall setup(args :flat, $P0 :flat :named)

@@ -7,12 +7,12 @@
         "name"     : "parrot-linear-algebra",
         "abstract" : "Linear Algebra Package for Parrot VM",
         "authority": "http://github.com/Whiteknight",
-        "version"  : "HEAD",
+        "version"  : "0.1",
         "license"  : {
             "type" : "Artistic License 2.0",
             "uri"  : "http://www.perlfoundation.org/artistic_license_2_0"
         },
-        "copyright_holder" : "Blair Sutton and Andrew Whitworth",
+        "copyright_holder" : "PLA Contributors",
         "generated_by"     : "distutils",
         "keywords"         : ["matrix", "linear", "algebra", "gsl", "atlas", "blas", "cblas"],
         "description"      : "Linear Algebra Package for Parrot VM."
@@ -48,7 +48,7 @@
         "requires"     : {
             "fetch"    : ["git"],
             "build"    : [],
-            "test"     : ["kakapo"],
+            "test"     : [],
             "install"  : [],
             "runtime"  : []
         }
