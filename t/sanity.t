@@ -1,7 +1,7 @@
 #! parrot-nqp
 
 INIT {
-    pir::load_bytecode('kakapo_full.pbc');
+    pir::load_bytecode('library/kakapo_full.pbc');
 }
 
 class Test::Sanity is UnitTest::Testcase;
