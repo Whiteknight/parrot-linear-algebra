@@ -14,10 +14,6 @@ In addition to these core goals, PLA may also provide a series of ancillary
 tools that are similar in implementation to it's high-performance core
 utilities.
 
-OLD Project Site: http://code.google.com/p/matrixy
-NEW Project Site: http://github.com/Whiteknight/matrixy
-Parrot:           http://www.parrot.org
-
 == STATUS ==
 
 PLA is being actively developed. It has core PMC types that build, a build
