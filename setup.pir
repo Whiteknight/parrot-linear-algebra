@@ -60,11 +60,18 @@ SOURCES
     $P2['linalg_group'] = $P3
     $P0['dynpmc'] = $P2
 
-
-    # test
+    $S0 = args[0]
+    if $S0 != "test" goto no_test
     $S0 = get_nqp()
-    $P0['harness_exec'] = $S0
-    $P0['harness_files'] = ''
+    $S0 = $S0 . " t/harness"
+    $I0 = spawnw $S0
+    exit $I0
+    # test
+    #$S0 = get_nqp()
+    #$S0 = $S0 . " t/harness"
+    #$P0['test_exec'] = $S0
+  no_test:
+
 
     # dist
     $P5 = glob('src/pmc/pla_matrix_types.h src/*.pir src/*.m examples/*.pir tools/nci/*.pl')
