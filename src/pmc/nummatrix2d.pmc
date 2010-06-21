@@ -213,7 +213,7 @@ pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
         const INTVAL total_size = attrs->rows * attrs->cols;
         if (key >= total_size) {
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
-                                        "NumMatrix2D: Matrix dimensions must match in add.");
+                "NumMatrix2D: Matrix dimensions must match in add.");
         }
         return attrs->storage[key];
     }
@@ -459,7 +459,7 @@ pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
 */
         else {
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_UNIMPLEMENTED,
-                "parrot-linear-algebra: Method multiply not implemented for "
+                PLATYPENAME ": Method multiply not implemented for "
                 "this combination of flags.");
         }
 
@@ -689,9 +689,9 @@ Transposes the matrix.
         SWAP_XY(attrs);
 
         if (transposed)
-            attrs->flags -= FLAG_TRANSPOSED;
+            FLAG_SET(attrs->flags, FLAG_TRANSPOSED);
         else
-            attrs->flags += FLAG_TRANSPOSED;
+            FLAG_CLEAR(attrs->flags, FLAG_TRANSPOSED);
         transposed = !transposed;
         RETURN(INTVAL transposed);
     }
