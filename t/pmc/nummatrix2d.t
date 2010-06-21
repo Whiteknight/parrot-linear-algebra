@@ -218,11 +218,31 @@ method test_VTABLE_add_float() {
 }
 
 method test_VTABLE_multiply_NUMMATRIX2D() {
-    todo("Test Needed");
+    my $A := self.matrix3x3(1.0, 2.0, 3.0,
+                            4.0, 5.0, 6.0,
+                            7.0, 8.0, 9.0);
+    my $B := self.matrix3x3(1.0, 2.0, 3.0,
+                            4.0, 5.0, 6.0,
+                            7.0, 8.0, 9.0);
+    my $C := self.matrix3x3(30.0,  36.0,  42.0,
+                            66.0,  81.0,  96.0,
+                            102.0, 126.0, 150.0);
+    my $Y := $A * $B;
+    assert_equal($C, $Y, "matrix multiply does not do the right thing");
+
+    $Y := $B * $A;
+    assert_equal($C, $Y, "matrix multiply does not do the right thing again");
 }
 
 method test_VTABLE_multiply_NUMMATRIX2D_SIZEFAIL() {
-    todo("Test Needed");
+    assert_throws(Exception::OutOfBounds, "error on sizes not equal", {
+        my $A := self.matrix3x3(1.0, 2.0, 3.0,
+                                4.0, 5.0, 6.0,
+                                7.0, 8.0, 9.0);
+        my $B := self.matrix2x2(1.0, 2.0,
+                                3.0, 4.0);
+        my $C := $A * $B;
+    });
 }
 
 method test_VTABLE_multiply_FLOAT() {
