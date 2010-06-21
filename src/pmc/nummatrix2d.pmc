@@ -116,6 +116,23 @@ add_scalar_float(PARROT_INTERP, PMC * self, FLOATVAL v)
     }
 }
 
+static void
+multiply_scalar_float(PARROT_INTERP, PMC * self, FLOATVAL v)
+{
+    Parrot_NumMatrix2D_attributes * const attrs = PARROT_NUMMATRIX2D(self);
+    const INTVAL rows_size = attrs->rows;
+    const INTVAL cols_size = attrs->cols;
+    FLOATVAL * const s = attrs->storage;
+    INTVAL i, j;
+
+    /* TODO: See if BLAS has a routine to do this */
+    for (j = 0; j < cols_size; j++) {
+        for (i = 0; i < rows_size; i++) {
+            ITEM_XY_ROWMAJOR(s, rows_size, cols_size, i, j) *= v;
+        }
+    }
+}
+
 pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
     ATTR FLOATVAL * storage;
     ATTR INTVAL rows;
@@ -365,7 +382,7 @@ pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
 
         if (selfattr->cols != valattr->rows) {
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
-              "NumMatrix2D:");
+                PLATYPENAME ": Dimensions do not match in matrix multiply");
         }
 
         dest = Parrot_pmc_new(INTERP, VTABLE_type(INTERP, SELF));
@@ -467,28 +484,10 @@ pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
         return dest;
     }
 
-    MULTI PMC *multiply(Float *value, PMC *dest) {
+    MULTI PMC *multiply(DEFAULT *value, PMC *dest) {
         const FLOATVAL v = VTABLE_get_number(INTERP, value);
-        Parrot_NumMatrix2D_attributes * const attrs = PARROT_NUMMATRIX2D(SELF);
-        Parrot_NumMatrix2D_attributes * dest_attrs;
-        const INTVAL rows_size = attrs->rows;
-        const INTVAL cols_size = attrs->cols;
-        FLOATVAL * const s = attrs->storage;
-        FLOATVAL * dest_s;
-        INTVAL i, j;
-
-        dest = Parrot_pmc_new(INTERP, SELF->vtable->base_type);
-        resize_matrix(INTERP, dest, rows_size - 1, cols_size - 1);
-        dest_attrs = PARROT_NUMMATRIX2D(dest);
-        dest_s = dest_attrs->storage;
-
-        /* TODO: See if BLAS has a routine to do this */
-        for (j = 0; j < cols_size; j++) {
-            for (i = 0; i < rows_size; i++) {
-                ITEM_XY_ROWMAJOR(dest_s, rows_size, cols_size, i, j) =
-                    ITEM_XY_ROWMAJOR(s, rows_size, cols_size, i, j) * v;
-            }
-        }
+        dest = VTABLE_clone(INTERP, SELF);
+        multiply_scalar_float(INTERP, dest, v);
         return dest;
     }
 
