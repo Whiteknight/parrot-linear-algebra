@@ -45,8 +45,39 @@ resize_matrix(PARROT_INTERP, PMC * self, INTVAL row, INTVAL col)
         mem_sys_free(old_s);
 }
 
+/* If the matrix is lazily transposed, actually transpose the physical memory
+   layout. This is necessary for calculations, especially BLAS calculations,
+   which aren't lazy-transpose-aware. */
 static void
-init_from_pmc_array(PARROT_INTERP, PMC * self, INTVAL rows_size, INTVAL cols_size, PMC * values) {
+normalize_lazy_transpose(PARROT_INTERP, PMC * self)
+{
+    Parrot_NumMatrix2D_attributes * const attrs = PARROT_NUMMATRIX2D(self);
+
+    if (IS_TRANSPOSED(attrs->flags)) {
+        const INTVAL rows_size = attrs->rows;
+        const INTVAL cols_size = attrs->cols;
+        const INTVAL size = rows_size * cols_size;
+        FLOATVAL * const new_s = ALLOCATE_STORAGE(size);
+        FLOATVAL * const old_s = attrs->storage;
+        INTVAL i, j;
+
+        for (i = 0; i < rows_size; ++i) {
+            for (j = 0; j < cols_size; ++j) {
+                ITEM_XY_COLMAJOR(new_s, rows_size, cols_size, i, j) =
+                    ITEM_XY_ROWMAJOR(old_s, rows_size, cols_size, i, j);
+            }
+        }
+        attrs->storage = new_s;
+        mem_sys_free(old_s);
+        FLAG_CLEAR(attrs->flags, FLAG_TRANSPOSED);
+    }
+}
+
+/* Initialize the PMC from an array, filling the matrix row-at-a-time */
+static void
+init_from_pmc_array(PARROT_INTERP, PMC * self, INTVAL rows_size,
+    INTVAL cols_size, PMC * values)
+{
     Parrot_NumMatrix2D_attributes * const attrs = PARROT_NUMMATRIX2D(self);
     FLOATVAL * s;
     INTVAL self_rows, self_cols, i, j, num = 0;
@@ -64,6 +95,23 @@ init_from_pmc_array(PARROT_INTERP, PMC * self, INTVAL rows_size, INTVAL cols_siz
             ITEM_XY_ROWMAJOR(s, self_rows, self_cols, i, j) = value;
             if (num >= init_elems)
                 return;
+        }
+    }
+}
+
+static void
+add_scalar_float(PARROT_INTERP, PMC * self, FLOATVAL v)
+{
+    Parrot_NumMatrix2D_attributes * const attrs = PARROT_NUMMATRIX2D(self);
+    const INTVAL rows_size = attrs->rows;
+    const INTVAL cols_size = attrs->cols;
+    FLOATVAL * const s = attrs->storage;
+    INTVAL i, j;
+
+    /* TODO: See if BLAS has a routine to do this */
+    for (j = 0; j < cols_size; j++) {
+        for (i = 0; i < rows_size; i++) {
+            ITEM_XY_ROWMAJOR(s, rows_size, cols_size, i, j) += v;
         }
     }
 }
@@ -259,86 +307,49 @@ pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
         return pstr;
     }
 
+/*
+
+=item* add
+
+=cut
+
+*/
+
     MULTI PMC *add(NumMatrix2D *value, PMC *dest) {
         int i = 0, j = 0;
-        INTVAL rows_size, cols_size;
         Parrot_NumMatrix2D_attributes * const selfattr = PARROT_NUMMATRIX2D(SELF);
         Parrot_NumMatrix2D_attributes * const valattr = PARROT_NUMMATRIX2D(value);
         Parrot_NumMatrix2D_attributes * destattr;
+        const INTVAL rows_size = selfattr->rows;
+        const INTVAL cols_size = selfattr->cols;
+        const INTVAL storage_size = rows_size * cols_size;
 
-        rows_size = selfattr->rows;
-        cols_size = selfattr->cols;
-
-        if (rows_size != valattr->rows || cols_size != valattr->cols) {
-            /* XXX: Throw a better exception. */
+        if (rows_size != valattr->rows || cols_size != valattr->cols)
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
               "NumMatrix2D: Matrix dimensions must match in add.");
-        }
 
-        if ((IS_TRANSPOSED(selfattr->flags) && ! IS_TRANSPOSED(valattr->flags))
-            || (IS_TRANSPOSED(valattr->flags) && ! IS_TRANSPOSED(selfattr->flags))) {
-            FLOATVAL *sstor = selfattr->storage,
-                     *vstor = valattr->storage;
-            FLOATVAL *dstor = NULL;
-
-            dest = Parrot_pmc_new(interp, VTABLE_type(interp, pmc));
-            resize_matrix(interp, dest, rows_size - 1, cols_size - 1);
-            destattr = (Parrot_NumMatrix2D_attributes *) PARROT_NUMMATRIX2D(dest);
-            dstor = destattr->storage;
-
-            if (IS_TRANSPOSED(selfattr->flags)) {
-                for (i = 0; i < rows_size; ++i) {
-                    for (j = 0; j < cols_size; ++j) {
-                        ITEM_XY_ROWMAJOR(dstor, rows_size, cols_size, i, j) =
-                            ITEM_XY_COLMAJOR(sstor, rows_size, cols_size, i, j)
-                            + ITEM_XY_ROWMAJOR(vstor, rows_size, cols_size, i, j);
-                    }
-                }
-            }
-            else {
-                for (i = 0; i < rows_size; ++i) {
-                    for (j = 0; j < cols_size; ++j) {
-                        ITEM_XY_ROWMAJOR(dstor, rows_size, cols_size, i, j) =
-                            ITEM_XY_ROWMAJOR(sstor, rows_size, cols_size, i, j)
-                            + ITEM_XY_COLMAJOR(vstor, rows_size, cols_size, i, j);
-                    }
-                }
-            }
-        }
-        else {
-            dest = VTABLE_clone(INTERP, value);
-            destattr = (Parrot_NumMatrix2D_attributes *) PARROT_NUMMATRIX2D(dest);
-
-            cblas_daxpy(rows_size*cols_size, 1, selfattr->storage, 1, destattr->storage, 1);
-        }
-
+        normalize_lazy_transpose(INTERP, SELF);
+        normalize_lazy_transpose(INTERP, value);
+        dest = VTABLE_clone(INTERP, value);
+        destattr = PARROT_NUMMATRIX2D(dest);
+        cblas_daxpy(storage_size, 1, selfattr->storage, 1, destattr->storage, 1);
         return dest;
     }
 
-    MULTI PMC *add(Float *value, PMC *dest) {
+    MULTI PMC *add(DEFAULT *value, PMC *dest) {
         const FLOATVAL v = VTABLE_get_number(INTERP, value);
-        Parrot_NumMatrix2D_attributes * const attrs = PARROT_NUMMATRIX2D(SELF);
-        Parrot_NumMatrix2D_attributes * dest_attrs;
-        const INTVAL rows_size = attrs->rows;
-        const INTVAL cols_size = attrs->cols;
-        FLOATVAL * const s = attrs->storage;
-        FLOATVAL * dest_s;
-        INTVAL i, j;
-
-        dest = Parrot_pmc_new(INTERP, SELF->vtable->base_type);
-        resize_matrix(INTERP, dest, rows_size - 1, cols_size - 1);
-        dest_attrs = PARROT_NUMMATRIX2D(dest);
-        dest_s = dest_attrs->storage;
-
-        /* TODO: See if BLAS has a routine to do this */
-        for (j = 0; j < cols_size; j++) {
-            for (i = 0; i < rows_size; i++) {
-                ITEM_XY_ROWMAJOR(dest_s, rows_size, cols_size, i, j) =
-                    ITEM_XY_ROWMAJOR(s, rows_size, cols_size, i, j) + v;
-            }
-        }
+        dest = VTABLE_clone(INTERP, SELF);
+        add_scalar_float(INTERP, dest, v);
         return dest;
     }
+
+/*
+
+=item* multiply
+
+=cut
+
+*/
 
     MULTI PMC *multiply(NumMatrix2D *value, PMC *dest) {
         INTVAL rows_size = 0, cols_size = 0, sflags = 0, vflags = 0;

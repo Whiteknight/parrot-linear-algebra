@@ -33,10 +33,11 @@ See F<runtime/library/distutils.pir>.
     $P0['keywords'] = $P1
     $P0['license_type'] = 'Artistic License 2.0'
     $P0['license_uri'] = 'http://www.perlfoundation.org/artistic_license_2_0'
-    $P0['copyright_holder'] = 'Blair Sutton and Andrew Whitworth'
+    $P0['copyright_holder'] = 'PLA Contributors'
     $P0['checkout_uri'] = 'git://github.com/Whiteknight/parrot-linear-algebra.git'
     $P0['browser_uri'] = 'http://github.com/Whiteknight/parrot-linear-algebra'
     $P0['project_uri'] = 'http://github.com/Whiteknight/parrot-linear-algebra'
+    $P0['version'] = "0.1"
 
     # build
     $I0 = elements args
@@ -60,14 +61,21 @@ SOURCES
     $P2['linalg_group'] = $P3
     $P0['dynpmc'] = $P2
 
-
-    # test
+    $S0 = args[0]
+    if $S0 != "test" goto no_test
     $S0 = get_nqp()
-    $P0['harness_exec'] = $S0
-    $P0['harness_files'] = ''
+    $S0 = $S0 . " t/harness"
+    $I0 = spawnw $S0
+    exit $I0
+    # test
+    #$S0 = get_nqp()
+    #$S0 = $S0 . " t/harness"
+    #$P0['test_exec'] = $S0
+  no_test:
+
 
     # dist
-    $P5 = glob('src/pmc/pla_matrix_types.h src/*.pir src/*.m examples/*.pir tools/nci/*.pl')
+    $P5 = glob('src/pmc/pla_matrix_types.h src/*.pir src/*.m examples/*.pir')
     $P0['manifest_includes'] = $P5
 
     .tailcall setup(args :flat, $P0 :flat :named)
