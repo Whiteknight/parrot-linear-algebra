@@ -135,6 +135,41 @@ multiply_scalar_float(PARROT_INTERP, PMC * self, FLOATVAL v)
     }
 }
 
+static void
+call_gemm(FLOATVAL alpha, PMC * A, PMC *B, FLOATVAL beta, PMC *C)
+{
+    Parrot_NumMatrix2D_attributes * const attrs_a = PARROT_NUMMATRIX2D(A);
+    Parrot_NumMatrix2D_attributes * const attrs_b = PARROT_NUMMATRIX2D(B);
+    Parrot_NumMatrix2D_attributes * const attrs_c = PARROT_NUMMATRIX2D(C);
+    const INTVAL M = attrs_a->rows;
+    const INTVAL N = attrs_b->cols;
+    const INTVAL K = attrs_a->cols;
+    if (attrs_c->rows != M)
+        Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+            PLATYPENAME ": A, C indices do not match in gemm");
+    if (attrs_c->cols != N)
+        Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+            PLATYPENAME ": B, C indices do not match in gemm");
+    if (attrs_b->rows != K)
+        Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+            PLATYPENAME ": A, B indeces do not match in gemm");
+    cblas_dgemm(CBlasRowMajor,
+        IS_TRANSPOSED_BLAS(attrs_a->flags),
+        IS_TRANSPOSED_BLAS(attrs_b->flags),
+        M,
+        N,
+        K,
+        alpha,
+        attrs_a->storage,
+        M,
+        attrs_b->storage,
+        N,
+        beta,
+        attrs_c->storage,
+        M
+    );
+}
+
 pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
     ATTR FLOATVAL * storage;
     ATTR INTVAL rows;
@@ -339,7 +374,6 @@ pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
 */
 
     MULTI PMC *add(NumMatrix2D *value, PMC *dest) {
-        int i = 0, j = 0;
         Parrot_NumMatrix2D_attributes * const selfattr = PARROT_NUMMATRIX2D(SELF);
         Parrot_NumMatrix2D_attributes * const valattr = PARROT_NUMMATRIX2D(value);
         Parrot_NumMatrix2D_attributes * destattr;
@@ -885,6 +919,24 @@ in order.
                     ITEM_XY_ROWMAJOR(blck_s, blck_rows, blck_cols, j, i);
             }
         }
+    }
+
+/*
+
+=item* gemm
+
+Calculates the matrix equation:
+
+    Z = aAB + bC
+
+=cut
+
+*/
+
+    METHOD gemm(FLOAVAL alpha, PMC * A, PMC *B, FLOATVAL beta, PMC *C) {
+        PMC * const c_out = VTABLE_clone(INTERP, C);
+        call_gemm(alpha, A, B, beta, c_out);
+        RETURN(PMC* c_out);
     }
 
 /*
