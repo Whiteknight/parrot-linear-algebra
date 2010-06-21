@@ -136,7 +136,7 @@ multiply_scalar_float(PARROT_INTERP, PMC * self, FLOATVAL v)
 }
 
 static void
-call_gemm(FLOATVAL alpha, PMC * A, PMC *B, FLOATVAL beta, PMC *C)
+call_gemm(PARROT_INTERP, FLOATVAL alpha, PMC * A, PMC *B, FLOATVAL beta, PMC *C)
 {
     Parrot_NumMatrix2D_attributes * const attrs_a = PARROT_NUMMATRIX2D(A);
     Parrot_NumMatrix2D_attributes * const attrs_b = PARROT_NUMMATRIX2D(B);
@@ -145,15 +145,15 @@ call_gemm(FLOATVAL alpha, PMC * A, PMC *B, FLOATVAL beta, PMC *C)
     const INTVAL N = attrs_b->cols;
     const INTVAL K = attrs_a->cols;
     if (attrs_c->rows != M)
-        Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
             PLATYPENAME ": A, C indices do not match in gemm");
     if (attrs_c->cols != N)
-        Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
             PLATYPENAME ": B, C indices do not match in gemm");
     if (attrs_b->rows != K)
-        Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
             PLATYPENAME ": A, B indeces do not match in gemm");
-    cblas_dgemm(CBlasRowMajor,
+    cblas_dgemm(CblasRowMajor,
         IS_TRANSPOSED_BLAS(attrs_a->flags),
         IS_TRANSPOSED_BLAS(attrs_b->flags),
         M,
@@ -933,9 +933,9 @@ Calculates the matrix equation:
 
 */
 
-    METHOD gemm(FLOAVAL alpha, PMC * A, PMC *B, FLOATVAL beta, PMC *C) {
+    METHOD gemm(FLOATVAL alpha, PMC * A, PMC *B, FLOATVAL beta, PMC *C) {
         PMC * const c_out = VTABLE_clone(INTERP, C);
-        call_gemm(alpha, A, B, beta, c_out);
+        call_gemm(INTERP, alpha, A, B, beta, c_out);
         RETURN(PMC* c_out);
     }
 
