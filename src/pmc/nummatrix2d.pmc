@@ -24,8 +24,8 @@ resize_matrix(PARROT_INTERP, PMC * self, INTVAL row, INTVAL col)
     const INTVAL old_cols = attrs->cols;
     FLOATVAL * old_s = attrs->storage;
 
-    /* rows and y are indices, not sizes. Resize the matrix to accomodate this
-       new point without shrinking by taking the max. */
+    /* rows and cols are indices, not sizes. Resize the matrix to accomodate
+       this new point without shrinking by taking the max. */
     const INTVAL new_rows = INDEX_MAX(old_rows, row + 1);
     const INTVAL new_cols = INDEX_MAX(old_cols, col + 1);
     const INTVAL newsize = new_rows * new_cols;
