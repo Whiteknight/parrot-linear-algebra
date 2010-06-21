@@ -697,9 +697,9 @@ Transposes the matrix.
         SWAP_XY(attrs);
 
         if (transposed)
-            FLAG_SET(attrs->flags, FLAG_TRANSPOSED);
-        else
             FLAG_CLEAR(attrs->flags, FLAG_TRANSPOSED);
+        else
+            FLAG_SET(attrs->flags, FLAG_TRANSPOSED);
         transposed = !transposed;
         RETURN(INTVAL transposed);
     }
