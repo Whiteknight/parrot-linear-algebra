@@ -268,3 +268,8 @@ method test_METHOD_get_block_2() {
     my $o := $m.get_block(1, 1, 2, 2);
     assert_equal($n, $o, "cannot get block");
 }
+
+method test_METHOD_gemm() {
+    todo("Test Needed");
+}
+
