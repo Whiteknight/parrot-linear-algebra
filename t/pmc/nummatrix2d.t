@@ -373,3 +373,35 @@ method test_METHOD_gemm_BADSIZE_C() {
     todo("Test Needed");
 }
 
+method test_METHOD_row_combine() {
+    my $A := self.matrix3x3(1.0, 2.0, 3.0,
+                            4.0, 5.0, 6.0,
+                            7.0, 8.0, 9.0);
+    $A.row_combine(1, 2, 1.0);
+    my $B := self.matrix3x3(1.0,  2.0,  3.0,
+                            4.0,  5.0,  6.0,
+                            11.0, 13.0, 15.0);
+    assert_equal($A, $B, "can add rows");
+}
+
+method test_METHOD_row_combine_GAIN() {
+    my $A := self.matrix3x3(1.0, 2.0, 3.0,
+                            4.0, 5.0, 6.0,
+                            7.0, 8.0, 9.0);
+    $A.row_combine(0, 1, -4.0);
+    my $B := self.matrix3x3(1.0,  2.0,  3.0,
+                            0.0, -3.0, -6.0,
+                            7.0,  8.0,  9.0);
+    assert_equal($A, $B, "can add rows");
+}
+
+method test_METHOD_row_scale() {
+    my $A := self.matrix3x3(1.0, 2.0, 3.0,
+                            4.0, 5.0, 6.0,
+                            7.0, 8.0, 9.0);
+    $A.row_scale(0, 4);
+    my $B := self.matrix3x3(4.0, 8.0,  12.0,
+                            4.0, 5.0,  6.0,
+                            7.0, 8.0,  9.0);
+    assert_equal($A, $B, "can add rows");
+}

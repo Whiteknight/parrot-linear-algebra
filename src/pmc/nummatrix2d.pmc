@@ -1022,6 +1022,37 @@ Calculates the matrix equation:
         RETURN(PMC* c_out);
     }
 
+    METHOD row_combine(INTVAL srcidx, INTVAL destidx, FLOATVAL gain) {
+        Parrot_NumMatrix2D_attributes * const attrs = PARROT_NUMMATRIX2D(SELF);
+        FLOATVAL * const s = attrs->storage;
+        const INTVAL rows = attrs->rows;
+        const INTVAL cols = attrs->cols;
+        const INTVAL flags = attrs->flags;
+        INTVAL i;
+        if (srcidx < 0 || srcidx >= rows)
+            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                PLATYPENAME ": Row index out of bounds");
+        for (i = 0; i < cols; i++) {
+            ITEM_XY(s, flags, rows, cols, destidx, i) +=
+                ITEM_XY(s, flags, rows, cols, srcidx, i) * gain;
+        }
+    }
+
+    METHOD row_scale(INTVAL idx, FLOATVAL gain) {
+        Parrot_NumMatrix2D_attributes * const attrs = PARROT_NUMMATRIX2D(SELF);
+        FLOATVAL * const s = attrs->storage;
+        const INTVAL rows = attrs->rows;
+        const INTVAL cols = attrs->cols;
+        const INTVAL flags = attrs->flags;
+        INTVAL i;
+        if (idx < 0 || idx >= rows)
+            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                PLATYPENAME ": Row index out of bounds");
+        for (i = 0; i < cols; i++) {
+            ITEM_XY(s, flags, rows, cols, idx, i) *= gain;
+        }
+    }
+
 /*
 
 =back
