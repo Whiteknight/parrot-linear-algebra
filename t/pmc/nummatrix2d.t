@@ -209,7 +209,19 @@ method test_VTABLE_add_FLOAT() {
     assert_equal($p, $n, "Cannot add float");
 }
 
+method test_VTABLE_add_int() {
+    todo("Test Needed");
+}
+
+method test_VTABLE_add_float() {
+    todo("Test Needed");
+}
+
 method test_VTABLE_multiply_NUMMATRIX2D() {
+    todo("Test Needed");
+}
+
+method test_VTABLE_multiply_NUMMATRIX2D_SIZEFAIL() {
     todo("Test Needed");
 }
 
