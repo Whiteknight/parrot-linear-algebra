@@ -45,6 +45,34 @@ resize_matrix(PARROT_INTERP, PMC * self, INTVAL row, INTVAL col)
         mem_sys_free(old_s);
 }
 
+/* If the matrix is lazily transposed, actually transpose the physical memory
+   layout. This is necessary for calculations, especially BLAS calculations,
+   which aren't lazy-transpose-aware. */
+static void
+normalize_lazy_transpose(PARROT_INTERP, PMC * self)
+{
+    Parrot_NumMatrix2D_attributes * const attrs = PARROT_NUMMATRIX2D(self);
+
+    if (IS_TRANSPOSED(attrs->flags)) {
+        const INTVAL rows_size = attrs->rows;
+        const INTVAL cols_size = attrs->cols;
+        const INTVAL size = rows_size * cols_size;
+        FLOATVAL * const new_s = ALLOCATE_STORAGE(size);
+        FLOATVAL * const old_s = attrs->storage;
+        INTVAL i, j;
+
+        for (i = 0; i < rows_size; ++i) {
+            for (j = 0; j < cols_size; ++j) {
+                ITEM_XY_COLMAJOR(new_s, rows_size, cols_size, i, j) =
+                    ITEM_XY_ROWMAJOR(old_s, rows_size, cols_size, i, j);
+            }
+        }
+        attrs->storage = new_s;
+        mem_sys_free(old_s);
+        FLAG_CLEAR(attrs->flags, FLAG_TRANSPOSED);
+    }
+}
+
 /* Initialize the PMC from an array, filling the matrix row-at-a-time */
 static void
 init_from_pmc_array(PARROT_INTERP, PMC * self, INTVAL rows_size,

@@ -148,6 +148,9 @@ do { \
                             (FLAG_UTRIANGLE) | \
                             (FLAG_TRIDIAGONAL)
 
+#define FLAG_SET(f, i) ((f) |= (i))
+#define FLAG_CLEAR(f, i) ((f) &= ~((INTVAL)(i)))
+
 /* Logical flag checking macros */
 #define IS_GENERAL(flags)         ((! (flags)))
 #define IS_TINY(flags)            (((flags) & (FLAG_TINY)))
