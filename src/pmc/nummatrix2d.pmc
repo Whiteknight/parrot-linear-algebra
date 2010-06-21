@@ -330,6 +330,10 @@ pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
 
 =item* add
 
+=item* add_float
+
+=item* add_int
+
 =cut
 
 */
@@ -359,6 +363,18 @@ pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
         const FLOATVAL v = VTABLE_get_number(INTERP, value);
         dest = VTABLE_clone(INTERP, SELF);
         add_scalar_float(INTERP, dest, v);
+        return dest;
+    }
+
+    PMC *add_float(FLOATVAL v, PMC *dest) {
+        dest = VTABLE_clone(INTERP, SELF);
+        add_scalar_float(INTERP, dest, v);
+        return dest;
+    }
+
+    PMC *add_int(INTVAL v, PMC *dest) {
+        dest = VTABLE_clone(INTERP, SELF);
+        add_scalar_float(INTERP, dest, (FLOATVAL)v);
         return dest;
     }
 
@@ -522,8 +538,8 @@ pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
         INTVAL const newsize = rows_size * cols_size;
         FLOATVAL * const old_s = old_atts->storage;
         FLOATVAL * const new_s = ALLOCATE_STORAGE(newsize);
-        memcpy(new_s, old_s, newsize);
-        memcpy(new_attrs, old_atts, sizeof(Parrot_NumMatrix2D_attributes));
+        memcpy(new_s, old_s, newsize * sizeof(FLOATVAL));
+        memcpy(new_atts, old_atts, sizeof(Parrot_NumMatrix2D_attributes));
         new_atts->storage = new_s;
         return c;
     }
