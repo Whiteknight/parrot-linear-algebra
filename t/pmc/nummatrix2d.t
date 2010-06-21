@@ -357,3 +357,19 @@ method test_METHOD_gemm_aABbC() {
     assert_equal($Y, $Z, "gemm aAB does not work");
 }
 
+method test_METHOD_gemm_BADTYPE() {
+    todo("Test Needed");
+}
+
+method test_METHOD_gemm_BADSIZE_A() {
+    todo("Test Needed");
+}
+
+method test_METHOD_gemm_BADSIZE_B() {
+    todo("Test Needed");
+}
+
+method test_METHOD_gemm_BADSIZE_C() {
+    todo("Test Needed");
+}
+

@@ -1,4 +1,5 @@
 #include "pla_matrix_types.h"
+#include <math.h>
 #include <cblas.h>
 
 #define ALLOCATE_STORAGE(s) (FLOATVAL *)mem_sys_allocate_zeroed(s * sizeof (FLOATVAL))
@@ -135,6 +136,8 @@ multiply_scalar_float(PARROT_INTERP, PMC * self, FLOATVAL v)
     }
 }
 
+/* Wrapper to call the dgemm function from BLAS with PMC arguments. Assumes
+   A, B, and C are all NumMatrix2D. */
 static void
 call_gemm(PARROT_INTERP, FLOATVAL alpha, PMC * A, PMC *B, FLOATVAL beta, PMC *C)
 {
@@ -169,6 +172,33 @@ call_gemm(PARROT_INTERP, FLOATVAL alpha, PMC * A, PMC *B, FLOATVAL beta, PMC *C)
         M
     );
 }
+
+#define FLOATVAL_EPSILON_REL 0.0001   /* Relative error between two large numbers */
+#define FLOATVAL_EPSILON_ABS 0.00001  /* Absolute difference between two small numbers */
+#define FLOATVAL_REL_THRESHOLD 10     /* Above we do relative error, below we use abs */
+/* Check if two floats are equalish. Above a certain threshold we want to do a
+   relative error calculation because precision between subsequent large
+   numbers can be much larger than standard epsilon values. Below the threshold
+   we want to do an absolute calculation because as the values approach zero the
+   error value quickly begins to diverge, even for very similar values. The
+   values for absolute difference, relative error, and threshold need to be
+   tuned. */
+static INTVAL
+floats_are_equal(FLOATVAL a, FLOATVAL b)
+{
+    FLOATVAL diff = fabs(a - b);
+    if (a == b)
+        return 1;
+    if (diff > FLOATVAL_EPSILON_ABS)
+        return 0;
+    if (a > FLOATVAL_REL_THRESHOLD) {
+        FLOATVAL err = diff / b;
+        if (err > FLOATVAL_EPSILON_REL)
+            return 0;
+    }
+    return 1;
+}
+
 
 pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
     ATTR FLOATVAL * storage;
@@ -543,6 +573,14 @@ pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
         return dest;
     }
 
+/*
+
+=item* get_attr_str
+
+=cut
+
+*/
+
     VTABLE PMC * get_attr_str(STRING * idx) {
         Parrot_NumMatrix2D_attributes * const attrs = PARROT_NUMMATRIX2D(SELF);
         if (Parrot_str_equal(INTERP, idx, CONST_STRING(INTERP, "rows"))) {
@@ -563,6 +601,14 @@ pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
         return PMCNULL;
     }
 
+/*
+
+=item* clone
+
+=cut
+
+*/
+
     VTABLE PMC * clone() {
         PMC * const c = Parrot_pmc_new(INTERP, SELF->vtable->base_type);
         Parrot_NumMatrix2D_attributes * const old_atts = PARROT_NUMMATRIX2D(SELF);
@@ -577,6 +623,14 @@ pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
         new_atts->storage = new_s;
         return c;
     }
+
+/*
+
+=item* is_equal
+
+=cut
+
+*/
 
     VTABLE INTVAL is_equal(PMC * other) {
         if (other->vtable->base_type == SELF->vtable->base_type) {
@@ -609,6 +663,16 @@ pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
         }
         return 0;
     }
+
+/*
+
+=item* freeze
+
+=item* thaw
+
+=cut
+
+*/
 
     VTABLE void freeze(PMC *info) {
         Parrot_NumMatrix2D_attributes * const attrs = PARROT_NUMMATRIX2D(SELF);
@@ -650,9 +714,6 @@ pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
         }
     }
 
-
-
-
 /*
 
 =back
@@ -660,9 +721,6 @@ pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
 =head1 METHODS
 
 =over 4
-
-*/
-/*
 
 =item resize()
 
@@ -717,7 +775,7 @@ sizes, growing the matrix if needed.
 
 =item transpose()
 
-Transposes the matrix.
+Transposes the matrix lazily.
 
 =cut
 
@@ -774,8 +832,13 @@ than the transpose() method.
 
 =item iterate_function_inplace()
 
-Calls a function for every element in the array, replacing the current
+Calls a function for every element in the matrix, replacing the current
 value with the return value of the called function.
+
+=item iterate_function_external()
+
+Calls a function for every element in the matrix, adding the result of each
+computation to a new matrix. Return the new matrix of results.
 
 =cut
 
@@ -837,10 +900,15 @@ value with the return value of the called function.
 
 /*
 
-=item instantiate_from_array()
+=item initialize_from_array()
 
-Instantiate a new matrix from a linear array, filling each row with data
+Initialize matrix values from a linear array, filling each row with data
 in order.
+
+=item initialize_from_args()
+
+Initialize matrix values from an array of function arguments, filling each row
+with data in order.
 
 =cut
 
@@ -853,6 +921,16 @@ in order.
     METHOD initialize_from_args(INTVAL rows_size, INTVAL cols_size, PMC *values :slurpy) {
         init_from_pmc_array(INTERP, SELF, rows_size, cols_size, values);
     }
+
+/*
+
+=item get_block
+
+=item set_block
+
+=cut
+
+*/
 
     METHOD get_block(INTVAL rows_idx, INTVAL cols_idx, INTVAL rows_size, INTVAL cols_size) {
         Parrot_NumMatrix2D_attributes * const attrs = PARROT_NUMMATRIX2D(SELF);
@@ -935,6 +1013,11 @@ Calculates the matrix equation:
 
     METHOD gemm(FLOATVAL alpha, PMC * A, PMC *B, FLOATVAL beta, PMC *C) {
         PMC * const c_out = VTABLE_clone(INTERP, C);
+        //if (A->vtable->base_type != B->vtable->base_type &&
+        //    C->vtable->base_type != A->vtable->base_type &&
+        //    A->vtable->base_type != enum_class_NumMatrix2D)
+        //    Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+        //        PLATYPENAME ": gemm only accepts NumMatrix2D arguments");
         call_gemm(INTERP, alpha, A, B, beta, c_out);
         RETURN(PMC* c_out);
     }
