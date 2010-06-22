@@ -1053,6 +1053,24 @@ Calculates the matrix equation:
         }
     }
 
+    METHOD row_swap(INTVAL idx_a, INTVAL idx_b) {
+        Parrot_NumMatrix2D_attributes * const attrs = PARROT_NUMMATRIX2D(SELF);
+        FLOATVAL * const s = attrs->storage;
+        const INTVAL rows = attrs->rows;
+        const INTVAL cols = attrs->cols;
+        const INTVAL flags = attrs->flags;
+        INTVAL i;
+        if (idx_a < 0 || idx_a >= rows || idx_b < 0 || idx_b >= rows)
+            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                PLATYPENAME ": Row index out of bounds");
+        for (i = 0; i < cols; i++) {
+            const FLOATVAL t = ITEM_XY(s, flags, rows, cols, idx_b, i);
+            ITEM_XY(s, flags, rows, cols, idx_b, i) =
+                ITEM_XY(s, flags, rows, cols, idx_a, i);
+            ITEM_XY(s, flags, rows, cols, idx_a, i) = t;
+        }
+    }
+
 /*
 
 =back

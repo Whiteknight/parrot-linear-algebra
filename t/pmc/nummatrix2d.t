@@ -405,3 +405,14 @@ method test_METHOD_row_scale() {
                             7.0, 8.0,  9.0);
     assert_equal($A, $B, "can add rows");
 }
+
+method test_METHOD_row_swap() {
+    my $A := self.matrix3x3(1.0, 2.0, 3.0,
+                            4.0, 5.0, 6.0,
+                            7.0, 8.0, 9.0);
+    $A.row_swap(0, 1);
+    my $B := self.matrix3x3(4.0, 5.0, 6.0,
+                            1.0, 2.0, 3.0,
+                            7.0, 8.0,  9.0);
+    assert_equal($A, $B, "can add rows");
+}
