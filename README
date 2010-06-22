@@ -56,7 +56,7 @@ dependencies.
 
 Here are a list of dependencies for PLA:
 
-* Parrot 2.2.0
+* Parrot 2.3.0
 
     PLA is an extension for Parrot and requires Parrot to build and run.
     Releases of PLA will target supported releases of Parrot. Supported
