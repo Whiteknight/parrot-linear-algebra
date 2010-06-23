@@ -19,6 +19,8 @@ See F<runtime/library/distutils.pir>.
 
 =cut
 
+.include 'iglobals.pasm'
+
 .sub 'main' :main
     .param pmc args
     $S0 = shift args
@@ -83,7 +85,9 @@ SOURCES
 
 .sub 'system_linker_settings'
     .param pmc config
-    $S0 = sysinfo 4
+    $P0 = getinterp
+    $P1 = $P0[.IGLOBALS_CONFIG_HASH]
+    $S0 = $P1['osname']
     if $S0 == "linux" goto have_linux
 
     # don't support other things yet.
