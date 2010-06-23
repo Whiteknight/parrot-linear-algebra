@@ -11,7 +11,7 @@ INIT {
 #class MyProgram is Program {
     method main(*@args) {
         #for @args {
-            my $test := "nummatrix2d.t";
+            my $test := "pmcmatrix2d.t";
             my $sub := Nqp::compile_file("t/pmc/" ~ $test);
             $sub[0]();
         #}

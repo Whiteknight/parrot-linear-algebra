@@ -321,7 +321,7 @@ elements.
 
     VTABLE STRING * get_string_keyed(PMC * key) {
         const FLOATVAL f = VTABLE_get_number_keyed(INTERP, SELF, key);
-        STRING * const item = Parrot_sprintf_c(INTERP, "\t%f", f);
+        STRING * const item = Parrot_sprintf_c(INTERP, "%f", f);
         return item;
     }
 
@@ -687,7 +687,8 @@ Add the integer value to every element in the matrix.
 */
 
     MULTI void i_multiply(NumMatrix2D* value) {
-        call_gemm(INTERP, 1.0, SELF, value, 0.0, SELF);
+        PMC * const temp = VTABLE_clone(INTERP, SELF);
+        call_gemm(INTERP, 1.0, temp, value, 0.0, SELF);
     }
 
     MULTI void i_multiply(DEFAULT* value) {
