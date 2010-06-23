@@ -144,6 +144,39 @@ multiply_scalar_float(PARROT_INTERP, PMC * self, FLOATVAL v)
     }
 }
 
+/* item-by-item addition or subtraction
+   A = A + B */
+static void
+add_matrices(PARROT_INTERP, PMC * A, PMC * B, INTVAL sub)
+{
+    DECLATTRS(A, attrs_a);
+    DECLATTRS(B, attrs_b);
+    const INTVAL rows = attrs_a->rows;
+    const INTVAL cols = attrs_a->cols;
+    FLOATVAL * const s_a = attrs_a->storage;
+    FLOATVAL * const s_b = attrs_b->storage;
+    INTVAL i, j;
+    if (attrs_b->rows != rows || attrs_b->cols != cols)
+        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
+            PLATYPENAME ": sizes do not match");
+    if (sub) {
+        for (i = 0; i < rows; i++) {
+            for (j = 0; j < cols; j++) {
+                ITEM_XY_ROWMAJOR(s_a, rows, cols, i, j) -=
+                    ITEM_XY_ROWMAJOR(s_b, rows, cols, i, j);
+            }
+        }
+    }
+    else {
+        for (i = 0; i < rows; i++) {
+            for (j = 0; j < cols; j++) {
+                ITEM_XY_ROWMAJOR(s_a, rows, cols, i, j) +=
+                    ITEM_XY_ROWMAJOR(s_b, rows, cols, i, j);
+            }
+        }
+    }
+}
+
 /* Wrapper to call the dgemm function from BLAS with PMC arguments. Assumes
    A, B, and C are all NumMatrix2D. */
 static void
@@ -219,6 +252,12 @@ pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
 
 =item* init
 
+Create a new NumMatrix2D
+
+=item* destroy
+
+Destrow the matrix and free it's allocated storage
+
 =cut
 
 */
@@ -243,11 +282,21 @@ pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
 
 =item* get_number_keyed
 
+Get the number at the location X, Y. The key must have two elements.
+
 =item* get_integer_keyed
+
+Get the integer at the location X, Y. The key must have two elements.
 
 =item* get_string_keyed
 
+Get a string representation of the number at the location X, Y. The key must
+have two elements.
+
 =item* get_pmc_keyed
+
+Get a Float PMC of the number at the location X, Y. The key must have two
+elements.
 
 =cut
 
@@ -287,11 +336,23 @@ pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
 
 =item* get_number_keyed_int
 
+Treating the matrix memory block like a C array, get the Nth number. The
+array is arranged in memory row by row.
+
 =item* get_integer_keyed_int
+
+Treating the matrix memory block like a C array, get the Nth integer. The
+array is arranged in memory row by row.
 
 =item* get_string_keyed_int
 
+Treating the matrix memory block like a C array, get the string representation
+of the Nth number. The array is arranged in memory row by row.
+
 =item* get_pmc_keyed_int
+
+Treating the matrix memory block like a C array, get a Float PMC for the
+Nth number. The array is arranged in memory row by row.
 
 =cut
 
@@ -329,7 +390,19 @@ pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
 
 =item* set_number_keyed
 
+Set the number at position (X, Y), growing the matrix if necessary and padding
+empty spaces with 0.0. The key must have two elements.
+
 =item* set_integer_keyed
+
+Set the integer at position (X, Y), growing the matrix if necessary and
+padding empty spaces with 0.0. The key must have two elements.
+
+=item* set_pmc_keyed
+
+Get the numeric value from the PMC argument and set it at position (X, Y),
+growing the matrix if necessary and padding empty spaces with 0.0. The key
+must have two elements.
 
 =cut
 
@@ -360,6 +433,8 @@ pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
 
 =item* get_string
 
+Get a string representation of the matrix.
+
 =cut
 
 */
@@ -389,33 +464,30 @@ pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
 
 /*
 
-=item* add
+=item* add(NumMatrix)
+
+Add two matrices together, element-by-element.
+
+=item* add(DEFAULT)
+
+Take the number representation of the argument PMC and add it to every element
+in the matrix.
 
 =item* add_float
 
+Add the float value to every element in the matrix.
+
 =item* add_int
+
+Add the integer value to every element in the matrix.
 
 =cut
 
 */
 
     MULTI PMC *add(NumMatrix2D *value, PMC *dest) {
-        DECLATTRS(SELF, selfattr);
-        DECLATTRS(value, valattr);
-        Parrot_NumMatrix2D_attributes * destattr;
-        const INTVAL rows_size = selfattr->rows;
-        const INTVAL cols_size = selfattr->cols;
-        const INTVAL storage_size = rows_size * cols_size;
-
-        if (rows_size != valattr->rows || cols_size != valattr->cols)
-            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
-              PLATYPENAME ": Matrix dimensions must match in add.");
-
-        normalize_lazy_transpose(INTERP, SELF);
-        normalize_lazy_transpose(INTERP, value);
-        dest = VTABLE_clone(INTERP, value);
-        destattr = PARROT_NUMMATRIX2D(dest);
-        cblas_daxpy(storage_size, 1, selfattr->storage, 1, destattr->storage, 1);
+        dest = VTABLE_clone(INTERP, SELF);
+        add_matrices(INTERP, dest, value, 0);
         return dest;
     }
 
@@ -426,13 +498,13 @@ pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
         return dest;
     }
 
-    PMC *add_float(FLOATVAL v, PMC *dest) {
+    VTABLE PMC *add_float(FLOATVAL v, PMC *dest) {
         dest = VTABLE_clone(INTERP, SELF);
         add_scalar_float(INTERP, dest, v);
         return dest;
     }
 
-    PMC *add_int(INTVAL v, PMC *dest) {
+    VTABLE PMC *add_int(INTVAL v, PMC *dest) {
         dest = VTABLE_clone(INTERP, SELF);
         add_scalar_float(INTERP, dest, (FLOATVAL)v);
         return dest;
@@ -440,22 +512,129 @@ pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
 
 /*
 
-=item* multiply
+=item* i_add(NumMatrix2D)
+
+=item* i_add(DEFAULT)
+
+=item* i_add_int
+
+=item* i_add_float
+
+=cut
+
+*/
+
+    MULTI void i_add(NumMatrix2D* value) {
+        add_matrices(INTERP, SELF, value, 0);
+    }
+
+    MULTI void i_add(DEFAULT* value) {
+        const FLOATVAL v = VTABLE_get_number(INTERP, value);
+        add_scalar_float(INTERP, SELF, v);
+    }
+
+    void i_add_int(INTVAL v) {
+        add_scalar_float(INTERP, SELF, (FLOATVAL)v);
+    }
+
+    void i_add_float(FLOATVAL v) {
+        add_scalar_float(INTERP, SELF, v);
+    }
+
+/*
+
+=item* subtract(NumMatrix)
+
+Add two matrices together, element-by-element.
+
+=item* subtract(DEFAULT)
+
+Take the number representation of the argument PMC and add it to every element
+in the matrix.
+
+=item* subtract_float
+
+Add the float value to every element in the matrix.
+
+=item* subtract_int
+
+Add the integer value to every element in the matrix.
+
+=cut
+
+*/
+
+    MULTI PMC *subtract(NumMatrix2D *value, PMC *dest) {
+        dest = VTABLE_clone(INTERP, SELF);
+        add_matrices(INTERP, dest, value, 1);
+        return dest;
+    }
+
+    MULTI PMC *subtract(DEFAULT *value, PMC *dest) {
+        const FLOATVAL v = VTABLE_get_number(INTERP, value);
+        dest = VTABLE_clone(INTERP, SELF);
+        add_scalar_float(INTERP, dest, -v);
+        return dest;
+    }
+
+    VTABLE PMC *subtract_float(FLOATVAL v, PMC *dest) {
+        dest = VTABLE_clone(INTERP, SELF);
+        add_scalar_float(INTERP, dest, -v);
+        return dest;
+    }
+
+    VTABLE PMC *subtract_int(INTVAL v, PMC *dest) {
+        dest = VTABLE_clone(INTERP, SELF);
+        add_scalar_float(INTERP, dest, -(FLOATVAL)v);
+        return dest;
+    }
+
+/*
+
+=item* i_subtract(NumMatrix2D)
+
+=item* i_subtract(DEFAULT)
+
+=item* i_subtract_int
+
+=item* i_subtract_float
+
+=cut
+
+*/
+
+    MULTI void i_subtract(NumMatrix2D* value) {
+        add_matrices(INTERP, SELF, value, 1);
+    }
+
+    MULTI void i_subtract(DEFAULT* value) {
+        const FLOATVAL v = VTABLE_get_number(INTERP, value);
+        add_scalar_float(INTERP, SELF, -v);
+    }
+
+    void i_subtract_int(INTVAL v) {
+        add_scalar_float(INTERP, SELF, -(FLOATVAL)v);
+    }
+
+    void i_subtract_float(FLOATVAL v) {
+        add_scalar_float(INTERP, SELF, -v);
+    }
+
+/*
+
+=item* multiply(NumMatrix2D)
+
+=item* multiply(DEFAULT)
 
 =cut
 
 */
 
     MULTI PMC *multiply(NumMatrix2D *value, PMC *dest) {
-        INTVAL rows_size = 0, cols_size = 0, sflags = 0, vflags = 0;
         DECLATTRS(SELF, selfattr);
         DECLATTRS(value, valattr);
-        Parrot_NumMatrix2D_attributes * destattr = NULL;
-
-        rows_size = selfattr->rows;
-        cols_size = valattr->cols;
-        sflags = selfattr->flags;
-        vflags = valattr->flags;
+        const INTVAL new_rows = selfattr->rows;
+        const INTVAL new_cols = valattr->cols;
 
         if (selfattr->cols != valattr->rows) {
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
@@ -463,101 +642,8 @@ pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
         }
 
         dest = Parrot_pmc_new(INTERP, VTABLE_type(INTERP, SELF));
-        resize_matrix(INTERP, dest, rows_size - 1, cols_size - 1);
-        destattr = (Parrot_NumMatrix2D_attributes *) PARROT_NUMMATRIX2D(dest);
-
-        if (IS_TINY(sflags) || (IS_GENERAL(sflags) && IS_GENERAL(vflags))) {
-            cblas_dgemm(CblasRowMajor,
-                IS_TRANSPOSED_BLAS(selfattr->flags),
-                IS_TRANSPOSED_BLAS(valattr->flags),
-                rows_size,
-                selfattr->cols,
-                cols_size,
-                1.,
-                selfattr->storage,
-                rows_size,
-                valattr->storage,
-                cols_size,
-                0.,
-                destattr->storage,
-                rows_size
-            );
-        }
-        else if (IS_SYMMETRIC(sflags)) {
-            cblas_dsymm(
-                CblasRowMajor,
-                (IS_TRANSPOSED(vflags) ? CblasRight : CblasLeft),
-                CblasUpper,
-                rows_size,
-                cols_size,
-                1.,
-                selfattr->storage,
-                rows_size,
-                valattr->storage,
-                valattr->rows,
-                1.,
-                destattr->storage,
-                rows_size
-            );
-
-            if (IS_TRANSPOSED(vflags)) {
-                /* TODO: Transpose matrix */
-            }
-        }
-        else if (IS_SYMMETRIC(vflags)) {
-            cblas_dsymm(
-                CblasRowMajor,
-                (IS_TRANSPOSED(sflags) ? CblasLeft : CblasRight),
-                CblasUpper,
-                rows_size,
-                cols_size,
-                1.,
-                valattr->storage,
-                valattr->rows,
-                selfattr->storage,
-                selfattr->rows,
-                1.,
-                destattr->storage,
-                rows_size
-            );
-
-            if (IS_TRANSPOSED(sflags)) {
-                /* TODO: Transpose matrix */
-            }
-        }
-/*        else if (IS_TRIANGLE(sflags)) {
-            cblas_dtrmm(
-                CblasRowMajor,
-                CblasLeft,
-                (IS_LTRIANGLE(sflags) ? CblasLower : CblasUpper),
-                rows_size,
-                cols_size,
-                1.,
-                selfattr->storage,
-                selfattr->rows,
-                valattr->storage,
-                valattr->rows,
-                0.,
-                destattr->storage,
-                rows_size
-            );
-
-        }
-        else if (IS_TRIANGLE(vflags)) {
-            cblas_dtrmm(
-                CblasRowMajor,
-                CblasRight,
-                (IS_LTRIANGLE(vflags) ? CblasLower : CblasUpper),
-
-        }
-*/
-        else {
-            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_UNIMPLEMENTED,
-                PLATYPENAME ": Method multiply not implemented for "
-                "this combination of flags.");
-        }
-
-        destattr->flags = sflags & vflags;
+        resize_matrix(INTERP, dest, new_rows - 1, new_cols - 1);
+        call_gemm(INTERP, 1.0, SELF, value, 0.0, dest);
         return dest;
     }
 
@@ -566,6 +652,65 @@ pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
         dest = VTABLE_clone(INTERP, SELF);
         multiply_scalar_float(INTERP, dest, v);
         return dest;
+    }
+
+/*
+
+=item* multiply_int
+
+=item* multiply_float
+
+=cut
+
+*/
+
+    VTABLE PMC *multiply_int(INTVAL v, PMC * dest) {
+        dest = VTABLE_clone(INTERP, SELF);
+        multiply_scalar_float(INTERP, dest, (FLOATVAL)v);
+        return dest;
+    }
+
+    VTABLE PMC *multiply_float(FLOATVAL v, PMC * dest) {
+        dest = VTABLE_clone(INTERP, SELF);
+        multiply_scalar_float(INTERP, dest, v);
+        return dest;
+    }
+
+/*
+
+=item* i_multiply(NumMatrix2D)
+
+=item* i_multiply(DEFAULT)
+
+=cut
+
+*/
+
+    MULTI void i_multiply(NumMatrix2D* value) {
+        call_gemm(INTERP, 1.0, SELF, value, 0.0, SELF);
+    }
+
+    MULTI void i_multiply(DEFAULT* value) {
+        const FLOATVAL v = VTABLE_get_number(INTERP, value);
+        multiply_scalar_float(INTERP, SELF, v);
+    }
+
+/*
+
+=item i_multiply_int
+
+=item i_multiply_float
+
+=cut
+
+*/
+
+    VTABLE void i_multiply_int(INTVAL v) {
+        multiply_scalar_float(INTERP, SELF, (FLOATVAL)v);
+    }
+
+    VTABLE void i_multiply_float(FLOATVAL v) {
+        multiply_scalar_float(INTERP, SELF, v);
     }
 
 /*
@@ -1013,6 +1158,24 @@ Calculates the matrix equation:
         call_gemm(INTERP, alpha, A, B, beta, c_out);
         RETURN(PMC* c_out);
     }
+
+/*
+
+=item row_combine(srcidx, destidx, gain)
+
+add a multiple of the source row to the destination row.
+
+=item row_scale(idx, gain)
+
+Multiply all elements in the row by a gain factor.
+
+=item row_swap(idx_a, idx_b)
+
+Swap two rows
+
+=cut
+
+*/
 
     METHOD row_combine(INTVAL srcidx, INTVAL destidx, FLOATVAL gain) {
         DECLATTRS(SELF, attrs);

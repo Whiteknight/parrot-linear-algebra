@@ -217,6 +217,72 @@ method test_VTABLE_add_float() {
     todo("Test Needed");
 }
 
+method test_VTABLE_i_add_NUMMATRIX2D() {
+    todo("Test Needed");
+}
+
+method test_VTABLE_i_add_DEFAULT() {
+    todo("Test Needed");
+}
+
+method test_VTABLE_i_add_int() {
+    todo("Test Needed");
+}
+
+method test_VTABLE_i_add_float() {
+    todo("Test Needed");
+}
+
+# subtract tests
+method test_VTABLE_subtract_NUMMATRIX2D() {
+    my $m := self.matrix2x2(1.0, 3.0, 2.0, 4.0);
+    my $n := self.matrix2x2(5.0, 7.0, 6.0, 8.0);
+    my $o := self.matrix2x2(-4.0, -4.0, -4.0, -4.0);
+    my $p := pir::sub__PPP($m, $n);
+    assert_equal($p, $o, "can add subtract matrices together of the same size");
+}
+
+method test_VTABLE_subtract_NUMMATRIX2D_SIZEFAIL() {
+    assert_throws(Exception::OutOfBounds, "error on sizes not equal", {
+        my $m := self.matrix2x2(1.0, 3.0, 2.0, 4.0);
+        my $n := self.matrix();
+        my $o := pir::sub__PPP($m, $n);
+        fail("subtraction worked, apparently");
+    });
+}
+
+method test_VTABLE_subtract_FLOAT() {
+    my $m := self.matrix2x2(1.0, 3.0, 2.0, 4.0);
+    my $n := self.matrix2x2(3.5, 5.5, 4.5, 6.5);
+    my $o := 2.5;
+    my $p := pir::add__PPP($m, $o);
+    assert_equal($p, $n, "Cannot subtract float");
+}
+
+method test_VTABLE_subtract_int() {
+    todo("Test Needed");
+}
+
+method test_VTABLE_subtract_float() {
+    todo("Test Needed");
+}
+
+method test_VTABLE_i_subtract_NUMMATRIX2D() {
+    todo("Test Needed");
+}
+
+method test_VTABLE_i_subtract_DEFAULT() {
+    todo("Test Needed");
+}
+
+method test_VTABLE_i_subtract_int() {
+    todo("Test Needed");
+}
+
+method test_VTABLE_i_subtract_float() {
+    todo("Test Needed");
+}
+
 method test_VTABLE_multiply_NUMMATRIX2D() {
     my $A := self.matrix3x3(1.0, 2.0, 3.0,
                             4.0, 5.0, 6.0,
@@ -245,12 +311,38 @@ method test_VTABLE_multiply_NUMMATRIX2D_SIZEFAIL() {
     });
 }
 
+method test_VTABLE_multiply_int() {
+    todo("Test Needed");
+}
+
+method test_VTABLE_multiply_float() {
+    todo("Test Needed");
+}
+
+method test_VTABLE_i_multiply_NUMMATRIX2D() {
+    todo("Test Needed");
+}
+
+method test_VTABLE_i_multiply_DEFAULT() {
+    todo("Test Needed");
+}
+
+method test_VTABLE_i_multiply_int() {
+    todo("Test Needed");
+}
+
+method test_VTABLE_i_multiply_float() {
+    todo("Test Needed");
+}
+
+
 method test_VTABLE_multiply_FLOAT() {
     my $m := self.matrix2x2(1.0, 2.0, 3.0, 4.0);
     my $n := self.matrix2x2(2.5, 5.0, 7.5, 10.0);
     my $p := pir::mul__PPP($m, 2.5);
     assert_equal($n, $p, "multiply matrix * float");
 }
+
 
 method test_METHOD_set_block() {
     my $m := self.matrix2x2(1.0, 2.0,
