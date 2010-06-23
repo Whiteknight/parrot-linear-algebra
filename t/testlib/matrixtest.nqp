@@ -179,11 +179,18 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
     }
 
     method test_VTABLE_freeze() {
-        todo("Tests Needed!");
+        assert_throws_nothing("Cannot set_pmc_keyed", {
+            my $m := self.fancymatrix2x2();
+            my $s := pir::freeze__SP($m);
+        })
     }
 
     method test_VTABLE_thaw() {
-        todo("Tests Needed!");
+        my $m := self.fancymatrix2x2();
+        my $s := pir::freeze__SP($m);
+        my $n := pir::thaw__PS($s);
+        assert_equal($m, $n, "Freeze/thaw does not create equal PMCs");
+        assert_not_same($m, $n, "Freeze/thaw returns original");
     }
 
     # Test to show that autoresizing behavior of the type is consistent.

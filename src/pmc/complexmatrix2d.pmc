@@ -384,6 +384,59 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
         return 0;
     }
 
+/*
+
+=item* freeze
+
+=item* thaw
+
+=cut
+
+*/
+
+    VTABLE void freeze(PMC *info) {
+        Parrot_ComplexMatrix2D_attributes * const attrs = PARROT_COMPLEXMATRIX2D(SELF);
+        INTVAL const rows = attrs->rows;
+        INTVAL const cols = attrs->cols;
+        INTVAL const flags = attrs->flags;
+        INTVAL i, j;
+        FLOATVAL * const s = attrs->storage;
+        VTABLE_push_integer(INTERP, info, rows);
+        VTABLE_push_integer(INTERP, info, cols);
+        VTABLE_push_integer(INTERP, info, flags);
+        for (i = 0; i < rows; i++) {
+            for (j = 0; j < cols; j++) {
+                FLOATVAL f = R_ITEM_XY(s, flags, rows, cols, i, j);
+                VTABLE_push_float(INTERP, info, f);
+                f = I_ITEM_XY(s, flags, rows, cols, i, j);
+                VTABLE_push_float(INTERP, info, f);
+            }
+        }
+    }
+
+    VTABLE void thaw(PMC *info) {
+        Parrot_ComplexMatrix2D_attributes * const attrs = PARROT_COMPLEXMATRIX2D(SELF);
+        INTVAL const rows = VTABLE_shift_integer(INTERP, info);
+        INTVAL const cols = VTABLE_shift_integer(INTERP, info);
+        INTVAL const flags = VTABLE_shift_integer(INTERP, info);
+        INTVAL i, j;
+        FLOATVAL * s;
+        attrs->rows = 0;
+        attrs->cols = 0;
+        attrs->storage = NULL;
+        attrs->flags = 0;
+        resize_matrix(INTERP, SELF, rows - 1, cols - 1);
+        s = attrs->storage;
+        attrs->flags = flags;
+        for (i = 0; i < rows; i++) {
+            for (j = 0; j < cols; j++) {
+                FLOATVAL f = VTABLE_shift_float(INTERP, info);
+                R_ITEM_XY(s, flags, rows, cols, i, j) = f;
+                f = VTABLE_shift_float(INTERP, info);
+                I_ITEM_XY(s, flags, rows, cols, i, j) = f;
+            }
+        }
+    }
 
 /*
 
