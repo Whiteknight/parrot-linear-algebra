@@ -192,18 +192,19 @@ Sets the character value at coordinates rows,cols
 
     VTABLE STRING *get_string() {
         INTVAL i;
-        STRING *pstr = Parrot_str_new(INTERP, "", 0);
+        PMC * const builder = Parrot_pmc_new(INTERP, enum_class_StringBuilder);
         STRING * const newline = Parrot_str_new(INTERP, "\n", 1);
         Parrot_CharMatrix2D_attributes * const attrs = PARROT_CHARMATRIX2D(SELF);
         char * const s = attrs->storage;
         const INTVAL x_size = attrs->rows;
         const INTVAL y_size = attrs->cols;
+
         for (i = 0; i < y_size; i++) {
             STRING * const row = get_string_from_row(INTERP, s, x_size, i);
-            pstr = Parrot_str_append(INTERP, pstr, row);
-            pstr = Parrot_str_append(INTERP, pstr, newline);
+            VTABLE_push_string(INTERP, builder, row);
+            VTABLE_push_string(INTERP, builder, newline);
         }
-        return pstr;
+        return VTABLE_get_string(INTERP, builder);
     }
 
     VTABLE PMC * get_attr_str(STRING * idx) {

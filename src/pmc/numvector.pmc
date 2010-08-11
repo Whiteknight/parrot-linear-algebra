@@ -121,23 +121,23 @@ pmclass NumVector dynpmc auto_attrs {
     VTABLE STRING * get_string() {
         INTVAL i = 0;
         Parrot_NumVector_attributes * const attrs = PARROT_NUMVECTOR(SELF);
-        STRING * pstr = Parrot_str_new(INTERP, "", 0);
+        PMC * const builder = Parrot_pmc_new(INTERP, enum_class_StringBuilder);
 
         if (GET_VECTOR_TYPE(attrs) == VECTOR_TYPE_COL) {
             for (i = 0; i < attrs->length; ++i) {
                 STRING * const item = Parrot_sprintf_c(INTERP, "\t%g\n", attrs->storage[i]);
-                Parrot_str_append(INTERP, pstr, item);
+                VTABLE_push_string(INTERP, builder, item);
             }
         }
         else {
             for (i = 0; i < attrs->length; ++i) {
                 STRING * const item = Parrot_sprintf_c(INTERP, "\t%g", attrs->storage[i]);
-                Parrot_str_append(INTERP, pstr, item);
+                VTABLE_push_string(INTERP, builder, item);
             }
-            Parrot_str_append(INTERP, pstr, "\n");
+            VTABLE_push_string(INTERP, builder, Parrot_str_new(INTERP, "\n", 0));
         }
 
-        return pstr;
+        return VTABLE_get_string(INTERP, builder);
     }
 
     VTABLE STRING * get_string_keyed(PMC * key) {
@@ -318,7 +318,7 @@ pmclass NumVector dynpmc auto_attrs {
 
         dest = VTABLE_copy(INTERP, SELF);
         destattrs = PARROT_NUMVECTOR(dest);
- 
+
         cblas_dscal(destattrs->length, value, destattrs->storage, 0);
         return dest;
     }
@@ -349,17 +349,17 @@ pmclass NumVector dynpmc auto_attrs {
 
         }
 
-        return dest;       
+        return dest;
     }
 
     MULTI void i_multiply(INTVAL value) {
         Parrot_NumVector_attributes * selfattrs = PARROT_NUMVECTOR(SELF);
-        cblas_dscal(selfattrs->length, (FLOATVAL) value, selfattrs->storage, 0); 
+        cblas_dscal(selfattrs->length, (FLOATVAL) value, selfattrs->storage, 0);
     }
 
     MULTI void i_multiply(FLOATVAL value) {
         Parrot_NumVector_attributes * selfattrs = PARROT_NUMVECTOR(SELF);
-        cblas_dscal(selfattrs->length, value, selfattrs->storage, 0); 
+        cblas_dscal(selfattrs->length, value, selfattrs->storage, 0);
     }
 
     MULTI PMC * divide(INTVAL value) {
@@ -372,12 +372,12 @@ pmclass NumVector dynpmc auto_attrs {
 
     MULTI void i_divide(INTVAL value) {
         Parrot_NumVector_attributes * selfattrs = PARROT_NUMVECTOR(SELF);
-        cblas_dscal(selfattrs->length, 1. / (FLOATVAL) value, selfattrs->storage, 0); 
+        cblas_dscal(selfattrs->length, 1. / (FLOATVAL) value, selfattrs->storage, 0);
     }
 
     MULTI void i_divide(FLOATVAL value) {
         Parrot_NumVector_attributes * selfattrs = PARROT_NUMVECTOR(SELF);
-        cblas_dscal(selfattrs->length, 1. / value, selfattrs->storage, 0); 
+        cblas_dscal(selfattrs->length, 1. / value, selfattrs->storage, 0);
 
     }
 

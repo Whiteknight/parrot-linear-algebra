@@ -442,24 +442,23 @@ Get a string representation of the matrix.
     VTABLE STRING *get_string() {
         DECLATTRS(SELF, attrs);
         INTVAL i, j;
-        STRING *pstr = Parrot_str_new(INTERP, "", 0);
+        PMC * const builder = Parrot_pmc_new(INTERP, enum_class_StringBuilder);
         STRING * const newline = Parrot_str_new(INTERP, "\n", 1);
         FLOATVAL * const s = attrs->storage;
         const INTVAL rows = attrs->rows;
         const INTVAL cols = attrs->cols;
         const INTVAL flags = attrs->flags;
 
-        /* TODO: Use a StringBuilder here. */
         for (i = 0; i < rows; ++i) {
             for (j = 0; j < cols; ++j) {
                 const FLOATVAL f = ITEM_XY(s, flags, rows, cols, i, j);
                 STRING * const item = Parrot_sprintf_c(INTERP, "\t%f", f);
-                pstr = Parrot_str_append(INTERP, pstr, item);
+                VTABLE_push_string(INTERP, builder, item);
             }
-            pstr = Parrot_str_append(INTERP, pstr, newline);
+            VTABLE_push_string(INTERP, builder, newline);
         }
 
-        return pstr;
+        return VTABLE_get_string(INTERP, builder);
     }
 
 /*

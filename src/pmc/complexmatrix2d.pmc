@@ -272,21 +272,22 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
 
     VTABLE STRING *get_string() {
         INTVAL rows, cols;
-        STRING *pstr = Parrot_str_new(INTERP, "", 0);
+        PMC * const builder = Parrot_pmc_new(INTERP, enum_class_StringBuilder);
         STRING * const newline = Parrot_str_new(INTERP, "\n", 1);
         Parrot_ComplexMatrix2D_attributes * const attrs = PARROT_COMPLEXMATRIX2D(SELF);
         FLOATVAL * const s = attrs->storage;
         const INTVAL rows_size = attrs->rows;
         const INTVAL cols_size = attrs->cols;
+
         if (IS_TRANSPOSED(attrs->flags)) {
             for (cols = 0; cols < cols_size; ++cols) {
                 for (rows = 0; rows < rows_size; ++rows) {
                     const FLOATVAL real = R_ITEM_XY_COLMAJOR(s, rows_size, cols_size, rows, cols);
                     const FLOATVAL imag = I_ITEM_XY_COLMAJOR(s, rows_size, cols_size, rows, cols);
                     STRING * const item = Parrot_sprintf_c(INTERP, "\t%f%+fi", real, imag);
-                    pstr = Parrot_str_append(INTERP, pstr, item);
+                    VTABLE_push_string(INTERP, builder, item);
                 }
-                pstr = Parrot_str_append(INTERP, pstr, newline);
+                VTABLE_push_string(INTERP, builder, newline);
             }
         }
         else {
@@ -295,12 +296,12 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
                     const FLOATVAL real = R_ITEM_XY_ROWMAJOR(s, rows_size, cols_size, rows, cols);
                     const FLOATVAL imag = I_ITEM_XY_ROWMAJOR(s, rows_size, cols_size, rows, cols);
                     STRING * const item = Parrot_sprintf_c(INTERP, "\t%f%+fi", real, imag);
-                    pstr = Parrot_str_append(INTERP, pstr, item);
+                    VTABLE_push_string(INTERP, builder, item);
                 }
-                pstr = Parrot_str_append(INTERP, pstr, newline);
+                VTABLE_push_string(INTERP, builder, newline);
             }
         }
-        return pstr;
+        return VTABLE_get_string(INTERP, builder);
     }
 
     VTABLE PMC * get_attr_str(STRING * idx) {

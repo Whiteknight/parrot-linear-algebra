@@ -187,7 +187,7 @@ pmclass PMCMatrix2D dynpmc auto_attrs provides matrix {
     /* TODO: Update this to account for transpositions */
     VTABLE STRING *get_string() {
         INTVAL rows, cols;
-        STRING *pstr = Parrot_str_new(INTERP, "{\n", 2);
+        PMC * builder = Parrot_pmc_new(INTERP, enum_class_StringBuilder);
         STRING * const strend = Parrot_str_new(INTERP, "}", 1);
         STRING * const newline = Parrot_str_new(INTERP, "\n", 1);
         Parrot_PMCMatrix2D_attributes * const attrs = PARROT_PMCMATRIX2D(SELF);
@@ -195,6 +195,8 @@ pmclass PMCMatrix2D dynpmc auto_attrs provides matrix {
         const INTVAL flags = attrs->flags;
         const INTVAL rows_size = attrs->rows;
         const INTVAL cols_size = attrs->cols;
+
+        VTABLE_push_string(INTERP, builder, Parrot_str_new(INTERP, "{\n", 2));
         for (rows = 0; rows < rows_size; ++rows) {
             for (cols = 0; cols < cols_size; ++cols) {
                 PMC * const item = ITEM_XY(s, flags, rows_size, cols_size, rows, cols);
@@ -204,14 +206,14 @@ pmclass PMCMatrix2D dynpmc auto_attrs provides matrix {
                     str = CONST_STRING(INTERP, "<NULL>");
                 else
                     str = VTABLE_get_string(INTERP, item);
-                pstr = Parrot_str_append(INTERP, pstr, index);
-                pstr = Parrot_str_append(INTERP, pstr, str);
-                pstr = Parrot_str_append(INTERP, pstr, newline);
+                VTABLE_push_string(INTERP, builder, index);
+                VTABLE_push_string(INTERP, builder, str);
+                VTABLE_push_string(INTERP, builder, newline);
             }
         }
-        pstr = Parrot_str_append(INTERP, pstr, strend);
-        pstr = Parrot_str_append(INTERP, pstr, newline);
-        return pstr;
+        VTABLE_push_string(INTERP, builder, strend);
+        VTABLE_push_string(INTERP, builder, newline);
+        return VTABLE_get_string(INTERP, builder);
     }
 
     /* TODO: Update this to account for transpositions */
