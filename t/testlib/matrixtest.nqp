@@ -1,12 +1,30 @@
 # Copyright (C) 2010, Andrew Whitworth. See accompanying LICENSE file, or
 # http://www.opensource.org/licenses/artistic-license-2.0.php for license.
 
-INIT {
-    use('UnitTest::Testcase');
-    use('UnitTest::Assertions');
-}
-
 class Pla::Matrix::Testcase is UnitTest::Testcase {
+
+    INIT {
+        use('UnitTest::Testcase');
+        use('UnitTest::Assertions');
+    }
+
+    # Temporary stuff util the use() statements above start working properly
+    our sub assert_equal($a, $b, $c) {
+        UnitTest::Assertions::assert_equal($a, $b, $c);
+    }
+
+    our sub assert_throws($a, $b, &c) {
+        UnitTest::Assertions::assert_throws($a, $b, &c);
+    }
+
+    our sub assert_throws_nothing($a, $b) {
+        UnitTest::Assertions::assert_throws_nothing($a, $b);
+    }
+
+    our sub assert_instance_of($a, $b, $c) {
+        UnitTest::Assertions::assert_instance_of($a, $b, $c);
+    }
+
     method default_loader() {
         Pla::Matrix::Loader.new;
     }
@@ -657,7 +675,7 @@ method order_tests(@tests) {
     }
 
     for @tests -> $name {
-    	my $name_lc := $name.downcase.substr(0, $len);
+    	my $name_lc := pir::downcase__SS($name).substr(0, $len);
 
     	if %partition.contains( $name_lc ) {
             %partition{$name_lc}.push: $name;

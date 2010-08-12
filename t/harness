@@ -2,7 +2,6 @@
 
 INIT {
     pir::load_bytecode('library/kakapo_full.pbc');
-    Nqp::compile_file('t/testlib/matrixtest.nqp');
 }
 
 MAIN();
@@ -13,6 +12,7 @@ MAIN();
 # verbose mode
 
 sub MAIN () {
+    Nqp::compile_file('t/testlib/matrixtest.nqp');
     my $total_passed := 0;
     my $total_failed := 0;
     my $total_files  := 0;
