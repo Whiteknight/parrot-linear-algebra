@@ -63,6 +63,14 @@ SOURCES
     $P2['linalg_group'] = $P3
     $P0['dynpmc'] = $P2
 
+    $P2 = new 'Hash'
+    $P2["src/nqp/pla.pir"] = "src/nqp/pla.nqp"
+    $P0["pir_nqp-rx"] = $P2
+
+    $P2 = new 'Hash'
+    $P2["src/nqp/pla.pbc"] = "src/nqp/pla.pir"
+    $P0["pbc_pir"] = $P2
+
     $S0 = args[0]
     if $S0 != "test" goto no_test
     $S0 = get_nqp()
