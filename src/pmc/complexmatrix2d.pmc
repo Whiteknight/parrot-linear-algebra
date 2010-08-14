@@ -2,6 +2,8 @@
 
 #define ALLOCATE_STORAGE(s) (FLOATVAL *)mem_sys_allocate_zeroed(s * sizeof (FLOATVAL) * 2)
 #define PLATYPENAME "ComplexMatrix2D"
+#define DECLATTRS(p, a) Parrot_ComplexMatrix2D_attributes * const (a) = \
+    (Parrot_ComplexMatrix2D_attributes *)((p)->data)
 
 /* Resize the matrix internal storage to be able to hold a point at position
    (x, y). The matrix grows but does not shrink. New spaces in the matrix
@@ -17,7 +19,7 @@
 static void
 resize_matrix(PARROT_INTERP, PMC * self, INTVAL row, INTVAL col)
 {
-    Parrot_ComplexMatrix2D_attributes * const attrs = PARROT_COMPLEXMATRIX2D(self);
+    DECLATTRS(self, attrs);
     /* Store the old values */
     const INTVAL old_rows = attrs->rows;
     const INTVAL old_cols = attrs->cols;
@@ -48,7 +50,7 @@ resize_matrix(PARROT_INTERP, PMC * self, INTVAL row, INTVAL col)
 
 static void
 init_from_pmc_array(PARROT_INTERP, PMC * self, INTVAL rows_size, INTVAL cols_size, PMC * values) {
-    Parrot_ComplexMatrix2D_attributes * const attrs = PARROT_COMPLEXMATRIX2D(self);
+    DECLATTRS(self, attrs);
     INTVAL num = 0;
     const INTVAL init_elems = VTABLE_elements(interp, values);
     const INTVAL total_elems = rows_size * cols_size;
@@ -63,29 +65,29 @@ init_from_pmc_array(PARROT_INTERP, PMC * self, INTVAL rows_size, INTVAL cols_siz
 static PMC *
 get_complex_pmc_at_xy(PARROT_INTERP, PMC *self, INTVAL rows, INTVAL cols)
 {
-	Parrot_ComplexMatrix2D_attributes * const attrs = PARROT_COMPLEXMATRIX2D(self);
-	const INTVAL rows_size = attrs->rows;
-	const INTVAL cols_size = attrs->cols;
-	PMC * newcomplex;
-	const INTVAL flags = attrs->flags;
-	FLOATVAL real, imag;
-	FLOATVAL * const s = attrs->storage;
+    DECLATTRS(self, attrs);
+    const INTVAL rows_size = attrs->rows;
+    const INTVAL cols_size = attrs->cols;
+    PMC * newcomplex;
+    const INTVAL flags = attrs->flags;
+    FLOATVAL real, imag;
+    FLOATVAL * const s = attrs->storage;
 
-	if (rows >= rows_size || cols >= cols_size)
-	    Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
-		"ComplexMatrix2d: indices out of bounds");
-	real = R_ITEM_XY(s, flags, rows_size, cols_size, rows, cols);
-	imag = I_ITEM_XY(s, flags, rows_size, cols_size, rows, cols);
-	newcomplex = Parrot_pmc_new(interp, enum_class_Complex);
-	VTABLE_set_number_keyed_int(interp, newcomplex, 0, real);
-	VTABLE_set_number_keyed_int(interp, newcomplex, 1, imag);
-	return newcomplex;
+    if (rows >= rows_size || cols >= cols_size)
+        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
+        "ComplexMatrix2d: indices out of bounds");
+    real = R_ITEM_XY(s, flags, rows_size, cols_size, rows, cols);
+    imag = I_ITEM_XY(s, flags, rows_size, cols_size, rows, cols);
+    newcomplex = Parrot_pmc_new(interp, enum_class_Complex);
+    VTABLE_set_number_keyed_int(interp, newcomplex, 0, real);
+    VTABLE_set_number_keyed_int(interp, newcomplex, 1, imag);
+    return newcomplex;
 }
 
 static void
 set_complex_pmc_at_xy(PARROT_INTERP, PMC * self, PMC * value, INTVAL row, INTVAL col)
 {
-    Parrot_ComplexMatrix2D_attributes * const attrs = PARROT_COMPLEXMATRIX2D(self);
+    DECLATTRS(self, attrs);
     INTVAL rows_size = attrs->rows;
     INTVAL cols_size = attrs->cols;
     FLOATVAL real, imag;
@@ -144,17 +146,17 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
 */
 
     VTABLE void init() {
-        Parrot_ComplexMatrix2D_attributes * const a = PARROT_COMPLEXMATRIX2D(SELF);
-        a->storage = NULL;
-        a->rows = 0;
-        a->cols = 0;
-        a->flags = 0;
+        DECLATTRS(SELF, attrs);
+        attrs->storage = NULL;
+        attrs->rows = 0;
+        attrs->cols = 0;
+        attrs->flags = 0;
         PObj_custom_destroy_SET(SELF);
     }
 
     VTABLE void destroy() {
-        Parrot_ComplexMatrix2D_attributes * const a = PARROT_COMPLEXMATRIX2D(SELF);
-        FLOATVAL * const s = a->storage;
+        DECLATTRS(SELF, attrs);
+        FLOATVAL * const s = attrs->storage;
         if (s)
             mem_sys_free(s);
     }
@@ -175,7 +177,7 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
 
     VTABLE FLOATVAL get_number_keyed(PMC * key) {
         /* TODO: What should we return here, the real value or the absolute value? */
-        Parrot_ComplexMatrix2D_attributes * const attrs = PARROT_COMPLEXMATRIX2D(SELF);
+        DECLATTRS(SELF, attrs);
         const INTVAL rows_size = attrs->rows;
         const INTVAL cols_size = attrs->cols;
         INTVAL rows, cols;
@@ -192,7 +194,7 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
     }
 
     VTABLE STRING * get_string_keyed(PMC * key) {
-        Parrot_ComplexMatrix2D_attributes * const attrs = PARROT_COMPLEXMATRIX2D(SELF);
+        DECLATTRS(SELF, attrs);
         const INTVAL rows_size = attrs->rows;
         const INTVAL cols_size = attrs->cols;
         INTVAL rows, cols;
@@ -209,13 +211,13 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
     }
 
     VTABLE PMC * get_pmc_keyed(PMC * key) {
-    	INTVAL rows, cols;
-    	GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
+        INTVAL rows, cols;
+        GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
         return get_complex_pmc_at_xy(INTERP, SELF, rows, cols);
     }
 
     VTABLE PMC * get_pmc_keyed_int(INTVAL key) {
-        Parrot_ComplexMatrix2D_attributes * const attrs = PARROT_COMPLEXMATRIX2D(SELF);
+        DECLATTRS(SELF, attrs);
         const INTVAL rows = attrs->rows;
         const INTVAL cols = attrs->cols;
         const INTVAL row = key / rows;
@@ -244,7 +246,7 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
     }
 
     VTABLE void set_pmc_keyed_int(INTVAL key, PMC * value) {
-        Parrot_ComplexMatrix2D_attributes * const attrs = PARROT_COMPLEXMATRIX2D(SELF);
+        DECLATTRS(SELF, attrs);
         const INTVAL rows = attrs->rows;
         const INTVAL cols = attrs->cols;
         const INTVAL row = key / rows;
@@ -271,10 +273,10 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
 */
 
     VTABLE STRING *get_string() {
+        DECLATTRS(SELF, attrs);
         INTVAL rows, cols;
         PMC * const builder = Parrot_pmc_new(INTERP, enum_class_StringBuilder);
         STRING * const newline = Parrot_str_new(INTERP, "\n", 1);
-        Parrot_ComplexMatrix2D_attributes * const attrs = PARROT_COMPLEXMATRIX2D(SELF);
         FLOATVAL * const s = attrs->storage;
         const INTVAL rows_size = attrs->rows;
         const INTVAL cols_size = attrs->cols;
@@ -305,7 +307,7 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
     }
 
     VTABLE PMC * get_attr_str(STRING * idx) {
-        Parrot_ComplexMatrix2D_attributes * const attrs = PARROT_COMPLEXMATRIX2D(SELF);
+        DECLATTRS(SELF, attrs);
         if (Parrot_str_equal(INTERP, idx, CONST_STRING(INTERP, "rows"))) {
             PMC * const rows = Parrot_pmc_new(INTERP, enum_class_Integer);
             VTABLE_set_integer_native(INTERP, rows, attrs->rows);
@@ -326,8 +328,8 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
 
     VTABLE PMC * clone() {
         PMC * const c = Parrot_pmc_new(INTERP, SELF->vtable->base_type);
-        Parrot_ComplexMatrix2D_attributes * const old_atts = PARROT_COMPLEXMATRIX2D(SELF);
-        Parrot_ComplexMatrix2D_attributes * const new_atts = PARROT_COMPLEXMATRIX2D(c);
+        DECLATTRS(SELF, old_atts);
+        DECLATTRS(c, new_atts);
         INTVAL rows, cols;
         INTVAL const rows_size = old_atts->rows;
         INTVAL const cols_size = old_atts->cols;
@@ -351,8 +353,8 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
 
     VTABLE INTVAL is_equal(PMC * other) {
         if (other->vtable->base_type == SELF->vtable->base_type) {
-            Parrot_ComplexMatrix2D_attributes * const self_attrs = PARROT_COMPLEXMATRIX2D(SELF);
-            Parrot_ComplexMatrix2D_attributes * const other_attrs = PARROT_COMPLEXMATRIX2D(other);
+            DECLATTRS(SELF, self_attrs);
+            DECLATTRS(other, other_attrs);
             const INTVAL self_rows = self_attrs->rows;
             const INTVAL self_cols = self_attrs->cols;
             const INTVAL self_flags = self_attrs->flags;
@@ -396,7 +398,7 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
 */
 
     VTABLE void freeze(PMC *info) {
-        Parrot_ComplexMatrix2D_attributes * const attrs = PARROT_COMPLEXMATRIX2D(SELF);
+        DECLATTRS(SELF, attrs);
         INTVAL const rows = attrs->rows;
         INTVAL const cols = attrs->cols;
         INTVAL const flags = attrs->flags;
@@ -416,7 +418,7 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
     }
 
     VTABLE void thaw(PMC *info) {
-        Parrot_ComplexMatrix2D_attributes * const attrs = PARROT_COMPLEXMATRIX2D(SELF);
+        DECLATTRS(SELF, attrs);
         INTVAL const rows = VTABLE_shift_integer(INTERP, info);
         INTVAL const cols = VTABLE_shift_integer(INTERP, info);
         INTVAL const flags = VTABLE_shift_integer(INTERP, info);
@@ -447,9 +449,6 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
 
 =over 4
 
-*/
-/*
-
 =item resize()
 
 =cut
@@ -476,7 +475,7 @@ sizes, growing the matrix if needed.
                 INTVAL cols_size :optional, INTVAL has_cols_size :opt_flag
                ) {
         /* TODO: Value here is going to be a Complex PMC. Handle that */
-        Parrot_ComplexMatrix2D_attributes * const attrs = PARROT_COMPLEXMATRIX2D(SELF);
+        DECLATTRS(SELF, attrs);
         FLOATVAL * s  = attrs->storage;
         INTVAL const curr_rows_size = attrs->rows;
         INTVAL const curr_cols_size = attrs->cols;
@@ -502,6 +501,19 @@ sizes, growing the matrix if needed.
 
 /*
 
+=item item_at()
+
+=cut
+
+*/
+
+    METHOD item_at(INTVAL row, INTVAL col) {
+        PMC * const p = get_complex_pmc_at_xy(INTERP, SELF, row, col);
+        RETURN(PMC * p);
+    }
+
+/*
+
 =item transpose()
 
 Transposes the matrix.
@@ -511,7 +523,7 @@ Transposes the matrix.
 */
 
     METHOD transpose() {
-        Parrot_ComplexMatrix2D_attributes * const attrs = PARROT_COMPLEXMATRIX2D(SELF);
+        DECLATTRS(SELF, attrs);
         INTVAL tmp = 0;
         INTVAL transposed = IS_TRANSPOSED(attrs->flags);
 
@@ -537,7 +549,7 @@ than the transpose() method.
 */
 
     METHOD mem_transpose() {
-        Parrot_ComplexMatrix2D_attributes * const attrs = PARROT_COMPLEXMATRIX2D(SELF);
+        DECLATTRS(SELF, attrs);
         const INTVAL rows_size = attrs->rows;
         const INTVAL cols_size = attrs->cols;
         const INTVAL newsize = rows_size * cols_size;
@@ -568,7 +580,7 @@ than the transpose() method.
 */
 
     METHOD conjugate() {
-        Parrot_ComplexMatrix2D_attributes * const attrs = PARROT_COMPLEXMATRIX2D(SELF);
+        DECLATTRS(SELF, attrs);
         const INTVAL rows_size = attrs->rows;
         const INTVAL cols_size = attrs->cols;
         const INTVAL newsize = rows_size * cols_size;
@@ -595,7 +607,7 @@ value with the return value of the called function.
 */
 
     METHOD iterate_function_inplace(PMC * func, PMC * args :slurpy) {
-        Parrot_ComplexMatrix2D_attributes * const attrs = PARROT_COMPLEXMATRIX2D(SELF);
+        DECLATTRS(SELF, attrs);
         const INTVAL rows_size = attrs->rows;
         const INTVAL cols_size = attrs->cols;
         INTVAL i, j;
@@ -611,7 +623,7 @@ value with the return value of the called function.
     }
 
     METHOD iterate_function_external(PMC * func, PMC * args :slurpy) {
-        Parrot_ComplexMatrix2D_attributes * const attrs = PARROT_COMPLEXMATRIX2D(SELF);
+        DECLATTRS(SELF, attrs);
         PMC * const new_matrix = Parrot_pmc_new(INTERP, SELF->vtable->base_type);
         const INTVAL rows_size = attrs->rows;
         const INTVAL cols_size = attrs->cols;
@@ -640,7 +652,7 @@ value with the return value of the called function.
     }
 
     METHOD get_block(INTVAL rows_idx, INTVAL cols_idx, INTVAL rows_size, INTVAL cols_size) {
-        Parrot_ComplexMatrix2D_attributes * const attrs = PARROT_COMPLEXMATRIX2D(SELF);
+        DECLATTRS(SELF, attrs);
         FLOATVAL * const s = attrs->storage;
         const INTVAL rows = attrs->rows;
         const INTVAL cols = attrs->cols;
@@ -674,8 +686,8 @@ value with the return value of the called function.
     }
 
     METHOD set_block(INTVAL rows_idx, INTVAL cols_idx, PMC * blck) {
-        Parrot_ComplexMatrix2D_attributes * const self_attrs = PARROT_COMPLEXMATRIX2D(SELF);
-        Parrot_ComplexMatrix2D_attributes * const blck_attrs = PARROT_COMPLEXMATRIX2D(blck);
+        DECLATTRS(SELF, self_attrs);
+        DECLATTRS(blck, blck_attrs);
         FLOATVAL * self_s = self_attrs->storage;
         FLOATVAL * const blck_s = blck_attrs->storage;
         INTVAL self_rows = self_attrs->rows;

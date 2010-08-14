@@ -911,6 +911,21 @@ sizes, growing the matrix if needed.
 
 /*
 
+=item item_at()
+
+=cut
+
+*/
+
+    METHOD item_at(INTVAL row, INTVAL col) {
+        DECLATTRS(SELF, att);
+        const FLOATVAL f =
+            ITEM_XY(att->storage, att->flags, att->rows, att->cols, row, col);
+        RETURN(FLOATVAL f);
+    }
+
+/*
+
 =item transpose()
 
 Transposes the matrix lazily.
@@ -1134,12 +1149,6 @@ with data in order.
                     ITEM_XY_ROWMAJOR(blck_s, blck_rows, blck_cols, j, i);
             }
         }
-    }
-
-    METHOD item_at(INTVAL row, INTVAL col) {
-        DECLATTRS(SELF, att);
-        FLOATVAL f = ITEM_XY(att->storage, att->flags, att->rows, att->cols, row, col);
-        RETURN(FLOATVAL f);
     }
 
 /*
