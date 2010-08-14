@@ -121,10 +121,8 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
     }
 
     ### COMMON TESTS ###
-    # TODO: For some of the stub tests below, we should fail() if a test isn't
-    #       provided. This means we're going to have to actually implement these
-    #       methods in the various types and enforce the behavior.
 
+    # Test that we can create a matrix
     method test_OP_new() {
         assert_throws_nothing("Cannot create new matrix", {
             my $m := self.matrix();
@@ -132,12 +130,14 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         });
     }
 
+    # Test that a matrix does matrix
     method test_OP_does() {
         my $m := self.matrix();
         assert_true(pir::does($m, "matrix"), "Does not do matrix");
         assert_false(pir::does($m, "gobbledegak"), "Does gobbledegak");
     }
 
+    # Test that we can get_pmc_keyed on a matrix
     method test_VTABLE_get_pmc_keyed() {
         my $m := self.matrix();
         my $a := self.defaultvalue();
@@ -146,6 +146,7 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         assert_equal($a, $b, "get_pmc_keyed doesn't work");
     }
 
+    # test that we can set a PMC at the given coordinates
     method test_VTABLE_set_pmc_keyed() {
         assert_throws_nothing("Cannot set_pmc_keyed", {
             my $m := self.matrix();
@@ -154,6 +155,8 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         });
     }
 
+    # Test cloning of the matrix. Clones should be different objects with the
+    # same contents
     method test_VTABLE_clone() {
         my $m := self.defaultmatrix2x2();
         my $n := pir::clone($m);
@@ -161,12 +164,14 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         assert_not_same($m, $n, "clones are the same PMC!");
     }
 
+    # test that we can compare two matrices for equality
     method test_VTABLE_is_equal() {
         my $m := self.defaultmatrix2x2();
         my $n := self.defaultmatrix2x2();
         assert_equal($m, $n, "equal matrices are not equal");
     }
 
+    # Assert that two matrices of different sizes are not equal
     method test_VTABLE_is_equal_SIZEFAIL() {
         my $m := self.defaultmatrix2x2();
         my $n := self.defaultmatrix2x2();
@@ -174,6 +179,8 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         assert_not_equal($m, $n, "different sized matrices are equal");
     }
 
+    # Test that two matrices of the same size but with different contents are
+    # not equal
     method test_VTABLE_is_equal_ELEMSFAIL() {
         my $m := self.defaultmatrix2x2();
         my $n := self.defaultmatrix2x2();
@@ -181,17 +188,20 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         assert_not_equal($m, $n, "non-equal matrices are equal");
     }
 
+    # Test that we can get named attributes about the matrix
     method test_VTABLE_get_attr_str() {
         my $m := self.matrix();
         $m{Key.new(5,7)} := self.defaultvalue;
         self.AssertSize($m, 6, 8);
     }
 
+    # Test that we can get attributes about an empty matrix
     method test_VTABLE_get_attr_str_EMPTY() {
         my $m := self.matrix();
         self.AssertSize($m, 0, 0);
     }
 
+    # Assert that we can freeze a matrix to a string
     method test_VTABLE_freeze() {
         assert_throws_nothing("Cannot set_pmc_keyed", {
             my $m := self.fancymatrix2x2();
@@ -199,6 +209,8 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         })
     }
 
+    # Assert that we can freeze a matrix to a string, and thaw that string
+    # back into a new copy of that matrix
     method test_VTABLE_thaw() {
         my $m := self.fancymatrix2x2();
         my $s := pir::freeze__SP($m);
@@ -219,6 +231,7 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         self.AssertSize($m, 8, 12);
     }
 
+    # Test how we access values if we use one key instead of two
     method test_MISC_linearindexing() {
         my $m := self.fancymatrix2x2();
         assert_equal($m[0], $m{Key.new(0,0)}, "cannot get first element linearly");
@@ -227,6 +240,9 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         assert_equal($m[3], $m{Key.new(1,1)}, "cannot get first element linearly");
     }
 
+    # TODO: Test the case where we pass a key with order greater than 2
+
+    # Test that all core matrix types have some common methods
     method test_MISC_havecommonmethods() {
         my $m := self.matrix();
         # Core matrix types should all have these methods in common.
@@ -245,12 +261,14 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         self.assert_has_method($m, "set_block");
     }
 
+    # Test the resize method
     method test_METHOD_resize() {
         my $m := self.matrix();
         $m.resize(3,3);
         self.AssertSize($m, 3, 3);
     }
 
+    # Test that we cannot shrink a matrix using the resize method
     method test_METHOD_resize_SHRINK() {
         my $m := self.matrix();
         $m.resize(3,3);
@@ -258,19 +276,14 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         self.AssertSize($m, 3, 3);
     }
 
+    # Test that resize method with negative indices does nothing
     method test_METHOD_resize_NEGATIVEINDICES() {
         my $m := self.matrix();
         $m.resize(-1, -1);
         self.AssertSize($m, 0, 0);
     }
 
-    method test_METHOD_fill_RESIZE() {
-        my $m := self.defaultmatrix2x2();
-        my $n := self.matrix();
-        $n.fill(self.defaultvalue(), 2, 2);
-        assert_equal($n, $m, "Cannot fill+Resize");
-    }
-
+    # Test that we can fill a matrix
     method test_METHOD_fill() {
         my $m := self.defaultmatrix2x2();
         my $n := self.matrix2x2(
@@ -283,6 +296,13 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         assert_equal($n, $m, "Cannot fill");
     }
 
+    # test that the fill method can be used to resize the matrix
+    method test_METHOD_fill_RESIZE() {
+        my $m := self.defaultmatrix2x2();
+        my $n := self.matrix();
+        $n.fill(self.defaultvalue(), 2, 2);
+        assert_equal($n, $m, "Cannot fill+Resize");
+    }
 
     # Test transposing square matrices
     method test_METHOD_transpose() {
@@ -320,7 +340,7 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         assert_equal($m, $n, "cannot transpose with non-square dimensions");
     }
 
-    # Test transposing square matrices
+    # Test mem transposing square matrices
     method test_METHOD_mem_transpose() {
         my $m := self.matrix2x2(
             self.fancyvalue(0),
@@ -338,7 +358,7 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         assert_equal($n, $m, "cannot mem_transpose matrix");
     }
 
-    # Test transposing non-square matrices
+    # Test mem transposing non-square matrices
     method test_METHOD_mem_transpose_DIMCHANGE() {
         my $m := self.matrix();
         $m{Key.new(0,0)} := self.fancyvalue(0);
@@ -356,6 +376,7 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         assert_equal($m, $n, "cannot mem_transpose with non-square dimensions");
     }
 
+    # Test that we can iterate a function in-place
     method test_METHOD_iterate_function_inplace() {
         my $m := self.defaultmatrix2x2();
         my $n := self.matrix();
@@ -372,6 +393,8 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         assert_equal($count, 4, "iteration did not happen for all elements");
     }
 
+    # test that iterate_function_inplace calls the callback with the proper
+    # coordinates
     method test_METHOD_iterate_function_inplace_COORDS() {
         my $m := self.fancymatrix2x2();
         my $count := 0;
@@ -387,6 +410,7 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         assert_equal($count, 4, "iteration did not happen for all elements");
     }
 
+    # Test that iterate_function_inplace passes the correct args
     method test_METHOD_iterate_function_inplace_ARGS() {
         my $m := self.fancymatrix2x2();
         my $count := 0;
@@ -402,6 +426,7 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         assert_equal($count, 4, "iteration did not happen for all elements");
     }
 
+    # Test that we can iterate_function_external, and create a new matrix
     method test_METHOD_iterate_function_external() {
         my $m := self.fancymatrix2x2();
         my $sub := pir::newclosure__PP(-> $matrix, $value, $x, $y {
@@ -411,6 +436,7 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         assert_equal($o, $m, "Cannot copy by iterating external");
     }
 
+    # Test that iterate_function_external passes the correct coordinates
     method test_METHOD_iterate_function_external_COORDS() {
         my $m := self.matrix2x2(self.nullvalue, self.nullvalue,
                                 self.nullvalue, self.nullvalue);
@@ -423,6 +449,7 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         assert_equal($o, $n, "cannot iterate external with proper coords");
     }
 
+    # Test that iterate_function_external passes the correct args
     method test_METHOD_iterate_function_external_ARGS() {
         my $m := self.matrix2x2(self.nullvalue, self.nullvalue,
                                 self.nullvalue, self.nullvalue);
@@ -435,6 +462,7 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         assert_equal($o, $n, "cannot iterate external with args");
     }
 
+    # Test that we can initialize from an array
     method test_METHOD_initialize_from_array() {
         my $a := [self.fancyvalue(0), self.fancyvalue(1), self.fancyvalue(2), self.fancyvalue(3)];
         my $m := self.matrix2x2(self.fancyvalue(0), self.fancyvalue(1), self.fancyvalue(2), self.fancyvalue(3));
@@ -443,6 +471,7 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         assert_equal($n, $m, "cannot initialize_from_array");
     }
 
+    # Test that we can initialize from array, including zero padding
     method test_METHOD_initialize_from_array_ZEROPAD() {
         my $a := [self.fancyvalue(0), self.fancyvalue(1), self.fancyvalue(2), self.fancyvalue(3)];
         my $m := self.matrix3x3(self.fancyvalue(0), self.fancyvalue(1), self.fancyvalue(2),
@@ -453,6 +482,8 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         assert_equal($n, $m, "cannot initalize from array with zero padding");
     }
 
+    # Test that when we initialize from an array, that we only use as many
+    # values as required
     method test_METHOD_initialize_from_array_UNDERSIZE() {
         my $a := [self.fancyvalue(0), self.fancyvalue(1), self.fancyvalue(2), self.fancyvalue(3)];
         my $m := self.matrix();
@@ -462,6 +493,7 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         assert_equal($n, $m, "cannot initialize from array undersized");
     }
 
+    # Test that we can initialize from a list of arguments
     method test_METHOD_initialize_from_args() {
         my $m := self.matrix2x2(self.fancyvalue(0), self.fancyvalue(1), self.fancyvalue(2), self.fancyvalue(3));
         my $n := self.matrix();
@@ -469,6 +501,7 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         assert_equal($n, $m, "cannot initialize_from_args");
     }
 
+    # Test that we can initialize from an arg list with zero padding
     method test_METHOD_initialize_from_args_ZEROPAD() {
         my $m := self.matrix3x3(self.fancyvalue(0), self.fancyvalue(1), self.fancyvalue(2),
                                 self.fancyvalue(3), self.nullvalue,     self.nullvalue,
@@ -478,6 +511,8 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         assert_equal($n, $m, "cannot initalize from args with zero padding");
     }
 
+    # Test that we can initialize from an arg list, ignoring values that we
+    # don't need
     method test_METHOD_initialize_from_args_UNDERSIZE() {
         my $m := self.matrix();
         $m{Key.new(0,0)} := self.fancyvalue(0);
@@ -486,6 +521,7 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         assert_equal($n, $m, "cannot initialize from args undersized");
     }
 
+    # Test that we can get a block from the matrix
     method test_METHOD_get_block() {
         my $m := self.fancymatrix2x2();
         my $n := $m.get_block(0, 0, 1, 1);
@@ -503,6 +539,7 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         assert_equal($n{Key.new(1, 0)}, $m{Key.new(1, 1)}, "Cannot get_block with correct values");
     }
 
+    # Test that we can use get_block to make a copy
     method test_METHOD_get_block_COPY() {
         my $m := self.fancymatrix2x2();
         my $n := $m.get_block(0, 0, 2, 2);
@@ -544,6 +581,8 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         });
     }
 
+    # Test that calling get_block with coordinates outside the bounds of the
+    # matrix throws an exception
     method test_METHOD_get_block_OUTSIDE() {
         assert_throws(Exception::OutOfBounds, "Can get_block outside boundaries of matrix",
         {
@@ -552,9 +591,7 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         });
     }
 
-
-
-
+    # Test set_block
     method test_METHOD_set_block() {
         my $m := self.fancymatrix2x2();
         my $n := self.matrix();
@@ -578,9 +615,7 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         assert_equal($n{Key.new(2,2)}, $m{Key.new(1,1)}, "value was set in wrong place");
     }
 
-    # TODO: More tests for this method and coordinate combinations, including
-    #       boundary-checking issues
-
+    # Test set_block with a block of zero size
     method test_METHOD_set_block_ZEROSIZE() {
         my $m := self.fancymatrix2x2();
         my $n := pir::clone__PP($m);
@@ -610,7 +645,9 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         self.AssertValueAtIs($m, 1, 1, self.defaultvalue);
     }
 
-    method test_METHOD_set_block_RESIZE() {
+    # Test that set_block can resize the matrix if the specified coordinates
+    # are outside the matrix
+    method test_METHOD_set_block_RESIZE_COORDS() {
         my $m := self.defaultmatrix2x2();
         my $o := self.matrix();
         $o{Key.new(0, 0)} := self.fancyvalue(2);
@@ -630,6 +667,20 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         self.AssertValueAtIs($m, 2, 2, self.fancyvalue(2));
     }
 
+    # Test that set_block can resize the matrix if the specified coordinates
+    # are outside the matrix
+    method test_METHOD_set_block_RESIZE_BLKSIZE() {
+        my $m := self.defaultmatrix2x2();
+        my $o := self.defaultmatrix2x2();
+        my $n := self.matrix3x3(self.defaultvalue, self.defaultvalue, self.nullvalue,
+                                self.defaultvalue, self.defaultvalue, self.defaultvalue,
+                                self.nullvalue,    self.defaultvalue, self.defaultvalue);
+        $m.set_block(1, 1, $o);
+        self.AssertSize($m, 3, 3);
+        assert_equal($m, $n, "set block with a large block does not resize the matrix");
+    }
+
+    # Test that set_block with negative indices throws an exception
     method test_METHOD_set_block_NEGINDICES() {
         assert_throws(Exception::OutOfBounds, "Can set_block with negative indices",
         {
@@ -639,6 +690,8 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         });
     }
 
+    # Test that we can set_block on an empty matrix and cause it to resize
+    # appropriately
     method test_METHOD_set_block_OVERFLOW() {
         my $m := self.fancymatrix2x2();
         my $n := self.matrix();
@@ -661,10 +714,13 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         assert_equal($n{Key.new(2,2)}, $m{Key.new(1,1)}, "value was set in wrong place 9");
     }
 
-    # TODO: Setup a test here to check the case where we set_block with a "block"
-    #       that is not a matrix.
+    # Test that calling set_block with a scalar throws an exception
     method test_METHOD_set_block_SCALAR() {
-        todo("Tests Needed!");
+        my $m := self.defaultmatrix2x2();
+        my $n := "";
+        assert_throws(Exception::OutOfBounds, "Can set_block a scalar", {
+            $m.set_block(0, 0, $n);
+        });
     }
 
     # TODO: We should probably create a few tests to check set_block when using
