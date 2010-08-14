@@ -2,6 +2,7 @@
 
 INIT {
     pir::load_bytecode('library/kakapo_full.pbc');
+    Nqp::compile_file('t/testlib/matrixtest.nqp');
 }
 
 MAIN();
@@ -12,7 +13,6 @@ MAIN();
 # verbose mode
 
 sub MAIN () {
-    Nqp::compile_file('t/testlib/matrixtest.nqp');
     my $total_passed := 0;
     my $total_failed := 0;
     my $total_files  := 0;
@@ -80,13 +80,14 @@ sub MAIN () {
     }
     if $total_failed {
         pir::say("FAILED " ~ $total_failed ~ '/' ~ ($total_passed+$total_failed));
-	pir::exit(1);
+        pir::exit(1);
     } elsif $failed_files {
         pir::say("FAILED " ~ $failed_files ~ " files, PASSED " ~ $total_passed ~ ' tests');
     } else {
         pir::say("PASSED " ~ $total_passed ~ ' tests in ' ~ $total_files ~ ' files');
     }
 }
+
 
 sub get_all_tests(*@dirs) {
     my $fs := FileSystem.instance;
