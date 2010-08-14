@@ -1136,6 +1136,12 @@ with data in order.
         }
     }
 
+    METHOD item_at(INTVAL row, INTVAL col) {
+        DECLATTRS(SELF, att);
+        FLOATVAL f = ITEM_XY(att->storage, att->flags, att->rows, att->cols, row, col);
+        RETURN(FLOATVAL f);
+    }
+
 /*
 
 =item* gemm

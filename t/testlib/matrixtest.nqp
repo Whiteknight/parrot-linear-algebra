@@ -259,6 +259,7 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         self.assert_has_method($m, "initialize_from_args");
         self.assert_has_method($m, "get_block");
         self.assert_has_method($m, "set_block");
+        self.assert_has_method($m, "item_at");
     }
 
     # Test the resize method
@@ -727,6 +728,22 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
     #       various matrix types. For instance,
     #       NumMatrix2d.set_block(PMCMatrix2D) should work, and vice-versa. We
     #       can test [almost] all combinations.
+
+    method test_METHOD_item_at() {
+        todo("Implement this test");
+    }
+
+    method test_METHOD_item_at_BOUNDS() {
+        todo("Implement this test");
+    }
+
+    method test_METHOD_item_at_NEGINDICES() {
+        todo("Implement this test");
+    }
+
+    method test_METHOD_item_at_EMPTY() {
+        todo("Implement this test");
+    }
 
 }
 
