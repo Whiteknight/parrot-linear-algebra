@@ -8,23 +8,6 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         use('UnitTest::Assertions');
     }
 
-    # Temporary stuff util the use() statements above start working properly
-    our sub assert_equal($a, $b, $c) {
-        UnitTest::Assertions::assert_equal($a, $b, $c);
-    }
-
-    our sub assert_throws($a, $b, &c) {
-        UnitTest::Assertions::assert_throws($a, $b, &c);
-    }
-
-    our sub assert_throws_nothing($a, $b) {
-        UnitTest::Assertions::assert_throws_nothing($a, $b);
-    }
-
-    our sub assert_instance_of($a, $b, $c) {
-        UnitTest::Assertions::assert_instance_of($a, $b, $c);
-    }
-
     method default_loader() {
         Pla::Matrix::Loader.new;
     }
@@ -122,6 +105,19 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         $m{Key.new(2,1)} := $cb;
         $m{Key.new(2,2)} := $cc;
         return ($m);
+    }
+
+    method assert_has_method($x, $meth) {
+        my $found;
+        Q:PIR {
+            $P0 = find_lex "$x"
+            $P1 = find_lex "$meth"
+            $S0 = $P1
+            $P2 = find_method $P0, $S0
+            store_lex "$found", $P2
+        };
+        my $type := pir::typeof__SP($x);
+        assert_not_null($found, $type ~ " does not have method " ~ $meth);
     }
 
     ### COMMON TESTS ###
@@ -229,6 +225,24 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         assert_equal($m[1], $m{Key.new(0,1)}, "cannot get first element linearly");
         assert_equal($m[2], $m{Key.new(1,0)}, "cannot get first element linearly");
         assert_equal($m[3], $m{Key.new(1,1)}, "cannot get first element linearly");
+    }
+
+    method test_MISC_havecommonmethods() {
+        my $m := self.matrix();
+        # Core matrix types should all have these methods in common.
+        # Individual types may have additional methods. The signatures for
+        # these will change depending on the type, so we don't check those
+        # here.
+        self.assert_has_method($m, "resize");
+        self.assert_has_method($m, "fill");
+        self.assert_has_method($m, "transpose");
+        self.assert_has_method($m, "mem_transpose");
+        self.assert_has_method($m, "iterate_function_inplace");
+        self.assert_has_method($m, "iterate_function_external");
+        self.assert_has_method($m, "initialize_from_array");
+        self.assert_has_method($m, "initialize_from_args");
+        self.assert_has_method($m, "get_block");
+        self.assert_has_method($m, "set_block");
     }
 
     method test_METHOD_resize() {
