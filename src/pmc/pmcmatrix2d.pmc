@@ -125,7 +125,7 @@ pmclass PMCMatrix2D dynpmc auto_attrs provides matrix {
         GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
         if (cols >= cols_size || rows >= rows_size)
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
-                                        "PMCMatrix2d: indices out of bounds");
+                                        PLATYPENAME ": indices out of bounds");
         return ITEM_XY(attrs->storage, attrs->flags, rows_size, cols_size, rows, cols);
     }
 
@@ -134,7 +134,7 @@ pmclass PMCMatrix2D dynpmc auto_attrs provides matrix {
         const INTVAL total_size = attrs->cols * attrs->rows;
         if (key >= total_size || key < 0) {
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
-                                        "PMCMatrix2D: indices out of bounds.");
+                                        PLATYPENAME ": indices out of bounds.");
         }
         return attrs->storage[key];
     }
@@ -414,9 +414,15 @@ sizes, growing the matrix if needed.
 */
 
     METHOD item_at(INTVAL row, INTVAL col) {
-        DECLATTRS(SELF, att);
+        DECLATTRS(SELF, attrs);
+        const INTVAL rows = attrs->rows;
+        const INTVAL cols = attrs->cols;
+        if (row >= rows || col >= cols || row < 0 || col < 0) {
+            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                PLATYPENAME ": indices out of bounds in item_at");
+        }
         PMC * const p =
-            ITEM_XY(att->storage, att->flags, att->rows, att->cols, row, col);
+            ITEM_XY(attrs->storage, attrs->flags, rows, cols, row, col);
         RETURN(PMC * p);
     }
 

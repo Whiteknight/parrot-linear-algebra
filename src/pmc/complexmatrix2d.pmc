@@ -73,9 +73,9 @@ get_complex_pmc_at_xy(PARROT_INTERP, PMC *self, INTVAL rows, INTVAL cols)
     FLOATVAL real, imag;
     FLOATVAL * const s = attrs->storage;
 
-    if (rows >= rows_size || cols >= cols_size)
+    if (rows >= rows_size || cols >= cols_size || cols < 0 || rows < 0)
         Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
-        "ComplexMatrix2d: indices out of bounds");
+            PLATYPENAME ": indices out of bounds");
     real = R_ITEM_XY(s, flags, rows_size, cols_size, rows, cols);
     imag = I_ITEM_XY(s, flags, rows_size, cols_size, rows, cols);
     newcomplex = Parrot_pmc_new(interp, enum_class_Complex);
@@ -121,7 +121,7 @@ set_complex_pmc_at_xy(PARROT_INTERP, PMC * self, PMC * value, INTVAL row, INTVAL
         default:
             /* TODO: We should support HLL-mapped types here. */
             Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
-                "ComplexMatrix2d: cannot set unknown PMC type");
+                PLATYPENAME ": cannot set unknown PMC type");
     }
     R_ITEM_XY(s, flags, rows_size, cols_size, row, col) = real;
     I_ITEM_XY(s, flags, rows_size, cols_size, row, col) = imag;
@@ -184,7 +184,7 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
         GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
         if (rows >= rows_size || cols >= cols_size)
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
-                "ComplexMatrix2d: indices out of bounds");
+                PLATYPENAME ": indices out of bounds");
         return ITEM_XY(attrs->storage, attrs->flags, rows_size, cols_size, rows, cols);
     }
 
@@ -204,7 +204,7 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
         GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
         if (rows >= rows_size || cols >= cols_size)
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
-                "ComplexMatrix2d: indices out of bounds");
+                PLATYPENAME ": indices out of bounds");
         real = R_ITEM_XY(s, flags, rows_size, cols_size, rows, cols);
         imag = I_ITEM_XY(s, flags, rows_size, cols_size, rows, cols);
         return Parrot_sprintf_c(INTERP, "%f+%fi", real, imag);
@@ -224,7 +224,7 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
         const INTVAL col = key % rows;
         if (row > rows || col > cols) {
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
-                "ComplexMatrix2D: Index out of bounds.");
+                PLATYPENAME ": Index out of bounds.");
         }
         return get_complex_pmc_at_xy(INTERP, SELF, row, col);
     }
@@ -253,7 +253,7 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
         const INTVAL col = key % rows;
         if (row > rows || col > cols) {
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
-                "ComplexMatrix2D: Index out of bounds.");
+                PLATYPENAME ": Index out of bounds.");
         }
         set_complex_pmc_at_xy(INTERP, SELF, value, row, col);
     }

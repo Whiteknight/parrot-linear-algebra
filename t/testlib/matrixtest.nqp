@@ -730,19 +730,35 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
     #       can test [almost] all combinations.
 
     method test_METHOD_item_at() {
-        todo("Implement this test");
+        my $m := self.fancymatrix2x2();
+        assert_equal(self.fancyvalue(0), $m.item_at(0, 0), "cannot get item 0,0");
+        assert_equal(self.fancyvalue(1), $m.item_at(0, 1), "cannot get item 0,1");
+        assert_equal(self.fancyvalue(2), $m.item_at(1, 0), "cannot get item 1,0");
+        assert_equal(self.fancyvalue(3), $m.item_at(1, 1), "cannot get item 1,1");
     }
 
     method test_METHOD_item_at_BOUNDS() {
-        todo("Implement this test");
+        my $m := self.defaultmatrix2x2();
+        assert_throws(Exception::OutOfBounds, "can item_at out of bounds",
+        {
+            $m.item_at(4, 4);
+        });
     }
 
     method test_METHOD_item_at_NEGINDICES() {
-        todo("Implement this test");
+        my $m := self.defaultmatrix2x2();
+        assert_throws(Exception::OutOfBounds, "can item_at out of bounds",
+        {
+            $m.item_at(-1, -1);
+        });
     }
 
     method test_METHOD_item_at_EMPTY() {
-        todo("Implement this test");
+        my $m := self.matrix();
+        assert_throws(Exception::OutOfBounds, "can item_at out of bounds",
+        {
+            $m.item_at(0, 0);
+        });
     }
 
 }
