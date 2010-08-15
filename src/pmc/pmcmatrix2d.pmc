@@ -417,12 +417,12 @@ sizes, growing the matrix if needed.
         DECLATTRS(SELF, attrs);
         const INTVAL rows = attrs->rows;
         const INTVAL cols = attrs->cols;
+        PMC * p;
         if (row >= rows || col >= cols || row < 0 || col < 0) {
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
                 PLATYPENAME ": indices out of bounds in item_at");
         }
-        PMC * const p =
-            ITEM_XY(attrs->storage, attrs->flags, rows, cols, row, col);
+        p = ITEM_XY(attrs->storage, attrs->flags, rows, cols, row, col);
         RETURN(PMC * p);
     }
 
