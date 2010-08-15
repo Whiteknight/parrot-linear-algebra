@@ -1,4 +1,5 @@
 #include "pla_matrix_types.h"
+#include <cblas.h>
 
 #define ALLOCATE_STORAGE(s) (FLOATVAL *)mem_sys_allocate_zeroed(s * sizeof (FLOATVAL) * 2)
 #define PLATYPENAME "ComplexMatrix2D"
@@ -126,6 +127,45 @@ set_complex_pmc_at_xy(PARROT_INTERP, PMC * self, PMC * value, INTVAL row, INTVAL
     R_ITEM_XY(s, flags, rows_size, cols_size, row, col) = real;
     I_ITEM_XY(s, flags, rows_size, cols_size, row, col) = imag;
 }
+
+/* Wrapper to call the dgemm function from BLAS with PMC arguments. Assumes
+   A, B, and C are all ComplexMatrix2D. */
+/*
+static void
+call_gemm(PARROT_INTERP, FLOATVAL alpha, PMC * A, PMC *B, FLOATVAL beta, PMC *C)
+{
+    DECLATTRS(A, attrs_a);
+    DECLATTRS(B, attrs_b);
+    DECLATTRS(C, attrs_c);
+    const INTVAL M = attrs_a->rows;
+    const INTVAL N = attrs_b->cols;
+    const INTVAL K = attrs_a->cols;
+    if (attrs_c->rows != M)
+        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
+            PLATYPENAME ": A, C indices do not match in gemm");
+    if (attrs_c->cols != N)
+        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
+            PLATYPENAME ": B, C indices do not match in gemm");
+    if (attrs_b->rows != K)
+        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
+            PLATYPENAME ": A, B indeces do not match in gemm");
+    cblas_zgemm(CblasRowMajor,
+        IS_TRANSPOSED_BLAS(attrs_a->flags),
+        IS_TRANSPOSED_BLAS(attrs_b->flags),
+        M,
+        N,
+        K,
+        alpha,
+        attrs_a->storage,
+        M,
+        attrs_b->storage,
+        N,
+        beta,
+        attrs_c->storage,
+        M
+    );
+}
+*/
 
 pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
     ATTR FLOATVAL * storage;
@@ -721,6 +761,31 @@ value with the return value of the called function.
             }
         }
     }
+
+/*
+
+=item* gemm
+
+Calculates the matrix equation:
+
+    Z = aAB + bC
+
+=cut
+
+*/
+
+    //METHOD gemm(FLOATVAL alpha, PMC * A, PMC *B, FLOATVAL beta, PMC *C) {
+        /*
+        PMC * const c_out = VTABLE_clone(INTERP, C);
+        //if (A->vtable->base_type != B->vtable->base_type &&
+        //    C->vtable->base_type != A->vtable->base_type &&
+        //    A->vtable->base_type != enum_class_NumMatrix2D)
+        //    Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+        //        PLATYPENAME ": gemm only accepts NumMatrix2D arguments");
+        call_gemm(INTERP, alpha, A, B, beta, c_out);
+        RETURN(PMC* c_out);
+        */
+    //}
 
 /*
 
