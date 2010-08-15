@@ -94,6 +94,9 @@ SOURCES
 
 .sub 'system_linker_settings'
     .param pmc config
+
+    config["dynpmc_cflags"] = "-g"
+
     $P0 = getinterp
     $P1 = $P0[.IGLOBALS_CONFIG_HASH]
     $S0 = $P1['osname']
