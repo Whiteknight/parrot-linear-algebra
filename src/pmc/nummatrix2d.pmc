@@ -1033,8 +1033,8 @@ computation to a new matrix. Return the new matrix of results.
         if (newsize == 0 || old_s == NULL)
             RETURN();
 
-        for (j = 0; j < rows; j++) {
-            for (i = 0; i < cols; i++) {
+        for (i = 0; i < rows; i++) {
+            for (j = 0; j < cols; j++) {
                 const FLOATVAL value = ITEM_XY(old_s, flags, rows, cols, i, j);
                 FLOATVAL result = 0.0;
                 Parrot_ext_call(INTERP, func, "PNIIPf->N", SELF, value, i, j, args, &result);
