@@ -1025,6 +1025,7 @@ computation to a new matrix. Return the new matrix of results.
         const INTVAL rows = attrs->rows;
         const INTVAL cols = attrs->cols;
         const INTVAL newsize = rows * cols;
+        const INTVAL flags = attrs->flags;
         FLOATVAL * const old_s = attrs->storage;
         FLOATVAL * const new_s = ALLOCATE_STORAGE(newsize);
         INTVAL i, j;
@@ -1034,10 +1035,10 @@ computation to a new matrix. Return the new matrix of results.
 
         for (j = 0; j < rows; j++) {
             for (i = 0; i < cols; i++) {
-                const FLOATVAL value = ITEM_XY_ROWMAJOR(old_s, rows, cols, i, j);
+                const FLOATVAL value = ITEM_XY(old_s, flags, rows, cols, i, j);
                 FLOATVAL result = 0.0;
                 Parrot_ext_call(INTERP, func, "PNIIPf->N", SELF, value, i, j, args, &result);
-                ITEM_XY_ROWMAJOR(new_s, rows, cols, i, j) = result;
+                ITEM_XY(new_s, flags, rows, cols, i, j) = result;
             }
         }
         attrs->storage = new_s;
@@ -1052,6 +1053,7 @@ computation to a new matrix. Return the new matrix of results.
         const INTVAL rows = attrs->rows;
         const INTVAL cols = attrs->cols;
         const INTVAL newsize = rows * cols;
+        const INTVAL flags = attrs->flags;
         FLOATVAL * const self_s = attrs->storage;
         FLOATVAL * new_s;
         INTVAL i, j;
@@ -1062,13 +1064,14 @@ computation to a new matrix. Return the new matrix of results.
         resize_matrix(INTERP, new_matrix, rows - 1, cols - 1);
         new_attrs = PARROT_NUMMATRIX2D(new_matrix);
         new_s = new_attrs->storage;
+        new_attrs->flags = flags;
 
         for (i = 0; i < rows; i++) {
             for (j = 0; j < cols; j++) {
-                FLOATVAL value = ITEM_XY_ROWMAJOR(self_s, rows, cols, i, j);
+                FLOATVAL value = ITEM_XY(self_s, flags, rows, cols, i, j);
                 FLOATVAL result = 0.0;
                 Parrot_ext_call(INTERP, func, "PNIIPf->N", SELF, value, i, j, args, &result);
-                ITEM_XY_ROWMAJOR(new_s, rows, cols, i, j) = result;
+                ITEM_XY(new_s, flags, rows, cols, i, j) = result;
             }
         }
         RETURN(PMC * new_matrix);
