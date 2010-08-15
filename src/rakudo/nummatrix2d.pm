@@ -1,10 +1,13 @@
 class P6NumMatrix2D {
 
-    has $.matrix;
+    has $.matrix is rw;
 
-    method new(:$matrix?) {
-        my $m = $matrix;
-        unless $matrix.defined {
+    submethod BUILD(*%n) {
+        if %n.contains("matrix") {
+            say "m not null";
+            $.matrix = %n<matrix>;
+        } else {
+            my $m;
             Q:PIR {
                 $P0 = get_root_global "PLALibrary"
                 unless null $P0 goto __PLA_have_library
@@ -16,9 +19,9 @@ class P6NumMatrix2D {
                 $P1 = root_new ["parrot";"NumMatrix2D"]
                 store_lex '$m', $P1
             };
+            $.matrix = $m;
         }
-        my $new = self.bless(*, matrix => $m);
-        return $new;
+        #}
     }
 
     method Str() {
@@ -35,20 +38,20 @@ class P6NumMatrix2D {
         return $new;
     }
 
-    method set($row, $col, $val) {
-        self!matrix.item_at($row, $col, $val);
+    multi method set($row, $col, $val) {
+        $.matrix.item_at($row, $col, $val);
     }
 
-    method set($row, $col, $rows, $cols, $block) {
-        self!matrix.set_block($row, $col, $rows, $cols, $block);
+    multi method set($row, $col, $rows, $cols, $block) {
+        $.matrix.set_block($row, $col, $rows, $cols, $block);
     }
 
     method map(&block) {
-        my $matrix = self!iterate_function_external(
+        my $matrix = $.matrix.iterate_function_external(
             -> $me, $val, $row, $col {
                 &block($val);
             });
-        my $new = NumMatrix2D.new($matrix);
+        my $new = P6NumMatrix2D.new(matrix => $matrix);
         return $new;
     }
 
@@ -59,7 +62,7 @@ class P6NumMatrix2D {
     }
 
     method transpose(:$mem?) {
-        if $mem.defined { self!matrix.mem_transpose(); }
-        else { self!matrix.transpose(); }
+        if $mem.defined { $.matrix.mem_transpose(); }
+        else { $.matrix.transpose(); }
     }
 }
