@@ -790,6 +790,37 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         });
     }
 
+    method test_METHOD_item_at_VALUE() {
+        my $m := self.fancymatrix2x2();
+        my $n := self.fancymatrix2x2();
+        $n{Key.new(1, 1)} := self.fancyvalue(0);
+        $m.item_at(1, 1, self.fancyvalue(0));
+        assert_equal($m, $n, "item_at(VALUE) does not work like keyed access");
+    }
+
+    method test_METHOD_item_at_VALUE_BOUNDS() {
+        my $m := self.defaultmatrix2x2();
+        assert_throws(Exception::OutOfBounds, "can item_at out of bounds",
+        {
+            $m.item_at(4, 4, self.fancyvalue(0));
+        });
+    }
+
+    method test_METHOD_item_at_VALUE_NEGINDICES() {
+        my $m := self.defaultmatrix2x2();
+        assert_throws(Exception::OutOfBounds, "can item_at out of bounds",
+        {
+            $m.item_at(-1, -1, self.fancyvalue(0));
+        });
+    }
+
+    method test_METHOD_item_at_VALUE_EMPTY() {
+        my $m := self.matrix();
+        assert_throws(Exception::OutOfBounds, "can item_at out of bounds",
+        {
+            $m.item_at(0, 0, self.fancyvalue(0));
+        });
+    }
 }
 
 class Pla::Matrix::Loader is UnitTest::Loader ;
