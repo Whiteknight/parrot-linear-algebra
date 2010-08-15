@@ -7,3 +7,4 @@ Makefile
 *.dump
 *_group.*
 src/pmc/pmc_*.h
+src/nqp/*.pir
