@@ -1,0 +1,83 @@
+#include "pla_matrix_types.h"
+
+#define DECLATTRS(p, a) Parrot_MatrixProxy_attributes * const (a) = \
+    (Parrot_MatrixProxy_attributes *)((p)->data)
+#define PLATYPENAME "MatrixyProxy"
+
+INTVAL __PLA_MatrixProxy_typeid;
+
+pmclass MatrixProxy dynpmc auto_attrs {
+    ATTR PMC * matrix;
+    ATTR PMC * key;
+
+    void class_init() {
+        __PLA_MatrixProxy_typeid = entry;
+    }
+
+    VTABLE void init() {
+        Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_INVALID_OPERATION,
+                                        PLATYPENAME ": cannot init.");
+    }
+
+    VTABLE void init_pmc(PMC *pmc) {
+        DECLATTRS(SELF, attrs);
+        attrs->matrix = pmc;
+        PObj_custom_mark_SET(SELF);
+    }
+
+    VTABLE void assign_pmc(PMC *key) {
+        DECLATTRS(SELF, attrs);
+        attrs->key = key;
+    }
+
+    VTABLE void mark() {
+        DECLATTRS(SELF, attrs);
+        PMC * const matrix = attrs->matrix;
+        PMC * const key = attrs->key;
+        if (!PMC_IS_NULL(matrix))
+            Parrot_gc_mark_PMC_alive(INTERP, matrix);
+        if (!PMC_IS_NULL(key))
+            Parrot_gc_mark_PMC_alive(INTERP, key);
+    }
+
+    VTABLE void set_pmc(PMC *value) {
+        DECLATTRS(SELF, attrs);
+        VTABLE_set_pmc_keyed(INTERP, attrs->matrix, attrs->key, value);
+    }
+
+    VTABLE void set_number(FLOATVAL value) {
+        DECLATTRS(SELF, attrs);
+        VTABLE_set_number_keyed(INTERP, attrs->matrix, attrs->key, value);
+    }
+
+    VTABLE void set_integer_native(INTVAL value) {
+        DECLATTRS(SELF, attrs);
+        VTABLE_set_integer_keyed(INTERP, attrs->matrix, attrs->key, value);
+    }
+
+    VTABLE void set_string(STRING *value) {
+        DECLATTRS(SELF, attrs);
+        VTABLE_set_string_keyed(INTERP, attrs->matrix, attrs->key, value);
+    }
+
+    VTABLE PMC * get_pmc() {
+        DECLATTRS(SELF, attrs);
+        return VTABLE_get_pmc_keyed(INTERP, attrs->matrix, attrs->key);
+    }
+
+    VTABLE FLOATVAL get_number() {
+        DECLATTRS(SELF, attrs);
+        return VTABLE_get_number_keyed(INTERP, attrs->matrix, attrs->key);
+    }
+
+    VTABLE INTVAL get_integer() {
+        DECLATTRS(SELF, attrs);
+        return VTABLE_get_integer_keyed(INTERP, attrs->matrix, attrs->key);
+    }
+
+    VTABLE STRING * get_string() {
+        DECLATTRS(SELF, attrs);
+        return VTABLE_get_string_keyed(INTERP, attrs->matrix, attrs->key);
+    }
+}
+

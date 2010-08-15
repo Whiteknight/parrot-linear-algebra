@@ -3,6 +3,8 @@
 
 #include <cblas.h>
 
+extern INTVAL __PLA_MatrixProxy_typeid;
+
 #define SWAP_XY(a) do { \
         const INTVAL __temp_val = a->rows; \
         a->rows = a->cols; \
