@@ -1,12 +1,28 @@
-class NumMatrix2D does Matrix {
+class P6NumMatrix2D {
+
+    has $.matrix;
 
     method new(:$matrix?) {
-        my $new = self.bless(*);
+        my $m = $matrix;
         unless $matrix.defined {
-            $matrix = pir::new__PS("NumMatrix2D");
+            Q:PIR {
+                $P0 = get_root_global "PLALibrary"
+                unless null $P0 goto __PLA_have_library
+                $P0 = loadlib "linalg_group"
+                set_root_global "PLALibrary", $P0
+                unless null $P0 goto __PLA_have_library
+                die "cannot load linalg_group"
+                __PLA_have_library:
+                $P1 = root_new ["parrot";"NumMatrix2D"]
+                store_lex '$m', $P1
+            };
         }
-        pir::setattribute__vpsp($new, "$!matrix", $matrix);
+        my $new = self.bless(*, matrix => $m);
         return $new;
+    }
+
+    method Str() {
+        return ~$.matrix;
     }
 
     multi method get($row, $col) {
@@ -37,14 +53,13 @@ class NumMatrix2D does Matrix {
     }
 
     method fill($value, *@coords) {
-        if +@coords == 0 { self!matrix.fill($value); }
-        elsif +@coords == 1 { self!matrix.fill($value, @coords[0]); }
-        elsif +@coords == 2 { self!matrix.fill($value, @coords[0], @coords[1]; }
+        if +@coords == 0 { $.matrix.fill($value); }
+        elsif +@coords == 1 { $.matrix.fill($value, @coords[0]); }
+        elsif +@coords == 2 { $.matrix.fill($value, @coords[0], @coords[1]); }
     }
 
     method transpose(:$mem?) {
         if $mem.defined { self!matrix.mem_transpose(); }
         else { self!matrix.transpose(); }
     }
-
 }
