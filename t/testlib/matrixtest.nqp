@@ -386,12 +386,13 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         $n{Key.new(1,0)} := self.fancyvalue(2);
         $n{Key.new(1,1)} := self.fancyvalue(3);
         my $count := -1;
-        my $sub := pir::newclosure__PP(-> $matrix, $value, $x, $y {
+        my $sub := pir::newclosure__PP(sub ($matrix, $value, $x, $y) {
             $count++;
-            return (self.fancyvalue($count));
+            return self.fancyvalue($count);
         });
         $m.iterate_function_inplace($sub);
-        assert_equal($count, 4, "iteration did not happen for all elements");
+        assert_equal($count, 3, "iteration did not happen for all elements");
+        assert_equal($m, $n, "iteration did not create the correct result");
     }
 
     # test that iterate_function_inplace calls the callback with the proper
@@ -401,7 +402,7 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         my $count := 0;
         my $x_ords := [0, 0, 1, 1];
         my $y_ords := [0, 1, 0, 1];
-        my $sub := pir::newclosure__PP(-> $matrix, $value, $x, $y {
+        my $sub := pir::newclosure__PP(sub ($matrix, $value, $x, $y) {
             assert_equal($x, $x_ords[$count], "x coordinate is correct");
             assert_equal($y, $y_ords[$count], "y coordinate is correct");
             $count++;
@@ -417,7 +418,7 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         my $count := 0;
         my $first := 5;
         my $second := 2;
-        my $sub := pir::newclosure__PP(-> $matrix, $value, $x, $y, $a, $b {
+        my $sub := pir::newclosure__PP(sub ($matrix, $value, $x, $y, $a, $b) {
             assert_equal($a, $first, "first arg is not equal: " ~ $x);
             assert_equal($b, $second, "second arg is not equal: " ~ $y);
             $count++;
@@ -434,9 +435,9 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         $m.transpose();
         my $n := self.matrix2x2(self.fancyvalue(0) * 2, self.fancyvalue(2) * 2,
                                 self.fancyvalue(1) * 2, self.fancyvalue(3) * 2);
-        my $sub := pir::newclosure__PP(-> $matrix, $value, $x, $y {
+        my $sub := sub ($matrix, $value, $x, $y) {
             return ($value * 2);
-        });
+        };
         $m.iterate_function_inplace($sub);
         assert_equal($m, $n, "external iteration does not respect transpose");
     }
@@ -444,9 +445,9 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
     # Test that we can iterate_function_external, and create a new matrix
     method test_METHOD_iterate_function_external() {
         my $m := self.fancymatrix2x2();
-        my $sub := pir::newclosure__PP(-> $matrix, $value, $x, $y {
-            return ($value);
-        });
+        my $sub := sub ($matrix, $value, $x, $y) {
+            return $value;
+        };
         my $o := $m.iterate_function_external($sub);
         assert_equal($o, $m, "Cannot copy by iterating external");
     }
@@ -457,7 +458,7 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
                                 self.nullvalue, self.nullvalue);
         my $n := self.matrix2x2(self.fancyvalue(0), self.fancyvalue(1),
                                 self.fancyvalue(1), self.fancyvalue(2));
-        my $sub := pir::newclosure__PP(-> $matrix, $value, $x, $y {
+        my $sub := pir::newclosure__PP(sub ($matrix, $value, $x, $y) {
             return (self.fancyvalue($x + $y));
         });
         my $o := $m.iterate_function_external($sub);
@@ -470,7 +471,7 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
                                 self.nullvalue, self.nullvalue);
         my $n := self.matrix2x2(self.fancyvalue(3), self.fancyvalue(3),
                                 self.fancyvalue(3), self.fancyvalue(3));
-        my $sub := pir::newclosure__PP(-> $matrix, $value, $x, $y, $a, $b {
+        my $sub := pir::newclosure__PP(sub ($matrix, $value, $x, $y, $a, $b) {
             return (self.fancyvalue($a + $b));
         });
         my $o := $m.iterate_function_external($sub, 1, 2);
@@ -484,7 +485,9 @@ class Pla::Matrix::Testcase is UnitTest::Testcase {
         $m.transpose();
         my $n := self.matrix2x2(self.fancyvalue(0) * 2, self.fancyvalue(2) * 2,
                                 self.fancyvalue(1) * 2, self.fancyvalue(3) * 2);
-        my $sub := -> $matrix, $value, $x, $y { $value * 2; };
+        my $sub := sub ($matrix, $value, $x, $y) {
+            return $value * 2;
+        };
         my $o := $m.iterate_function_external($sub);
         assert_equal($o, $n, "external iteration does not respect transpose");
     }
