@@ -117,12 +117,4 @@ method test_METHOD_conjugate() {
     assert_equal($m, $n, "conjugate does not work");
 }
 
-method test_METHOD_iterate_function_inplace() {
-    my $m := self.matrix2x2("1+1i", "2+2i", "3+3i", "4+4i");
-    my $n := self.matrix2x2("3.5+1i", "4.5+2i", "5.5+3i", "6.5+4i");
-    $m.iterate_function_inplace(sub ($matrix, $value, $row, $col) {
-        return ($value + 2.5);
-    });
-    assert_equal($m, $n, "Cannot iterate function in place");
-}
 

@@ -16,15 +16,15 @@ class Pla::Matrix::MatrixTest is Pla::Matrix::MatrixTestBase {
         });
     }
 
+    method test_OP_does_NOT() {
+        my $m := self.matrix();
+        assert_false(pir::does($m, "gobbledegak"), "Does gobbledegak");
+    }
+
     # Test that a matrix does matrix
     method test_OP_does_Matrix() {
         my $m := self.matrix();
         assert_true(pir::does($m, "matrix"), "Does not do matrix");
-    }
-
-    method test_OP_does_NOT() {
-        my $m := self.matrix();
-        assert_false(pir::does($m, "gobbledegak"), "Does gobbledegak");
     }
 
     # Test that we can get_pmc_keyed on a matrix
@@ -109,6 +109,96 @@ class Pla::Matrix::MatrixTest is Pla::Matrix::MatrixTestBase {
         assert_not_same($m, $n, "Freeze/thaw returns original");
     }
 
+    method test_VTABLE_get_string() {
+        self.RequireOverride("test_VTABLE_get_string");
+    }
+
+    method test_VTABLE_get_string_keyed() {
+        my $m := self.matrix2x2(4.0, 2.0,
+                                3.0, 1.0);
+        Q:PIR {
+            $P0 = find_lex "$m"
+            $S0 = $P0[1;1]
+            $S1 = substr $S0, 0, 3
+            assert_equal($S1, "1.0", "get_string_keyed fails")
+        }
+    }
+
+    method test_VTABLE_get_number_keyed_int() {
+        my $m := self.matrix2x2(4.0, 2.0,
+                                3.0, 1.0);
+        Q:PIR {
+            $P0 = find_lex "$m"
+
+            $N0 = $P0[0]
+            assert_equal($N0, 4.0, "Can get number 0 by linear index")
+
+            $N0 = $P0[1]
+            assert_equal($N0, 2.0, "Can get number 1 by linear index")
+
+            $N0 = $P0[2]
+            assert_equal($N0, 3.0, "Can get number 2 by linear index")
+
+            $N0 = $P0[3]
+            assert_equal($N0, 1.0, "Can get number 3 by linear index")
+        }
+    }
+
+    method test_VTABLE_get_integer_keyed_int() {
+        my $m := self.matrix2x2(4.0, 2.0, 3.0, 1.0);
+        Q:PIR {
+            $P0 = find_lex "$m"
+
+            $I0 = $P0[0]
+            assert_equal($I0, 4, "Can get integer 0 by linear index")
+
+            $I0 = $P0[1]
+            assert_equal($I0, 2, "Can get integer 1 by linear index")
+
+            $I0 = $P0[2]
+            assert_equal($I0, 3, "Can get integer 2 by linear index")
+
+            $I0 = $P0[3]
+            assert_equal($I0, 1, "Can get integer 3 by linear index")
+        }
+    }
+
+    method test_VTABLE_get_string_keyed_int() {
+        my $m := self.matrix2x2(4.0, 2.0,
+                                3.0, 1.0);
+        Q:PIR {
+            $P0 = find_lex "$m"
+            $S0 = $P0[2]
+            $S1 = substr $S0, 0, 3
+            assert_equal($S1, "3.0", "Cannot get string keyed int")
+        }
+    }
+
+    method test_VTABLE_get_pmc_keyed_int() {
+        my $m := self.matrix2x2(4.0, 2.0, 3.0, 1.0);
+        Q:PIR {
+            $P0 = find_lex "$m"
+
+            $P1 = $P0[0]
+            assert_instance_of($P1, "Float", "got Number PMC from linear index")
+            $N0 = $P1
+            assert_equal($N0, 4.0, "Got PMC 0 from linear index")
+
+            $P1 = $P0[1]
+            $N0 = $P1
+            assert_equal($N0, 2.0, "Got PMC 1 from linear index")
+
+            $P1 = $P0[2]
+            $N0 = $P1
+            assert_equal($N0, 3.0, "Got PMC 2 from linear index")
+
+            $P1 = $P0[3]
+            $N0 = $P1
+            assert_equal($N0, 1.0, "Got PMC 3 from linear index")
+        }
+    }
+
+
     # Test to show that autoresizing behavior of the type is consistent.
     method test_MISC_autoresizing() {
         my $m := self.matrix();
@@ -122,7 +212,7 @@ class Pla::Matrix::MatrixTest is Pla::Matrix::MatrixTestBase {
     }
 
     # Test how we access values if we use one key instead of two
-    method test_MISC_linearindexing() {
+    method test_MISC_linear_indexing() {
         my $m := self.fancymatrix2x2();
         assert_equal($m[0], $m{Key.new(0,0)}, "cannot get first element linearly");
         assert_equal($m[1], $m{Key.new(0,1)}, "cannot get first element linearly");
@@ -150,6 +240,9 @@ class Pla::Matrix::MatrixTest is Pla::Matrix::MatrixTestBase {
         self.AssertHasMethod($m, "get_block");
         self.AssertHasMethod($m, "set_block");
         self.AssertHasMethod($m, "item_at");
+
+        # TODO
+        #self.AssertHasMethod($m, "dimensions");
     }
 
     # Test the resize method
@@ -465,6 +558,28 @@ class Pla::Matrix::MatrixTest is Pla::Matrix::MatrixTestBase {
         self.AssertSize($n, 2, 1);
         assert_equal($n{Key.new(0, 0)}, $m{Key.new(0, 1)}, "Cannot get_block with correct values");
         assert_equal($n{Key.new(1, 0)}, $m{Key.new(1, 1)}, "Cannot get_block with correct values");
+    }
+
+    # TODO: Other tests for this method with other argument combinations and
+    #       boundary checks.
+    method test_METHOD_get_block_1() {
+        my $m := self.matrix3x3(1.0, 2.0, 3.0,
+                                4.0, 5.0, 6.0,
+                                7.0, 8.0, 9.0);
+        my $n := self.matrix2x2(1.0, 2.0,
+                                4.0, 5.0);
+        my $o := $m.get_block(0, 0, 2, 2);
+        assert_equal($n, $o, "cannot get block");
+    }
+
+    method test_METHOD_get_block_2() {
+        my $m := self.matrix3x3(1.0, 2.0, 3.0,
+                                4.0, 5.0, 6.0,
+                                7.0, 8.0, 9.0);
+        my $n := self.matrix2x2(5.0, 6.0,
+                                8.0, 9.0);
+        my $o := $m.get_block(1, 1, 2, 2);
+        assert_equal($n, $o, "cannot get block");
     }
 
     # Test that we can use get_block to make a copy

@@ -14,32 +14,30 @@ class Pla::Matrix::MatrixTestBase is UnitTest::Testcase {
 
     method default_loader() { Pla::Matrix::Loader.new; }
 
+    method RequireOverride($m) {
+        Exception::MethodNotFound.new(
+            :message("Must subclass " ~ $m ~ " in your test class")
+        ).throw;
+    }
+
     # A default value which can be set at a particular location and tested
     method defaultvalue() {
-        Exception::MethodNotFound.new(
-            :message("Must subclass matrix() in your test class")
-        ).throw;
+        self.RequireOverride(self.defaultvalue);
     }
 
     # The null value which is auto-inserted into the matrix on resize.
     method nullvalue() {
-        Exception::MethodNotFound.new(
-            :message("Must subclass nullvalue() in your test class")
-        ).throw;
+        self.RequireOverride(self.nullvalue);
     }
 
     # A novel value which can be used to flag interesting changes in tests.
     method fancyvalue($idx) {
-        Exception::MethodNotFound.new(
-            :message("Must subclass fancyvalue(i) in your test class")
-        ).throw;
+        self.RequireOverride(self.fancyvalue);
     }
 
     # Create an empty matrix of the given type
     method matrix() {
-        Exception::MethodNotFound.new(
-            :message("Must subclass matrix() in your test class")
-        ).throw;
+        self.RequireOverride(self.matrix);
     }
 
     # Create a 2x2 matrix of the type with given values row-first
