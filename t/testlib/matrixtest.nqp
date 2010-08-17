@@ -240,9 +240,6 @@ class Pla::Matrix::MatrixTest is Pla::Matrix::MatrixTestBase {
         self.AssertHasMethod($m, "get_block");
         self.AssertHasMethod($m, "set_block");
         self.AssertHasMethod($m, "item_at");
-
-        # TODO
-        #self.AssertHasMethod($m, "dimensions");
     }
 
     # Test the resize method
