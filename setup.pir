@@ -69,8 +69,12 @@ SOURCES
     $P0["pir_nqp-rx"] = $P2
 
     $P2 = new 'Hash'
-    $P2["src/nqp/pla.pbc"] = "src/nqp/pla.pir"
+    $P2["pla_nqp.pbc"] = "src/nqp/pla.pir"
     $P0["pbc_pir"] = $P2
+
+    $P2 = new 'ResizablePMCArray'
+    push $P2, "pla_nqp.pbc"
+    $P0["inst_lib"] = $P2
 
     $S0 = args[0]
     if $S0 != "test" goto no_test
