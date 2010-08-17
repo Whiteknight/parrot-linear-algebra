@@ -2,8 +2,7 @@
 .sub "" :load :init
     load_bytecode "nqp-rx.pbc"
     load_bytecode "./library/kakapo_full.pbc"
-    $P0 = get_hll_global ["Nqp"], "compile_file"
-    $P0("t/testlib/matrixtest.nqp")
+    load_bytecode "t/testlib/pla_test.pbc"
     loadlib $P33, "./linalg_group"
 .end
 

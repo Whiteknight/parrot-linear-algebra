@@ -1,4 +1,4 @@
-class Test::PmcMatrix2D is Pla::Matrix::Testcase;
+class Test::PmcMatrix2D is Pla::Matrix::MatrixTest;
 
 INIT {
     use('UnitTest::Testcase');
@@ -15,8 +15,10 @@ method matrix() {
     return (Parrot::new("PMCMatrix2D"));
 }
 
-method nullvalue() {
-    return (pir::null__P());
+method defaultvalue() { 1; }
+method nullvalue() { return (pir::null__P()); }
+method fancyvalue($idx) {
+    [5, 6, 7, 8][$idx];
 }
 
 method test_VTABLE_get_integer_keyed() {

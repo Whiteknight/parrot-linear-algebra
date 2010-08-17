@@ -1,4 +1,4 @@
-class Test::ComplexMatrix2D is Pla::Matrix::Testcase;
+class Test::ComplexMatrix2D is Pla::Matrix::NumericMatrixTest;
 
 INIT {
     use('UnitTest::Testcase');
@@ -13,7 +13,7 @@ sub MAIN() {
     $proto.suite.run;
 }
 
-method defaultvalue() {
+our method defaultvalue() {
     return (pir::new__PSP("Complex", "1+1i"));
 }
 
@@ -29,7 +29,7 @@ method fancyvalue($idx) {
     );
 }
 
-method matrix() {
+our method matrix() {
     my $m := Parrot::new("ComplexMatrix2D");
     return ($m);
 }

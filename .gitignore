@@ -8,3 +8,4 @@ Makefile
 *_group.*
 src/pmc/pmc_*.h
 src/nqp/*.pir
+t/testlib/*.pir

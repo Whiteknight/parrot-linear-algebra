@@ -1,4 +1,4 @@
-class Test::NumMatrix2D is Pla::Matrix::Testcase;
+class Test::NumMatrix2D is Pla::Matrix::MatrixTest;
 
 # Test boilerplate.
 
@@ -19,6 +19,12 @@ sub MAIN() {
 method matrix() {
     my $m := Parrot::new("NumMatrix2D");
     return ($m);
+}
+
+method defaultvalue() { 1.0; }
+method nullvalue() { 0.0; }
+method fancyvalue($idx) {
+    [5.1, 6.2, 7.3, 8.4][$idx];
 }
 
 # TODO: Need to add lots more tests for is_equal. It uses a new float

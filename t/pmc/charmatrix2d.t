@@ -1,4 +1,4 @@
-class Test::CharMatrix2D is Pla::Matrix::Testcase;
+class Test::CharMatrix2D is Pla::Matrix::MatrixTest;
 
 INIT {
     use('UnitTest::Testcase');

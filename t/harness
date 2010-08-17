@@ -2,7 +2,7 @@
 
 INIT {
     pir::load_bytecode('library/kakapo_full.pbc');
-    Nqp::compile_file('t/testlib/matrixtest.nqp');
+    pir::load_bytecode('t/testlib/pla_test.pbc');
 }
 
 MAIN();
