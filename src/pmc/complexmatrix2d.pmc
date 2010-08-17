@@ -547,9 +547,23 @@ sizes, growing the matrix if needed.
 
 */
 
-    METHOD item_at(INTVAL row, INTVAL col) {
-        PMC * const p = get_complex_pmc_at_xy(INTERP, SELF, row, col);
-        RETURN(PMC * p);
+    METHOD item_at(INTVAL row, INTVAL col,
+        PMC * value :optional, INTVAL has_value :opt_flag) {
+        DECLATTRS(SELF, attrs);
+        const INTVAL rows = attrs->rows;
+        const INTVAL cols = attrs->cols;
+        if (row < 0 || col < 0 || row >= rows || col >= cols) {
+            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                PLATYPENAME ": Index out of bounds.");
+        }
+        if (has_value) {
+            set_complex_pmc_at_xy(INTERP, SELF, value, row, col);
+            RETURN(PMC * value);
+        }
+        else {
+            PMC * const p = get_complex_pmc_at_xy(INTERP, SELF, row, col);
+            RETURN(PMC * p);
+        }
     }
 
 /*

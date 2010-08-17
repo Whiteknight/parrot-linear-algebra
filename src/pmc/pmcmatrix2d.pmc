@@ -413,16 +413,21 @@ sizes, growing the matrix if needed.
 
 */
 
-    METHOD item_at(INTVAL row, INTVAL col) {
+    METHOD item_at(INTVAL row, INTVAL col,
+        PMC * value :optional, INTVAL has_value :opt_flag) {
         DECLATTRS(SELF, attrs);
         const INTVAL rows = attrs->rows;
         const INTVAL cols = attrs->cols;
+        const INTVAL flags = attrs->flags;
+        PMC ** const s = attrs->storage;
         PMC * p;
         if (row >= rows || col >= cols || row < 0 || col < 0) {
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
                 PLATYPENAME ": indices out of bounds in item_at");
         }
-        p = ITEM_XY(attrs->storage, attrs->flags, rows, cols, row, col);
+        if (has_value)
+            ITEM_XY(s, flags, rows, cols, row, col) = value;
+        p = ITEM_XY(s, flags, rows, cols, row, col);
         RETURN(PMC * p);
     }
 
@@ -510,7 +515,7 @@ value with the return value of the called function.
             for (j = 0; j < cols_size; j++) {
                 PMC * const value = ITEM_XY_ROWMAJOR(old_s, rows_size, cols_size, i, j);
                 PMC * result = PMCNULL;
-                Parrot_ext_call(INTERP, func, "PPIIPf->N", SELF, value, i, j, args, &result);
+                Parrot_ext_call(INTERP, func, "PPIIPf->P", SELF, value, i, j, args, &result);
                 ITEM_XY_ROWMAJOR(new_s, rows_size, cols_size, i, j) = result;
             }
         }
@@ -526,6 +531,7 @@ value with the return value of the called function.
         const INTVAL rows_size = attrs->rows;
         const INTVAL cols_size = attrs->cols;
         const INTVAL newsize = rows_size * cols_size;
+        const INTVAL flags = attrs->flags;
         PMC ** const self_s = attrs->storage;
         PMC ** new_s;
         INTVAL i, j;
@@ -535,13 +541,14 @@ value with the return value of the called function.
 
         resize_matrix(INTERP, new_matrix, rows_size - 1, cols_size - 1);
         new_s = new_attrs->storage;
+        new_attrs->flags = flags;
 
         for (i = 0; i < rows_size; i++) {
             for (j = 0; j < cols_size; j++) {
-                PMC * const value = ITEM_XY_ROWMAJOR(self_s, rows_size, cols_size, i, j);
+                PMC * const value = ITEM_XY(self_s, flags, rows_size, cols_size, i, j);
                 PMC * result = PMCNULL;
-                Parrot_ext_call(INTERP, func, "PPIIPf->N", SELF, value, i, j, args, &result);
-                ITEM_XY_ROWMAJOR(new_s, rows_size, cols_size, i, j) = result;
+                Parrot_ext_call(INTERP, func, "PPIIPf->P", SELF, value, i, j, args, &result);
+                ITEM_XY(new_s, flags, rows_size, cols_size, i, j) = result;
             }
         }
         RETURN(PMC * new_matrix);
