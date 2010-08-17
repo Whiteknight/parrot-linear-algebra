@@ -343,8 +343,8 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
             }
         }
         else {
-            for (cols = 0; cols < cols_size; ++cols) {
-                for (rows = 0; rows < rows_size; ++rows) {
+            for (rows = 0; rows < rows_size; ++rows) {
+                for (cols = 0; cols < cols_size; ++cols) {
                     const FLOATVAL real = R_ITEM_XY_ROWMAJOR(s, rows_size, cols_size, rows, cols);
                     const FLOATVAL imag = I_ITEM_XY_ROWMAJOR(s, rows_size, cols_size, rows, cols);
                     STRING * const item = Parrot_sprintf_c(INTERP, "\t%f%+fi", real, imag);
