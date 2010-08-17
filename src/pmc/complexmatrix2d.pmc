@@ -130,9 +130,8 @@ set_complex_pmc_at_xy(PARROT_INTERP, PMC * self, PMC * value, INTVAL row, INTVAL
 
 /* Wrapper to call the dgemm function from BLAS with PMC arguments. Assumes
    A, B, and C are all ComplexMatrix2D. */
-/*
 static void
-call_gemm(PARROT_INTERP, FLOATVAL alpha, PMC * A, PMC *B, FLOATVAL beta, PMC *C)
+call_gemm(PARROT_INTERP, PMC *alpha, PMC * A, PMC *B, PMC *beta, PMC *C)
 {
     DECLATTRS(A, attrs_a);
     DECLATTRS(B, attrs_b);
@@ -140,6 +139,8 @@ call_gemm(PARROT_INTERP, FLOATVAL alpha, PMC * A, PMC *B, FLOATVAL beta, PMC *C)
     const INTVAL M = attrs_a->rows;
     const INTVAL N = attrs_b->cols;
     const INTVAL K = attrs_a->cols;
+    FLOATVAL alpha_p[2];
+    FLOATVAL beta_p[2];
     if (attrs_c->rows != M)
         Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
             PLATYPENAME ": A, C indices do not match in gemm");
@@ -149,23 +150,32 @@ call_gemm(PARROT_INTERP, FLOATVAL alpha, PMC * A, PMC *B, FLOATVAL beta, PMC *C)
     if (attrs_b->rows != K)
         Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
             PLATYPENAME ": A, B indeces do not match in gemm");
+    if (!VTABLE_isa(interp, alpha, CONST_STRING(interp, "Complex")))
+        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_INVALID_OPERATION,
+            PLATYPENAME ": Alpha must be Complex");
+    if (!VTABLE_isa(interp, beta, CONST_STRING(interp, "Complex")))
+        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_INVALID_OPERATION,
+            PLATYPENAME ": Beta must be Complex");
+    alpha_p[0] = VTABLE_get_number_keyed_int(interp, alpha, 0);
+    alpha_p[1] = VTABLE_get_number_keyed_int(interp, alpha, 1);
+    beta_p[0] = VTABLE_get_number_keyed_int(interp, beta, 0);
+    beta_p[1] = VTABLE_get_number_keyed_int(interp, beta, 1);
     cblas_zgemm(CblasRowMajor,
         IS_TRANSPOSED_BLAS(attrs_a->flags),
         IS_TRANSPOSED_BLAS(attrs_b->flags),
         M,
         N,
         K,
-        alpha,
+        alpha_p,
         attrs_a->storage,
         M,
         attrs_b->storage,
         N,
-        beta,
+        beta_p,
         attrs_c->storage,
         M
     );
 }
-*/
 
 pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
     ATTR FLOATVAL * storage;
@@ -788,8 +798,7 @@ Calculates the matrix equation:
 
 */
 
-    //METHOD gemm(FLOATVAL alpha, PMC * A, PMC *B, FLOATVAL beta, PMC *C) {
-        /*
+    METHOD gemm(PMC *alpha, PMC * A, PMC *B, PMC *beta, PMC *C) {
         PMC * const c_out = VTABLE_clone(INTERP, C);
         //if (A->vtable->base_type != B->vtable->base_type &&
         //    C->vtable->base_type != A->vtable->base_type &&
@@ -798,8 +807,7 @@ Calculates the matrix equation:
         //        PLATYPENAME ": gemm only accepts NumMatrix2D arguments");
         call_gemm(INTERP, alpha, A, B, beta, c_out);
         RETURN(PMC* c_out);
-        */
-    //}
+    }
 
 /*
 
