@@ -128,10 +128,29 @@ set_complex_pmc_at_xy(PARROT_INTERP, PMC * self, PMC * value, INTVAL row, INTVAL
     I_ITEM_XY(s, flags, rows_size, cols_size, row, col) = imag;
 }
 
+static void
+set_scalar_at_xy(PARROT_INTERP, PMC * self, FLOATVAL value, INTVAL row, INTVAL col)
+{
+    DECLATTRS(self, attrs);
+    INTVAL rows_size = attrs->rows;
+    INTVAL cols_size = attrs->cols;
+    const INTVAL flags = attrs->flags;
+    FLOATVAL * s;
+
+    if (row >= rows_size || col >= cols_size) {
+        resize_matrix(interp, self, row, col);
+        rows_size = attrs->rows;
+        cols_size = attrs->cols;
+    }
+    s = attrs->storage;
+    R_ITEM_XY(s, flags, rows_size, cols_size, row, col) = value;
+    I_ITEM_XY(s, flags, rows_size, cols_size, row, col) = 0;
+}
+
 /* Wrapper to call the dgemm function from BLAS with PMC arguments. Assumes
    A, B, and C are all ComplexMatrix2D. */
 static void
-call_gemm(PARROT_INTERP, PMC *alpha, PMC * A, PMC *B, PMC *beta, PMC *C)
+call_gemm_pmc(PARROT_INTERP, PMC *alpha, PMC * A, PMC *B, PMC *beta, PMC *C)
 {
     DECLATTRS(A, attrs_a);
     DECLATTRS(B, attrs_b);
@@ -175,6 +194,196 @@ call_gemm(PARROT_INTERP, PMC *alpha, PMC * A, PMC *B, PMC *beta, PMC *C)
         attrs_c->storage,
         M
     );
+}
+
+/* Wrapper to call the dgemm function from BLAS with PMC arguments. Assumes
+   A, B, and C are all ComplexMatrix2D. */
+static void
+call_gemm(PARROT_INTERP, FLOATVAL alpha_r, FLOATVAL alpha_i, PMC * A, PMC *B,
+    FLOATVAL beta_r, FLOATVAL beta_i, PMC *C)
+{
+    DECLATTRS(A, attrs_a);
+    DECLATTRS(B, attrs_b);
+    DECLATTRS(C, attrs_c);
+    const INTVAL M = attrs_a->rows;
+    const INTVAL N = attrs_b->cols;
+    const INTVAL K = attrs_a->cols;
+    FLOATVAL alpha_p[2];
+    FLOATVAL beta_p[2];
+    if (attrs_c->rows != M)
+        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
+            PLATYPENAME ": A, C indices do not match in gemm");
+    if (attrs_c->cols != N)
+        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
+            PLATYPENAME ": B, C indices do not match in gemm");
+    if (attrs_b->rows != K)
+        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
+            PLATYPENAME ": A, B indeces do not match in gemm");
+    alpha_p[0] = alpha_r;
+    alpha_p[1] = alpha_i;
+    beta_p[0] = beta_r;
+    beta_p[1] = beta_i;
+    cblas_zgemm(CblasRowMajor,
+        IS_TRANSPOSED_BLAS(attrs_a->flags),
+        IS_TRANSPOSED_BLAS(attrs_b->flags),
+        M,
+        N,
+        K,
+        alpha_p,
+        attrs_a->storage,
+        M,
+        attrs_b->storage,
+        N,
+        beta_p,
+        attrs_c->storage,
+        M
+    );
+}
+
+/* Add a scalar to every element of the matrix */
+static void
+add_scalar_float(PARROT_INTERP, PMC * self, FLOATVAL v)
+{
+    DECLATTRS(self, attrs);
+    const INTVAL rows_size = attrs->rows;
+    const INTVAL cols_size = attrs->cols;
+    FLOATVAL * const s = attrs->storage;
+    INTVAL i, j;
+
+    for (i = 0; i < rows_size; i++) {
+        for (j = 0; j < cols_size; j++) {
+            R_ITEM_XY_ROWMAJOR(s, rows_size, cols_size, i, j) += v;
+        }
+    }
+}
+
+/* Add a scalar to every element of the matrix */
+static void
+add_scalar_complex(PARROT_INTERP, PMC * self, PMC *v, INTVAL sub)
+{
+    DECLATTRS(self, attrs);
+    const INTVAL rows_size = attrs->rows;
+    const INTVAL cols_size = attrs->cols;
+    FLOATVAL * const s = attrs->storage;
+    INTVAL i, j;
+    const FLOATVAL v_r = VTABLE_get_number_keyed_int(interp, v, 0);
+    const FLOATVAL v_i = VTABLE_get_number_keyed_int(interp, v, 1);
+
+    if (sub) {
+        for (i = 0; i < rows_size; i++) {
+            for (j = 0; j < cols_size; j++) {
+                R_ITEM_XY_ROWMAJOR(s, rows_size, cols_size, i, j) -= v_r;
+                I_ITEM_XY_ROWMAJOR(s, rows_size, cols_size, i, j) -= v_i;
+            }
+        }
+    }
+    else {
+        for (i = 0; i < rows_size; i++) {
+            for (j = 0; j < cols_size; j++) {
+                R_ITEM_XY_ROWMAJOR(s, rows_size, cols_size, i, j) += v_r;
+                I_ITEM_XY_ROWMAJOR(s, rows_size, cols_size, i, j) += v_i;
+            }
+        }
+    }
+}
+
+/* Multiply every entry by a scalar */
+static void
+multiply_scalar_float(PARROT_INTERP, PMC * self, FLOATVAL v)
+{
+    DECLATTRS(self, attrs);
+    const INTVAL rows_size = attrs->rows;
+    const INTVAL cols_size = attrs->cols;
+    FLOATVAL * const s = attrs->storage;
+    INTVAL i, j;
+
+    for (i = 0; i < rows_size; i++) {
+        for (j = 0; j < cols_size; j++) {
+            R_ITEM_XY_ROWMAJOR(s, rows_size, cols_size, i, j) *= v;
+            I_ITEM_XY_ROWMAJOR(s, rows_size, cols_size, i, j) *= v;
+        }
+    }
+}
+
+/* Multiply every entry by a scalar */
+static void
+multiply_scalar_complex(PARROT_INTERP, PMC * self, PMC * v)
+{
+    DECLATTRS(self, attrs);
+    const INTVAL rows_size = attrs->rows;
+    const INTVAL cols_size = attrs->cols;
+    FLOATVAL * const s = attrs->storage;
+    INTVAL i, j;
+    const FLOATVAL v_r = VTABLE_get_number_keyed_int(interp, v, 0);
+    const FLOATVAL v_i = VTABLE_get_number_keyed_int(interp, v, 1);
+
+    for (i = 0; i < rows_size; i++) {
+        for (j = 0; j < cols_size; j++) {
+            const FLOATVAL s_r = R_ITEM_XY_ROWMAJOR(s, rows_size, cols_size, i, j);
+            const FLOATVAL s_i = I_ITEM_XY_ROWMAJOR(s, rows_size, cols_size, i, j);
+            const FLOATVAL new_r = (s_r * v_r) - (s_i * v_i);
+            const FLOATVAL new_i = (s_r * v_i) + (s_i * v_r);
+            R_ITEM_XY_ROWMAJOR(s, rows_size, cols_size, i, j) = new_r;
+            I_ITEM_XY_ROWMAJOR(s, rows_size, cols_size, i, j) = new_i;
+        }
+    }
+}
+
+/* item-by-item addition or subtraction
+   A = A + B */
+static void
+add_matrices(PARROT_INTERP, PMC * A, PMC * B, INTVAL sub)
+{
+    DECLATTRS(A, attrs_a);
+    DECLATTRS(B, attrs_b);
+    const INTVAL rows = attrs_a->rows;
+    const INTVAL cols = attrs_a->cols;
+    FLOATVAL * const s_a = attrs_a->storage;
+    FLOATVAL * const s_b = attrs_b->storage;
+    INTVAL i, j;
+    if (attrs_b->rows != rows || attrs_b->cols != cols)
+        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
+            PLATYPENAME ": sizes do not match");
+    if (sub) {
+        for (i = 0; i < rows; i++) {
+            for (j = 0; j < cols; j++) {
+                R_ITEM_XY_ROWMAJOR(s_a, rows, cols, i, j) -=
+                    R_ITEM_XY_ROWMAJOR(s_b, rows, cols, i, j);
+                I_ITEM_XY_ROWMAJOR(s_a, rows, cols, i, j) -=
+                    R_ITEM_XY_ROWMAJOR(s_b, rows, cols, i, j);
+            }
+        }
+    }
+    else {
+        for (i = 0; i < rows; i++) {
+            for (j = 0; j < cols; j++) {
+                R_ITEM_XY_ROWMAJOR(s_a, rows, cols, i, j) +=
+                    R_ITEM_XY_ROWMAJOR(s_b, rows, cols, i, j);
+                I_ITEM_XY_ROWMAJOR(s_a, rows, cols, i, j) +=
+                    R_ITEM_XY_ROWMAJOR(s_b, rows, cols, i, j);
+            }
+        }
+    }
+}
+
+
+static void
+intkey_to_coords(PARROT_INTERP, const INTVAL rows, const INTVAL cols,
+    const INTVAL key, INTVAL * row, INTVAL * col)
+{
+    if (rows == 0) {
+        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
+            PLATYPENAME ": Index out of bounds.");
+    } else {
+        const INTVAL r = key / rows;
+        const INTVAL c = key % rows;
+        if (key < 0 || r > rows || c > cols) {
+            Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                PLATYPENAME ": Index out of bounds.");
+        }
+        *row = r;
+        *col = c;
+    }
 }
 
 pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
@@ -232,14 +441,29 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
         const INTVAL cols_size = attrs->cols;
         INTVAL rows, cols;
         GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
-        if (rows >= rows_size || cols >= cols_size)
+        if (rows < 0 || rows >= rows_size || cols >= cols_size || cols < 0)
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
                 PLATYPENAME ": indices out of bounds");
-        return ITEM_XY(attrs->storage, attrs->flags, rows_size, cols_size, rows, cols);
+        return R_ITEM_XY(attrs->storage, attrs->flags, rows_size, cols_size, rows, cols);
+    }
+
+    VTABLE FLOATVAL get_number_keyed_int(INTVAL key) {
+        DECLATTRS(SELF, attrs);
+        const INTVAL totalsize = attrs->rows * attrs->cols;
+        if (key >= totalsize || key < 0) {
+            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                PLATYPENAME ": Index out of bounds.");
+        }
+        return attrs->storage[key * 2];
     }
 
     VTABLE INTVAL get_integer_keyed(PMC * key) {
         const FLOATVAL f = VTABLE_get_number_keyed(INTERP, SELF, key);
+        return (INTVAL)f;
+    }
+
+    VTABLE INTVAL get_integer_keyed_int(INTVAL key) {
+        const FLOATVAL f = VTABLE_get_number_keyed_int(INTERP, SELF, key);
         return (INTVAL)f;
     }
 
@@ -252,12 +476,25 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
         FLOATVAL real, imag;
         FLOATVAL * const s = attrs->storage;
         GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
-        if (rows >= rows_size || cols >= cols_size)
+        if (rows < 0 || rows >= rows_size || cols >= cols_size || cols < 0)
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
                 PLATYPENAME ": indices out of bounds");
         real = R_ITEM_XY(s, flags, rows_size, cols_size, rows, cols);
         imag = I_ITEM_XY(s, flags, rows_size, cols_size, rows, cols);
-        return Parrot_sprintf_c(INTERP, "%f+%fi", real, imag);
+        return Parrot_sprintf_c(INTERP, "%vg%+vgi", real, imag);
+    }
+
+    VTABLE STRING * get_string_keyed_int(INTVAL key) {
+        DECLATTRS(SELF, attrs);
+        FLOATVAL real, imag;
+        const INTVAL totalsize = attrs->rows * attrs->cols;
+        if (key >= totalsize || totalsize < 0) {
+            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                PLATYPENAME ": Index out of bounds.");
+        }
+        real = attrs->storage[key * 2];
+        imag = attrs->storage[key * 2 + 1];
+        return Parrot_sprintf_c(INTERP, "%vg%+vgi", real, imag);
     }
 
     VTABLE PMC * get_pmc_keyed(PMC * key) {
@@ -268,14 +505,8 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
 
     VTABLE PMC * get_pmc_keyed_int(INTVAL key) {
         DECLATTRS(SELF, attrs);
-        const INTVAL rows = attrs->rows;
-        const INTVAL cols = attrs->cols;
-        const INTVAL row = key / rows;
-        const INTVAL col = key % rows;
-        if (row > rows || col > cols) {
-            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
-                PLATYPENAME ": Index out of bounds.");
-        }
+        INTVAL row, col;
+        intkey_to_coords(INTERP, attrs->rows, attrs->cols, key, &row, &col);
         return get_complex_pmc_at_xy(INTERP, SELF, row, col);
     }
 
@@ -297,21 +528,36 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
 
     VTABLE void set_pmc_keyed_int(INTVAL key, PMC * value) {
         DECLATTRS(SELF, attrs);
-        const INTVAL rows = attrs->rows;
-        const INTVAL cols = attrs->cols;
-        const INTVAL row = key / rows;
-        const INTVAL col = key % rows;
-        if (row > rows || col > cols) {
-            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
-                PLATYPENAME ": Index out of bounds.");
-        }
+        INTVAL row, col;
+        intkey_to_coords(INTERP, attrs->rows, attrs->cols, key, &row, &col);
         set_complex_pmc_at_xy(INTERP, SELF, value, row, col);
+    }
+
+    VTABLE void set_number_keyed(PMC * key, FLOATVAL value) {
+        INTVAL rows, cols;
+        GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
+        set_scalar_at_xy(INTERP, SELF, value, rows, cols);
+    }
+
+    VTABLE void set_number_keyed_int(INTVAL key, FLOATVAL value) {
+        DECLATTRS(SELF, attrs);
+        INTVAL row, col;
+        intkey_to_coords(INTERP, attrs->rows, attrs->cols, key, &row, &col);
+        set_scalar_at_xy(INTERP, SELF, value, row, col);
     }
 
     VTABLE void set_string_keyed(PMC * key, STRING * value) {
         PMC * const item = Parrot_pmc_new(INTERP, enum_class_Complex);
         VTABLE_set_string_native(INTERP, item, value);
         VTABLE_set_pmc_keyed(INTERP, SELF, key, item);
+    }
+
+    VTABLE void set_string_keyed_int(INTVAL key, STRING * value) {
+        DECLATTRS(SELF, attrs);
+        INTVAL row, col;
+        PMC * const item = Parrot_pmc_new(INTERP, enum_class_Complex);
+        VTABLE_set_string_native(INTERP, item, value);
+        VTABLE_set_pmc_keyed_int(INTERP, SELF, key, item);
     }
 
 /*
@@ -336,7 +582,7 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
                 for (rows = 0; rows < rows_size; ++rows) {
                     const FLOATVAL real = R_ITEM_XY_COLMAJOR(s, rows_size, cols_size, rows, cols);
                     const FLOATVAL imag = I_ITEM_XY_COLMAJOR(s, rows_size, cols_size, rows, cols);
-                    STRING * const item = Parrot_sprintf_c(INTERP, "\t%f%+fi", real, imag);
+                    STRING * const item = Parrot_sprintf_c(INTERP, "\t%vg%+vgi", real, imag);
                     VTABLE_push_string(INTERP, builder, item);
                 }
                 VTABLE_push_string(INTERP, builder, newline);
@@ -347,7 +593,7 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
                 for (cols = 0; cols < cols_size; ++cols) {
                     const FLOATVAL real = R_ITEM_XY_ROWMAJOR(s, rows_size, cols_size, rows, cols);
                     const FLOATVAL imag = I_ITEM_XY_ROWMAJOR(s, rows_size, cols_size, rows, cols);
-                    STRING * const item = Parrot_sprintf_c(INTERP, "\t%f%+fi", real, imag);
+                    STRING * const item = Parrot_sprintf_c(INTERP, "\t%vg%+vgi", real, imag);
                     VTABLE_push_string(INTERP, builder, item);
                 }
                 VTABLE_push_string(INTERP, builder, newline);
@@ -490,6 +736,290 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
             }
         }
     }
+
+/*
+
+=item* add(ComplexMatrix2D)
+
+Add two matrices together, element-by-element.
+
+=item* add(DEFAULT)
+
+Take the number representation of the argument PMC and add it to every element
+in the matrix.
+
+=item* add_float
+
+Add the float value to every element in the matrix.
+
+=item* add_int
+
+Add the integer value to every element in the matrix.
+
+=cut
+
+*/
+
+    MULTI PMC *add(ComplexMatrix2D *value, PMC *dest) {
+        dest = VTABLE_clone(INTERP, SELF);
+        add_matrices(INTERP, dest, value, 0);
+        return dest;
+    }
+
+    MULTI PMC *add(Complex *value, PMC *dest) {
+        dest = VTABLE_clone(INTERP, SELF);
+        add_scalar_complex(INTERP, dest, value, 0);
+        return dest;
+    }
+
+    MULTI PMC *add(DEFAULT *value, PMC *dest) {
+        const FLOATVAL v = VTABLE_get_number(INTERP, value);
+        dest = VTABLE_clone(INTERP, SELF);
+        add_scalar_float(INTERP, dest, v);
+        return dest;
+    }
+
+    VTABLE PMC *add_float(FLOATVAL v, PMC *dest) {
+        dest = VTABLE_clone(INTERP, SELF);
+        add_scalar_float(INTERP, dest, v);
+        return dest;
+    }
+
+    VTABLE PMC *add_int(INTVAL v, PMC *dest) {
+        dest = VTABLE_clone(INTERP, SELF);
+        add_scalar_float(INTERP, dest, (FLOATVAL)v);
+        return dest;
+    }
+
+/*
+
+=item* i_add(ComplexMatrix2D)
+
+=item* i_add(DEFAULT)
+
+=item* i_add_int
+
+=item* i_add_float
+
+=cut
+
+*/
+
+    MULTI void i_add(ComplexMatrix2D* value) {
+        add_matrices(INTERP, SELF, value, 0);
+    }
+
+    MULTI void i_add(Complex* value) {
+        add_scalar_complex(INTERP, SELF, value, 0);
+    }
+
+    MULTI void i_add(DEFAULT* value) {
+        const FLOATVAL v = VTABLE_get_number(INTERP, value);
+        add_scalar_float(INTERP, SELF, v);
+    }
+
+    void i_add_int(INTVAL v) {
+        add_scalar_float(INTERP, SELF, (FLOATVAL)v);
+    }
+
+    void i_add_float(FLOATVAL v) {
+        add_scalar_float(INTERP, SELF, v);
+    }
+
+/*
+
+=item* subtract(ComplexMatrix2D)
+
+Add two matrices together, element-by-element.
+
+=item* subtract(DEFAULT)
+
+Take the number representation of the argument PMC and add it to every element
+in the matrix.
+
+=item* subtract_float
+
+Add the float value to every element in the matrix.
+
+=item* subtract_int
+
+Add the integer value to every element in the matrix.
+
+=cut
+
+*/
+
+    MULTI PMC *subtract(ComplexMatrix2D *value, PMC *dest) {
+        dest = VTABLE_clone(INTERP, SELF);
+        add_matrices(INTERP, dest, value, 1);
+        return dest;
+    }
+
+    MULTI PMC *subtract(Complex* value, PMC *dest) {
+        dest = VTABLE_clone(INTERP, SELF);
+        add_scalar_complex(INTERP, SELF, value, 1);
+        return dest;
+    }
+
+
+    MULTI PMC *subtract(DEFAULT *value, PMC *dest) {
+        const FLOATVAL v = VTABLE_get_number(INTERP, value);
+        dest = VTABLE_clone(INTERP, SELF);
+        add_scalar_float(INTERP, dest, -v);
+        return dest;
+    }
+
+    VTABLE PMC *subtract_float(FLOATVAL v, PMC *dest) {
+        dest = VTABLE_clone(INTERP, SELF);
+        add_scalar_float(INTERP, dest, -v);
+        return dest;
+    }
+
+    VTABLE PMC *subtract_int(INTVAL v, PMC *dest) {
+        dest = VTABLE_clone(INTERP, SELF);
+        add_scalar_float(INTERP, dest, -(FLOATVAL)v);
+        return dest;
+    }
+
+/*
+
+=item* i_subtract(ComplexMatrix2D)
+
+=item* i_subtract(DEFAULT)
+
+=item* i_subtract_int
+
+=item* i_subtract_float
+
+=cut
+
+*/
+
+    MULTI void i_subtract(ComplexMatrix2D* value) {
+        add_matrices(INTERP, SELF, value, 1);
+    }
+
+    MULTI void i_sub(Complex* value) {
+        add_scalar_complex(INTERP, SELF, value, 1);
+    }
+
+    MULTI void i_subtract(DEFAULT* value) {
+        const FLOATVAL v = VTABLE_get_number(INTERP, value);
+        add_scalar_float(INTERP, SELF, -v);
+    }
+
+    VTABLE void i_subtract_int(INTVAL v) {
+        add_scalar_float(INTERP, SELF, -(FLOATVAL)v);
+    }
+
+    VTABLE void i_subtract_float(FLOATVAL v) {
+        add_scalar_float(INTERP, SELF, -v);
+    }
+
+/*
+
+=item* multiply(ComplexMatrix2D)
+
+=item* multiply(DEFAULT)
+
+=cut
+
+*/
+
+    MULTI PMC *multiply(ComplexMatrix2D *value, PMC *dest) {
+        DECLATTRS(SELF, selfattr);
+        DECLATTRS(value, valattr);
+        const INTVAL new_rows = selfattr->rows;
+        const INTVAL new_cols = valattr->cols;
+
+        if (selfattr->cols != valattr->rows) {
+            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                PLATYPENAME ": Dimensions do not match in matrix multiply");
+        }
+
+        dest = Parrot_pmc_new(INTERP, VTABLE_type(INTERP, SELF));
+        resize_matrix(INTERP, dest, new_rows - 1, new_cols - 1);
+        call_gemm(INTERP, 1.0, 0.0, SELF, value, 0.0, 0.0, dest);
+        return dest;
+    }
+
+    MULTI PMC *mutiply(Complex *value, PMC *dest) {
+        dest = VTABLE_clone(INTERP, SELF);
+        multiply_scalar_complex(INTERP, SELF, dest);
+        return dest;
+    }
+
+    MULTI PMC *multiply(DEFAULT *value, PMC *dest) {
+        const FLOATVAL v = VTABLE_get_number(INTERP, value);
+        dest = VTABLE_clone(INTERP, SELF);
+        multiply_scalar_float(INTERP, dest, v);
+        return dest;
+    }
+
+/*
+
+=item* multiply_int
+
+=item* multiply_float
+
+=cut
+
+*/
+
+    VTABLE PMC *multiply_int(INTVAL v, PMC * dest) {
+        dest = VTABLE_clone(INTERP, SELF);
+        multiply_scalar_float(INTERP, dest, (FLOATVAL)v);
+        return dest;
+    }
+
+    VTABLE PMC *multiply_float(FLOATVAL v, PMC * dest) {
+        dest = VTABLE_clone(INTERP, SELF);
+        multiply_scalar_float(INTERP, dest, v);
+        return dest;
+    }
+
+/*
+
+=item* i_multiply(NumMatrix2D)
+
+=item* i_multiply(DEFAULT)
+
+=cut
+
+*/
+
+    MULTI void i_multiply(ComplexMatrix2D* value) {
+        PMC * const temp = VTABLE_clone(INTERP, SELF);
+        call_gemm(INTERP, 1.0, 0.0, temp, value, 0.0, 0.0, SELF);
+    }
+
+    MULTI void i_multiply(Complex *value) {
+        multiply_scalar_complex(INTERP, SELF, value);
+    }
+
+    MULTI void i_multiply(DEFAULT* value) {
+        const FLOATVAL v = VTABLE_get_number(INTERP, value);
+        multiply_scalar_float(INTERP, SELF, v);
+    }
+
+/*
+
+=item i_multiply_int
+
+=item i_multiply_float
+
+=cut
+
+*/
+
+    VTABLE void i_multiply_int(INTVAL v) {
+        multiply_scalar_float(INTERP, SELF, (FLOATVAL)v);
+    }
+
+    VTABLE void i_multiply_float(FLOATVAL v) {
+        multiply_scalar_float(INTERP, SELF, v);
+    }
+
 
 /*
 
@@ -805,9 +1335,84 @@ Calculates the matrix equation:
         //    A->vtable->base_type != enum_class_NumMatrix2D)
         //    Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
         //        PLATYPENAME ": gemm only accepts NumMatrix2D arguments");
-        call_gemm(INTERP, alpha, A, B, beta, c_out);
+        call_gemm_pmc(INTERP, alpha, A, B, beta, c_out);
         RETURN(PMC* c_out);
     }
+
+/*
+
+=item row_combine(srcidx, destidx, gain)
+
+add a multiple of the source row to the destination row.
+
+=item row_scale(idx, gain)
+
+Multiply all elements in the row by a gain factor.
+
+=item row_swap(idx_a, idx_b)
+
+Swap two rows
+
+=cut
+
+*/
+
+    METHOD row_combine(INTVAL srcidx, INTVAL destidx, FLOATVAL gain) {
+        DECLATTRS(SELF, attrs);
+        FLOATVAL * const s = attrs->storage;
+        const INTVAL rows = attrs->rows;
+        const INTVAL cols = attrs->cols;
+        const INTVAL flags = attrs->flags;
+        INTVAL i;
+        if (srcidx < 0 || srcidx >= rows)
+            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                PLATYPENAME ": Row index out of bounds");
+        for (i = 0; i < cols; i++) {
+            R_ITEM_XY(s, flags, rows, cols, destidx, i) +=
+                R_ITEM_XY(s, flags, rows, cols, srcidx, i) * gain;
+            I_ITEM_XY(s, flags, rows, cols, destidx, i) +=
+                I_ITEM_XY(s, flags, rows, cols, srcidx, i) * gain;
+        }
+    }
+
+    METHOD row_scale(INTVAL idx, FLOATVAL gain) {
+        DECLATTRS(SELF, attrs);
+        FLOATVAL * const s = attrs->storage;
+        const INTVAL rows = attrs->rows;
+        const INTVAL cols = attrs->cols;
+        const INTVAL flags = attrs->flags;
+        INTVAL i;
+        if (idx < 0 || idx >= rows)
+            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                PLATYPENAME ": Row index out of bounds");
+        for (i = 0; i < cols; i++) {
+            R_ITEM_XY(s, flags, rows, cols, idx, i) *= gain;
+            I_ITEM_XY(s, flags, rows, cols, idx, i) *= gain;
+        }
+    }
+
+    METHOD row_swap(INTVAL idx_a, INTVAL idx_b) {
+        DECLATTRS(SELF, attrs);
+        FLOATVAL * const s = attrs->storage;
+        const INTVAL rows = attrs->rows;
+        const INTVAL cols = attrs->cols;
+        const INTVAL flags = attrs->flags;
+        INTVAL i;
+        if (idx_a < 0 || idx_a >= rows || idx_b < 0 || idx_b >= rows)
+            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                PLATYPENAME ": Row index out of bounds");
+        for (i = 0; i < cols; i++) {
+            const FLOATVAL t_r = R_ITEM_XY(s, flags, rows, cols, idx_b, i);
+            const FLOATVAL t_i = I_ITEM_XY(s, flags, rows, cols, idx_b, i);
+            R_ITEM_XY(s, flags, rows, cols, idx_b, i) =
+                R_ITEM_XY(s, flags, rows, cols, idx_a, i);
+            I_ITEM_XY(s, flags, rows, cols, idx_b, i) =
+                I_ITEM_XY(s, flags, rows, cols, idx_a, i);
+            R_ITEM_XY(s, flags, rows, cols, idx_a, i) = t_r;
+            I_ITEM_XY(s, flags, rows, cols, idx_a, i) = t_i;
+        }
+    }
+
 
 /*
 
