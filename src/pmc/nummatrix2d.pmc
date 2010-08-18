@@ -238,7 +238,7 @@ floats_are_equal(FLOATVAL a, FLOATVAL b)
 }
 
 
-pmclass NumMatrix2D dynpmc auto_attrs provides matrix {
+pmclass NumMatrix2D dynpmc auto_attrs provides matrix provides numericmatrix {
     ATTR FLOATVAL * storage;
     ATTR INTVAL rows;
     ATTR INTVAL cols;

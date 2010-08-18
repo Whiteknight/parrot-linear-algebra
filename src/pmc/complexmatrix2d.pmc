@@ -386,7 +386,7 @@ intkey_to_coords(PARROT_INTERP, const INTVAL rows, const INTVAL cols,
     }
 }
 
-pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix {
+pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix provides numericmatrix {
     ATTR FLOATVAL * storage;
     ATTR INTVAL rows;
     ATTR INTVAL cols;

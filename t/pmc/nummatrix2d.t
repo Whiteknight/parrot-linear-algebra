@@ -1,4 +1,4 @@
-class Test::NumMatrix2D is Pla::Matrix::MatrixTest;
+class Test::NumMatrix2D is Pla::Matrix::NumericMatrixTest;
 
 # Test boilerplate.
 
