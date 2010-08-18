@@ -114,90 +114,134 @@ class Pla::Matrix::MatrixTest is Pla::Matrix::MatrixTestBase {
     }
 
     method test_VTABLE_get_string_keyed() {
-        my $m := self.matrix2x2(4.0, 2.0,
-                                3.0, 1.0);
+        my $m := self.fancymatrix2x2();
         Q:PIR {
+            .local pmc me
+            me = find_lex "self"
             $P0 = find_lex "$m"
+
+            $S0 = $P0[0;0]
+            $S1 = me.'fancyvalue'(0)
+            $S2 = "Expected '" . $S1
+            $S2 .= "' got '"
+            $S2 .= $S0
+            $S2 .= "'"
+            #"get_string_keyed fails 0;0"
+            assert_equal($S1, $S0, $S2)
+
+            $S0 = $P0[0;1]
+            $S1 = me.'fancyvalue'(1)
+            assert_equal($S1, $S0, "get_string_keyed fails 0;1")
+
+            $S0 = $P0[1;0]
+            $S1 = me.'fancyvalue'(2)
+            assert_equal($S1, $S0, "get_string_keyed fails 1;0")
+
             $S0 = $P0[1;1]
-            $S1 = substr $S0, 0, 3
-            assert_equal($S1, "1.0", "get_string_keyed fails")
-        }
+            $S1 = me.'fancyvalue'(3)
+            assert_equal($S1, $S0, "get_string_keyed fails 1;1")
+        };
     }
 
     method test_VTABLE_get_number_keyed_int() {
-        my $m := self.matrix2x2(4.0, 2.0,
-                                3.0, 1.0);
+        my $m := self.fancymatrix2x2();
         Q:PIR {
+            .local pmc me
+            me = find_lex "self"
             $P0 = find_lex "$m"
 
             $N0 = $P0[0]
-            assert_equal($N0, 4.0, "Can get number 0 by linear index")
+            $N1 = me.'fancyvalue'(0)
+            assert_equal($N0, $N1, "Can get number 0 by linear index")
 
             $N0 = $P0[1]
-            assert_equal($N0, 2.0, "Can get number 1 by linear index")
+            $N1 = me.'fancyvalue'(1)
+            assert_equal($N0, $N1, "Can get number 1 by linear index")
 
             $N0 = $P0[2]
-            assert_equal($N0, 3.0, "Can get number 2 by linear index")
+            $N1 = me.'fancyvalue'(2)
+            assert_equal($N0, $N1, "Can get number 2 by linear index")
 
             $N0 = $P0[3]
-            assert_equal($N0, 1.0, "Can get number 3 by linear index")
+            $N1 = me.'fancyvalue'(3)
+            assert_equal($N0, $N1, "Can get number 3 by linear index")
         }
     }
 
     method test_VTABLE_get_integer_keyed_int() {
-        my $m := self.matrix2x2(4.0, 2.0, 3.0, 1.0);
+        my $m := self.fancymatrix2x2();
         Q:PIR {
+            .local pmc me
+            me = find_lex "self"
             $P0 = find_lex "$m"
 
             $I0 = $P0[0]
-            assert_equal($I0, 4, "Can get integer 0 by linear index")
+            $I1 = me.'fancyvalue'(0)
+            assert_equal($I0, $I1, "Can get integer 0 by linear index")
 
             $I0 = $P0[1]
-            assert_equal($I0, 2, "Can get integer 1 by linear index")
+            $I1 = me.'fancyvalue'(1)
+            assert_equal($I0, $I1, "Can get integer 1 by linear index")
 
             $I0 = $P0[2]
-            assert_equal($I0, 3, "Can get integer 2 by linear index")
+            $I1 = me.'fancyvalue'(2)
+            assert_equal($I0, $I1, "Can get integer 2 by linear index")
 
             $I0 = $P0[3]
-            assert_equal($I0, 1, "Can get integer 3 by linear index")
+            $I1 = me.'fancyvalue'(3)
+            assert_equal($I0, $I1, "Can get integer 3 by linear index")
         }
     }
 
     method test_VTABLE_get_string_keyed_int() {
-        my $m := self.matrix2x2(4.0, 2.0,
-                                3.0, 1.0);
+        my $m := self.fancymatrix2x2();
         Q:PIR {
+            .local pmc me
+            me = find_lex "self"
             $P0 = find_lex "$m"
+
+            $S0 = $P0[0]
+            $S1 = me.'fancyvalue'(0)
+            assert_equal($S0, $S1, "Cannot get string keyed int 0")
+
+            $S0 = $P0[1]
+            $S1 = me.'fancyvalue'(1)
+            assert_equal($S0, $S1, "Cannot get string keyed int 1")
+
             $S0 = $P0[2]
-            $S1 = substr $S0, 0, 3
-            assert_equal($S1, "3.0", "Cannot get string keyed int")
+            $S1 = me.'fancyvalue'(2)
+            assert_equal($S0, $S1, "Cannot get string keyed int 2")
+
+            $S0 = $P0[3]
+            $S1 = me.'fancyvalue'(3)
+            assert_equal($S0, $S1, "Cannot get string keyed int 3")
         }
     }
 
     method test_VTABLE_get_pmc_keyed_int() {
-        my $m := self.matrix2x2(4.0, 2.0, 3.0, 1.0);
+        my $m := self.fancymatrix2x2();
         Q:PIR {
+            .local pmc me
+            me = find_lex "self"
             $P0 = find_lex "$m"
 
             $P1 = $P0[0]
-            assert_instance_of($P1, "Float", "got Number PMC from linear index")
-            $N0 = $P1
-            assert_equal($N0, 4.0, "Got PMC 0 from linear index")
+            $P2 = me.'fancyvalue'(0)
+            assert_equal($P1, $P2, "Got PMC 0 from linear index")
 
             $P1 = $P0[1]
-            $N0 = $P1
-            assert_equal($N0, 2.0, "Got PMC 1 from linear index")
+            $P2 = me.'fancyvalue'(1)
+            assert_equal($P1, $P2, "Got PMC 1 from linear index")
 
             $P1 = $P0[2]
-            $N0 = $P1
-            assert_equal($N0, 3.0, "Got PMC 2 from linear index")
+            $P2 = me.'fancyvalue'(2)
+            assert_equal($P1, $P2, "Got PMC 2 from linear index")
 
             $P1 = $P0[3]
-            $N0 = $P1
-            assert_equal($N0, 1.0, "Got PMC 3 from linear index")
+            $P2 = me.'fancyvalue'(3)
+            assert_equal($P1, $P2, "Got PMC 3 from linear index")
         }
     }
-
 
     # Test to show that autoresizing behavior of the type is consistent.
     method test_MISC_autoresizing() {
