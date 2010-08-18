@@ -258,14 +258,6 @@ method test_METHOD_row_combine() {
     assert_equal($A, $B, "can add rows");
 }
 
-method test_METHOD_row_combine_NEGIDX() {
-    todo("Test Needed");
-}
-
-method test_METHOD_row_combine_HIGHIDX() {
-    todo("Test Needed");
-}
-
 method test_METHOD_row_combine_GAIN() {
     my $A := self.matrix3x3(1.0, 2.0, 3.0,
                             4.0, 5.0, 6.0,
@@ -288,14 +280,6 @@ method test_METHOD_row_scale() {
     assert_equal($A, $B, "can add rows");
 }
 
-method test_METHOD_row_scale_NEGIDX() {
-    todo("Test Needed");
-}
-
-method test_METHOD_row_scale_HIGHIDX() {
-    todo("Test Needed");
-}
-
 method test_METHOD_row_swap() {
     my $A := self.matrix3x3(1.0, 2.0, 3.0,
                             4.0, 5.0, 6.0,
@@ -305,20 +289,4 @@ method test_METHOD_row_swap() {
                             1.0, 2.0, 3.0,
                             7.0, 8.0,  9.0);
     assert_equal($A, $B, "can add rows");
-}
-
-method test_METHOD_row_swap_NEGIDXA() {
-    todo("Test Needed");
-}
-
-method test_METHOD_row_swap_HIGHIDXA() {
-    todo("Test Needed");
-}
-
-method test_METHOD_row_swap_NEGIDXB() {
-    todo("Test Needed");
-}
-
-method test_METHOD_row_swap_HIGHIDXB() {
-    todo("Test Needed");
 }
