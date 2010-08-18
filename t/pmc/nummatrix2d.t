@@ -35,10 +35,13 @@ method test_VTABLE_get_string() {
     my $m := self.matrix2x2(1.0, 2.0,
                             3.0, 4.0);
     my $s := pir::set__SP($m);
-    my $t := pir::sprintf__SSP("\t%f\t%f\n\t%f\t%f\n", [1.0, 2.0, 3.0, 4.0]);
+    my $t := pir::sprintf__SSP("\t%S\t%S\n\t%S\t%S\n", [1.0, 2.0, 3.0, 4.0]);
     assert_equal($s, $t, "cannot get string");
 }
 
+# TODO: Tests for get/set_pmc to prove that we get a Float from it
+#             $P1 = $P0[0]
+#            assert_instance_of($P1, "Float", "got Number PMC from linear index")
 
 # Addition Tests
 
@@ -59,7 +62,6 @@ method test_VTABLE_add_NUMMATRIX2D_SIZEFAIL() {
     });
 }
 
-
 method test_VTABLE_i_add_NUMMATRIX2D() {
     my $m := self.matrix2x2(1.0, 3.0, 2.0, 4.0);
     my $n := self.matrix2x2(5.0, 7.0, 6.0, 8.0);
@@ -72,7 +74,6 @@ method test_VTABLE_i_add_NUMMATRIX2D() {
         assert_equal($P0, $P2, "can i_add two matrices together of the same size")
     }
 }
-
 
 # Subtraction Tests
 
@@ -106,7 +107,6 @@ method test_VTABLE_i_subtract_NUMMATRIX2D() {
         assert_equal($P0, $P2, "can not i_subtract matrices together of the same size")
     }
 }
-
 
 # Multiplication Tests
 
@@ -157,7 +157,6 @@ method test_VTABLE_i_multiply_NUMMATRIX2D() {
         assert_equal($P0, $P2, "matrix i_multiply does not do the right thing")
     }
 }
-
 
 # Block Get/Set method tests
 

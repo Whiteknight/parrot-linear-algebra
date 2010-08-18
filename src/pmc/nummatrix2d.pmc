@@ -321,8 +321,7 @@ elements.
 
     VTABLE STRING * get_string_keyed(PMC * key) {
         const FLOATVAL f = VTABLE_get_number_keyed(INTERP, SELF, key);
-        STRING * const item = Parrot_sprintf_c(INTERP, "%f", f);
-        return item;
+        return Parrot_str_from_num(INTERP, f);
     }
 
     VTABLE PMC * get_pmc_keyed(PMC * key) {
@@ -375,8 +374,7 @@ Nth number. The array is arranged in memory row by row.
 
     VTABLE STRING * get_string_keyed_int(INTVAL key) {
         const FLOATVAL f = VTABLE_get_number_keyed_int(INTERP, SELF, key);
-        STRING * const item = Parrot_sprintf_c(INTERP, "%f", f);
-        return item;
+        return Parrot_str_from_num(INTERP, f);
     }
 
     VTABLE PMC * get_pmc_keyed_int(INTVAL key) {
@@ -444,6 +442,7 @@ Get a string representation of the matrix.
         INTVAL i, j;
         PMC * const builder = Parrot_pmc_new(INTERP, enum_class_StringBuilder);
         STRING * const newline = Parrot_str_new(INTERP, "\n", 1);
+        STRING * const tab = Parrot_str_new(INTERP, "\t", 1);
         FLOATVAL * const s = attrs->storage;
         const INTVAL rows = attrs->rows;
         const INTVAL cols = attrs->cols;
@@ -452,7 +451,8 @@ Get a string representation of the matrix.
         for (i = 0; i < rows; ++i) {
             for (j = 0; j < cols; ++j) {
                 const FLOATVAL f = ITEM_XY(s, flags, rows, cols, i, j);
-                STRING * const item = Parrot_sprintf_c(INTERP, "\t%f", f);
+                STRING * const item = Parrot_str_from_num(INTERP, f);
+                VTABLE_push_string(INTERP, builder, tab);
                 VTABLE_push_string(INTERP, builder, item);
             }
             VTABLE_push_string(INTERP, builder, newline);
