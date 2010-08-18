@@ -19,11 +19,13 @@ sub MAIN () {
     my $failed_files := 0;
     my $max_length   := 30;
     my @files := get_all_tests("t", "t/pmc");
+    my %failures := {};
 
     for @files {
         my $filename := $_;
         $total_files++;
         print_filename($filename, $max_length);
+        %failures{$filename} := [];
 
         my $test_output := run_test($filename);
         my $plan := $test_output[0];
@@ -52,6 +54,8 @@ sub MAIN () {
                 if ($line_parts[0] eq 'not ') {
                     $failed++;
                     $curr_test++;
+                    my $test_name := $line.split(' - ')[1];
+                    %failures{$filename}.push($test_number ~ ": " ~ $test_name);
                 } elsif ($test_number == ($curr_test+1)) {
                     $passed++;
                     $curr_test++;
@@ -80,6 +84,19 @@ sub MAIN () {
     }
     if $total_failed {
         pir::say("FAILED " ~ $total_failed ~ '/' ~ ($total_passed+$total_failed));
+        pir::say("");
+        pir::say("========================== FAILURES ==========================");
+        for %failures {
+            my $testfile := $_;
+            my $failures_in_here := pir::elements(%failures{$testfile});
+            if $failures_in_here > 0 {
+                pir::say($testfile);
+                for %failures{$testfile} {
+                    pir::say("\t" ~ $_);
+                }
+                pir::say("");
+            }
+        }
         pir::exit(1);
     } elsif $failed_files {
         pir::say("FAILED " ~ $failed_files ~ " files, PASSED " ~ $total_passed ~ ' tests');
