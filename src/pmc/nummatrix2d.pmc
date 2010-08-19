@@ -18,6 +18,22 @@
 
 INTVAL __PLA_Type_NumMatrix2D;
 
+static PMC *
+convert_to_NumMatrix2D(PARROT_INTERP, PMC * p)
+{
+    if (p->vtable->base_type == __PLA_Type_NumMatrix2D)
+        return p;
+    else if (!VTABLE_does(interp, p, CONST_STRING(interp, "matrix")))
+        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                PLATYPENAME ": cannot convert unknown PMC type");
+    else {
+        PMC * const meth = VTABLE_find_method(interp, p, CONST_STRING(interp, "convert_to_number_matrix"));
+        PMC * dest = PMCNULL;
+        Parrot_ext_call(interp, meth, "Pi->P", p, &dest);
+        return dest;
+    }
+}
+
 /* Resize the matrix internal storage to be able to hold a point at position
    (x, y). The matrix grows but does not shrink. New spaces in the matrix
    are initialized to 0.0. Parameters x and y are the indices that are trying
@@ -368,7 +384,7 @@ Nth number. The array is arranged in memory row by row.
         const INTVAL total_size = attrs->rows * attrs->cols;
         if (key >= total_size) {
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
-                PLATYPENAME ": Matrix dimensions must match in add.");
+                PLATYPENAME ": integer index out of bounds.");
         }
         return attrs->storage[key];
     }
@@ -428,10 +444,32 @@ must have two elements.
         VTABLE_set_number_keyed(INTERP, SELF, key, (FLOATVAL)value);
     }
 
+    /* TODO: set_string_keyed */
+
     VTABLE void set_pmc_keyed(PMC * key, PMC * value) {
         const FLOATVAL v = VTABLE_get_number(INTERP, value);
         VTABLE_set_number_keyed(INTERP, SELF, key, v);
     }
+
+    VTABLE void set_number_keyed_int(INTVAL key, FLOATVAL value) {
+        DECLATTRS(SELF, attrs);
+        const INTVAL total_size = attrs->rows * attrs->cols;
+        if (key >= total_size) {
+            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                PLATYPENAME ": integer index out of bounds.");
+        }
+        attrs->storage[key] = value;
+    }
+
+    VTABLE void set_integer_keyed_int(INTVAL key, INTVAL value) {
+        VTABLE_set_number_keyed_int(INTERP, SELF, key, (FLOATVAL)value);
+    }
+
+    VTABLE void set_pmc_keyed_int(INTVAL key, PMC * value) {
+        const FLOATVAL f = VTABLE_get_number(INTERP, value);
+        VTABLE_set_number_keyed_int(INTERP, SELF, key, f);
+    }
+
 
 /*
 
@@ -1184,11 +1222,9 @@ Calculates the matrix equation:
 
     METHOD gemm(FLOATVAL alpha, PMC * A, PMC *B, FLOATVAL beta, PMC *C) {
         PMC * const c_out = VTABLE_clone(INTERP, C);
-        if (A->vtable->base_type != B->vtable->base_type &&
-            C->vtable->base_type != A->vtable->base_type &&
-            A->vtable->base_type != SELF->vtable->base_type)
-            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
-                PLATYPENAME ": gemm only accepts NumMatrix2D arguments");
+        A = convert_to_NumMatrix2D(interp, A);
+        B = convert_to_NumMatrix2D(interp, B);
+        C = convert_to_NumMatrix2D(interp, C);
         call_gemm(INTERP, alpha, A, B, beta, c_out);
         RETURN(PMC* c_out);
     }
@@ -1242,6 +1278,7 @@ Swap two rows
         }
     }
 
+
     METHOD row_swap(INTVAL idx_a, INTVAL idx_b) {
         DECLATTRS(SELF, attrs);
         FLOATVAL * const s = attrs->storage;
@@ -1259,6 +1296,24 @@ Swap two rows
             ITEM_XY(s, flags, rows, cols, idx_a, i) = t;
         }
     }
+
+/*
+
+=item convert_to_number_matrix
+
+Get a NumMatrix2D from the current matrix
+
+=item convert_to_complex_matrix
+
+Get a ComplexMatrix2D from the current matrix
+
+=item convert_to_pmc_matrix
+
+Get a PMCMatrix2D from the current matrix
+
+=cut
+
+*/
 
     METHOD convert_to_number_matrix() {
         PMC * const d = VTABLE_clone(INTERP, SELF);

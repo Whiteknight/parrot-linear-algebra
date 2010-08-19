@@ -8,6 +8,50 @@
 
 INTVAL __PLA_Type_ComplexMatrix2D;
 
+static void
+get_complex_value_from_pmc(PARROT_INTERP, PMC * value, FLOATVAL * real, FLOATVAL * imag)
+{
+    switch (value->vtable->base_type) {
+        case enum_class_String:
+            value = Parrot_pmc_new_init(interp, enum_class_Complex, value);
+        case enum_class_Complex:
+            *real = VTABLE_get_number_keyed_int(interp, value, 0);
+            *imag = VTABLE_get_number_keyed_int(interp, value, 1);
+            break;
+        case enum_class_Float:
+            *real = VTABLE_get_number(interp, value);
+            *imag = 0.0;
+            break;
+        case enum_class_Integer:
+            {
+                const INTVAL _r = VTABLE_get_integer(interp, value);
+                *real = (FLOATVAL)_r;
+            }
+            *imag = 0.0;
+            break;
+        default:
+            /* TODO: We should support HLL-mapped types here. */
+            Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                PLATYPENAME ": cannot set unknown PMC type");
+    }
+}
+
+static PMC *
+convert_to_ComplexMatrix2D(PARROT_INTERP, PMC * p)
+{
+    if (p->vtable->base_type == __PLA_Type_ComplexMatrix2D)
+        return p;
+    else if (!VTABLE_does(interp, p, CONST_STRING(interp, "matrix")))
+        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                PLATYPENAME ": cannot convert unknown PMC type");
+    else {
+        PMC * const meth = VTABLE_find_method(interp, p, CONST_STRING(interp, "convert_to_complex_matrix"));
+        PMC * dest = PMCNULL;
+        Parrot_ext_call(interp, meth, "Pi->P", p, &dest);
+        return dest;
+    }
+}
+
 /* Resize the matrix internal storage to be able to hold a point at position
    (x, y). The matrix grows but does not shrink. New spaces in the matrix
    are initialized to 0.0. Parameters x and y are the indices that are trying
@@ -103,29 +147,7 @@ set_complex_pmc_at_xy(PARROT_INTERP, PMC * self, PMC * value, INTVAL row, INTVAL
         cols_size = attrs->cols;
     }
     s = attrs->storage;
-    switch (value->vtable->base_type) {
-        case enum_class_String:
-            value = Parrot_pmc_new_init(interp, enum_class_Complex, value);
-        case enum_class_Complex:
-            real = VTABLE_get_number_keyed_int(interp, value, 0);
-            imag = VTABLE_get_number_keyed_int(interp, value, 1);
-            break;
-        case enum_class_Float:
-            real = VTABLE_get_number(interp, value);
-            imag = 0.0;
-            break;
-        case enum_class_Integer:
-            {
-                const INTVAL _r = VTABLE_get_integer(interp, value);
-                real = (FLOATVAL)_r;
-            }
-            imag = 0.0;
-            break;
-        default:
-            /* TODO: We should support HLL-mapped types here. */
-            Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
-                PLATYPENAME ": cannot set unknown PMC type");
-    }
+    get_complex_value_from_pmc(interp, value, &real, &imag);
     R_ITEM_XY(s, flags, rows_size, cols_size, row, col) = real;
     I_ITEM_XY(s, flags, rows_size, cols_size, row, col) = imag;
 }
@@ -147,55 +169,6 @@ set_scalar_at_xy(PARROT_INTERP, PMC * self, FLOATVAL value, INTVAL row, INTVAL c
     s = attrs->storage;
     R_ITEM_XY(s, flags, rows_size, cols_size, row, col) = value;
     I_ITEM_XY(s, flags, rows_size, cols_size, row, col) = 0;
-}
-
-/* Wrapper to call the dgemm function from BLAS with PMC arguments. Assumes
-   A, B, and C are all ComplexMatrix2D. */
-static void
-call_gemm_pmc(PARROT_INTERP, PMC *alpha, PMC * A, PMC *B, PMC *beta, PMC *C)
-{
-    DECLATTRS(A, attrs_a);
-    DECLATTRS(B, attrs_b);
-    DECLATTRS(C, attrs_c);
-    const INTVAL M = attrs_a->rows;
-    const INTVAL N = attrs_b->cols;
-    const INTVAL K = attrs_a->cols;
-    FLOATVAL alpha_p[2];
-    FLOATVAL beta_p[2];
-    if (attrs_c->rows != M)
-        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
-            PLATYPENAME ": A, C indices do not match in gemm");
-    if (attrs_c->cols != N)
-        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
-            PLATYPENAME ": B, C indices do not match in gemm");
-    if (attrs_b->rows != K)
-        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
-            PLATYPENAME ": A, B indeces do not match in gemm");
-    if (!VTABLE_isa(interp, alpha, CONST_STRING(interp, "Complex")))
-        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_INVALID_OPERATION,
-            PLATYPENAME ": Alpha must be Complex");
-    if (!VTABLE_isa(interp, beta, CONST_STRING(interp, "Complex")))
-        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_INVALID_OPERATION,
-            PLATYPENAME ": Beta must be Complex");
-    alpha_p[0] = VTABLE_get_number_keyed_int(interp, alpha, 0);
-    alpha_p[1] = VTABLE_get_number_keyed_int(interp, alpha, 1);
-    beta_p[0] = VTABLE_get_number_keyed_int(interp, beta, 0);
-    beta_p[1] = VTABLE_get_number_keyed_int(interp, beta, 1);
-    cblas_zgemm(CblasRowMajor,
-        IS_TRANSPOSED_BLAS(attrs_a->flags),
-        IS_TRANSPOSED_BLAS(attrs_b->flags),
-        M,
-        N,
-        K,
-        alpha_p,
-        attrs_a->storage,
-        M,
-        attrs_b->storage,
-        N,
-        beta_p,
-        attrs_c->storage,
-        M
-    );
 }
 
 /* Wrapper to call the dgemm function from BLAS with PMC arguments. Assumes
@@ -1349,12 +1322,13 @@ Calculates the matrix equation:
 
     METHOD gemm(PMC *alpha, PMC * A, PMC *B, PMC *beta, PMC *C) {
         PMC * const c_out = VTABLE_clone(INTERP, C);
-        if (A->vtable->base_type != B->vtable->base_type &&
-            C->vtable->base_type != A->vtable->base_type &&
-            A->vtable->base_type != SELF->vtable->base_type)
-            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
-                PLATYPENAME ": gemm only accepts NumMatrix2D arguments");
-        call_gemm_pmc(INTERP, alpha, A, B, beta, c_out);
+        FLOATVAL alpha_r, alpha_i, beta_r, beta_i;
+        A = convert_to_ComplexMatrix2D(interp, A);
+        B = convert_to_ComplexMatrix2D(interp, B);
+        C = convert_to_ComplexMatrix2D(interp, C);
+        get_complex_value_from_pmc(interp, alpha, &alpha_r, &alpha_i);
+        get_complex_value_from_pmc(interp, beta, &beta_r, &beta_i);
+        call_gemm(INTERP, alpha_r, alpha_i, A, B, beta_r, beta_i, c_out);
         RETURN(PMC* c_out);
     }
 
@@ -1430,6 +1404,57 @@ Swap two rows
             R_ITEM_XY(s, flags, rows, cols, idx_a, i) = t_r;
             I_ITEM_XY(s, flags, rows, cols, idx_a, i) = t_i;
         }
+    }
+
+/*
+
+=item convert_to_number_matrix
+
+Get a NumMatrix2D from the current matrix
+
+=item convert_to_complex_matrix
+
+Get a ComplexMatrix2D from the current matrix
+
+=item convert_to_pmc_matrix
+
+Get a PMCMatrix2D from the current matrix
+
+=cut
+
+*/
+
+    METHOD convert_to_number_matrix() {
+        DECLATTRS(SELF, attrs);
+        PMC * const d = Parrot_pmc_new(INTERP, __PLA_Type_NumMatrix2D);
+        const INTVAL totalsize = attrs->rows * attrs->cols;
+        PMC * const meth = VTABLE_find_method(INTERP, d, CONST_STRING(INTERP, "resize"));
+        INTVAL i;
+        Parrot_ext_call(INTERP, meth, "PiII->", d, attrs->rows, attrs->cols);
+        for (i = 0; i < totalsize; i++) {
+            const FLOATVAL f = VTABLE_get_number_keyed_int(INTERP, SELF, i);
+            VTABLE_set_number_keyed_int(INTERP, d, i, f);
+        }
+        RETURN(PMC * d);
+    }
+
+    METHOD convert_to_complex_matrix() {
+        PMC * const d = VTABLE_clone(INTERP, SELF);
+        RETURN(PMC * d);
+    }
+
+    METHOD convert_to_pmc_matrix() {
+        DECLATTRS(SELF, attrs);
+        PMC * const d = Parrot_pmc_new(INTERP, __PLA_Type_PMCMatrix2D);
+        const INTVAL totalsize = attrs->rows * attrs->cols;
+        PMC * const meth = VTABLE_find_method(INTERP, d, CONST_STRING(INTERP, "resize"));
+        INTVAL i;
+        Parrot_ext_call(INTERP, meth, "PiII->", d, attrs->rows, attrs->cols);
+        for (i = 0; i < totalsize; i++) {
+            PMC * const p = VTABLE_get_pmc_keyed_int(INTERP, SELF, i);
+            VTABLE_set_pmc_keyed_int(INTERP, d, i, p);
+        }
+        RETURN(PMC * d);
     }
 
 

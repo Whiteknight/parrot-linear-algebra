@@ -284,6 +284,9 @@ class Pla::Matrix::MatrixTest is Pla::Matrix::MatrixTestBase {
         self.AssertHasMethod($m, "get_block");
         self.AssertHasMethod($m, "set_block");
         self.AssertHasMethod($m, "item_at");
+        self.AssertHasMethod($m, "convert_to_number_matrix");
+        self.AssertHasMethod($m, "convert_to_complex_matrix");
+        self.AssertHasMethod($m, "convert_to_pmc_matrix");
     }
 
     # Test the resize method
@@ -874,6 +877,27 @@ class Pla::Matrix::MatrixTest is Pla::Matrix::MatrixTestBase {
         {
             $m.item_at(0, 0, self.fancyvalue(0));
         });
+    }
+
+    method test_METHOD_convert_to_number_matrix() {
+        my $A := self.defaultmatrix2x2();
+        my $B := $A.convert_to_number_matrix();
+        assert_equal(pir::typeof__SP($B), "NumMatrix2D", "cannot convert");
+        self.AssertSize($B, 2, 2);
+    }
+
+    method test_METHOD_convert_to_complex_matrix() {
+        my $A := self.defaultmatrix2x2();
+        my $B := $A.convert_to_complex_matrix();
+        assert_equal(pir::typeof__SP($B), "ComplexMatrix2D", "cannot convert");
+        self.AssertSize($B, 2, 2);
+    }
+
+    method test_METHOD_convert_to_pmc_matrix() {
+        my $A := self.defaultmatrix2x2();
+        my $B := $A.convert_to_pmc_matrix();
+        assert_equal(pir::typeof__SP($B), "PMCMatrix2D", "cannot convert");
+        self.AssertSize($B, 2, 2);
     }
 }
 

@@ -673,5 +673,57 @@ value with the return value of the called function.
             }
         }
     }
+
+/*
+
+=item convert_to_number_matrix
+
+Get a NumMatrix2D from the current matrix
+
+=item convert_to_complex_matrix
+
+Get a ComplexMatrix2D from the current matrix
+
+=item convert_to_pmc_matrix
+
+Get a PMCMatrix2D from the current matrix
+
+=cut
+
+*/
+
+    METHOD convert_to_number_matrix() {
+        DECLATTRS(SELF, attrs);
+        PMC * const d = Parrot_pmc_new(INTERP, __PLA_Type_NumMatrix2D);
+        const INTVAL totalsize = attrs->rows * attrs->cols;
+        PMC * const meth = VTABLE_find_method(INTERP, d, CONST_STRING(INTERP, "resize"));
+        INTVAL i;
+        Parrot_ext_call(INTERP, meth, "PiII->", d, attrs->rows, attrs->cols);
+        for (i = 0; i < totalsize; i++) {
+            const FLOATVAL f = VTABLE_get_number_keyed_int(INTERP, SELF, i);
+            VTABLE_set_number_keyed_int(INTERP, d, i, f);
+        }
+        RETURN(PMC * d);
+    }
+
+    METHOD convert_to_complex_matrix() {
+        DECLATTRS(SELF, attrs);
+        PMC * const d = Parrot_pmc_new(INTERP, __PLA_Type_PMCMatrix2D);
+        const INTVAL totalsize = attrs->rows * attrs->cols;
+        PMC * const meth = VTABLE_find_method(INTERP, d, CONST_STRING(INTERP, "resize"));
+        INTVAL i;
+        Parrot_ext_call(INTERP, meth, "PiII->", d, attrs->rows, attrs->cols);
+        for (i = 0; i < totalsize; i++) {
+            PMC * const p = VTABLE_get_pmc_keyed_int(INTERP, SELF, i);
+            VTABLE_set_pmc_keyed_int(INTERP, d, i, p);
+        }
+        RETURN(PMC * d);
+    }
+
+    METHOD convert_to_pmc_matrix() {
+        PMC * const d = VTABLE_clone(INTERP, SELF);
+        RETURN(PMC * d);
+    }
+
 }
 
