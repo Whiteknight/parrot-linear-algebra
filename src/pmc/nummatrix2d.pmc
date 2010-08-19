@@ -16,6 +16,8 @@
 /* Above we do relative error, below we use abs */
 #define FLOATVAL_REL_THRESHOLD 10
 
+INTVAL __PLA_Type_NumMatrix2D;
+
 /* Resize the matrix internal storage to be able to hold a point at position
    (x, y). The matrix grows but does not shrink. New spaces in the matrix
    are initialized to 0.0. Parameters x and y are the indices that are trying
@@ -243,6 +245,10 @@ pmclass NumMatrix2D dynpmc auto_attrs provides matrix provides numericmatrix {
     ATTR INTVAL rows;
     ATTR INTVAL cols;
     ATTR INTVAL flags;
+
+    void class_init() {
+        __PLA_Type_NumMatrix2D = entry;
+    }
 
 /*
 
@@ -872,20 +878,6 @@ Add the integer value to every element in the matrix.
 
 /*
 
-=item get_proxy()
-
-=cut
-
-*/
-
-    METHOD get_proxy(PMC * key) {
-        PMC * const proxy = Parrot_pmc_new_init(INTERP, __PLA_MatrixProxy_typeid, SELF);
-        VTABLE_assign_pmc(INTERP, proxy, key);
-        RETURN(PMC * proxy);
-    }
-
-/*
-
 =item fill()
 
 Fill the matrix with a single value. if sizes are provided, fill to those
@@ -1267,6 +1259,41 @@ Swap two rows
             ITEM_XY(s, flags, rows, cols, idx_a, i) = t;
         }
     }
+
+    METHOD convert_to_number_matrix() {
+        PMC * const d = VTABLE_clone(INTERP, SELF);
+        RETURN(PMC * d);
+    }
+
+    METHOD convert_to_complex_matrix() {
+        DECLATTRS(SELF, attrs);
+        PMC * const d = Parrot_pmc_new(INTERP, __PLA_Type_ComplexMatrix2D);
+        const INTVAL totalsize = attrs->rows * attrs->cols;
+        PMC * const meth = VTABLE_find_method(INTERP, d, CONST_STRING(INTERP, "resize"));
+        INTVAL i;
+        Parrot_ext_call(INTERP, meth, "PiII->", d, attrs->rows, attrs->cols);
+        for (i = 0; i < totalsize; i++) {
+            const FLOATVAL f = VTABLE_get_number_keyed_int(INTERP, SELF, i);
+            VTABLE_set_number_keyed_int(INTERP, d, i, f);
+        }
+        RETURN(PMC * d);
+    }
+
+    METHOD convert_to_pmc_matrix() {
+        DECLATTRS(SELF, attrs);
+        PMC * const d = Parrot_pmc_new(INTERP, __PLA_Type_PMCMatrix2D);
+        const INTVAL totalsize = attrs->rows * attrs->cols;
+        PMC * const meth = VTABLE_find_method(INTERP, d, CONST_STRING(INTERP, "resize"));
+        INTVAL i;
+        Parrot_ext_call(INTERP, meth, "PiII->", d, attrs->rows, attrs->cols);
+        for (i = 0; i < totalsize; i++) {
+            const FLOATVAL f = VTABLE_get_number_keyed_int(INTERP, SELF, i);
+            VTABLE_set_number_keyed_int(INTERP, d, i, f);
+        }
+        RETURN(PMC * d);
+    }
+
+
 
 /*
 

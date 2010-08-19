@@ -5,6 +5,7 @@
 #define DECLATTRS(p, a) Parrot_PMCMatrix2D_attributes * const (a) = \
     (Parrot_PMCMatrix2D_attributes *)((p)->data)
 
+INTVAL __PLA_Type_PMCMatrix2D;
 
 /* Resize the matrix internal storage to be able to hold a point at position
    (x, y). The matrix grows but does not shrink. New spaces in the matrix
@@ -85,6 +86,10 @@ pmclass PMCMatrix2D dynpmc auto_attrs provides matrix {
     ATTR INTVAL cols;
     ATTR INTVAL rows;
     ATTR INTVAL flags;
+
+    void class_init() {
+        __PLA_Type_PMCMatrix2D = entry;
+    }
 
     VTABLE void init() {
         DECLATTRS(SELF, attrs);
@@ -217,7 +222,7 @@ TODO: Update all these to follow HLL mappings
         VTABLE_set_pmc_keyed(INTERP, SELF, key, item);
     }
 
-    VTABLE void set_integer_keyed_int(INTVAL key, FLOATVAL value) {
+    VTABLE void set_number_keyed_int(INTVAL key, FLOATVAL value) {
         PMC * const item = Parrot_pmc_new(INTERP, enum_class_Float);
         VTABLE_set_number_native(INTERP, item, value);
         VTABLE_set_pmc_keyed_int(INTERP, SELF, key, item);
@@ -229,7 +234,7 @@ TODO: Update all these to follow HLL mappings
         VTABLE_set_pmc_keyed(INTERP, SELF, key, item);
     }
 
-    VTABLE void set_integer_keyed_int(INTVAL key, STRING * value) {
+    VTABLE void set_string_keyed_int(INTVAL key, STRING * value) {
         PMC * const item = Parrot_pmc_new(INTERP, enum_class_String);
         VTABLE_set_string_native(INTERP, item, value);
         VTABLE_set_pmc_keyed_int(INTERP, SELF, key, item);

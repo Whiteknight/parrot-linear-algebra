@@ -6,6 +6,8 @@
 #define DECLATTRS(p, a) Parrot_ComplexMatrix2D_attributes * const (a) = \
     (Parrot_ComplexMatrix2D_attributes *)((p)->data)
 
+INTVAL __PLA_Type_ComplexMatrix2D;
+
 /* Resize the matrix internal storage to be able to hold a point at position
    (x, y). The matrix grows but does not shrink. New spaces in the matrix
    are initialized to 0.0. Parameters x and y are the indices that are trying
@@ -391,6 +393,10 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix provides numericmatrix
     ATTR INTVAL rows;
     ATTR INTVAL cols;
     ATTR INTVAL flags;
+
+    void class_init() {
+        __PLA_Type_ComplexMatrix2D = entry;
+    }
 
 /*
 

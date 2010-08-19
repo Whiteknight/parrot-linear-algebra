@@ -3,7 +3,9 @@
 
 #include <cblas.h>
 
-extern INTVAL __PLA_MatrixProxy_typeid;
+extern INTVAL __PLA_Type_NumMatrix2D;
+extern INTVAL __PLA_Type_ComplexMatrix2D;
+extern INTVAL __PLA_Type_PMCMatrix2D;
 
 #define SWAP_XY(a) do { \
         const INTVAL __temp_val = a->rows; \
