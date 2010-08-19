@@ -387,7 +387,23 @@ class Pla::Matrix::NumericMatrixTest is Pla::Matrix::MatrixTest {
 
     method test_METHOD_row_combine() {
         my $A := self.fancymatrix2x2();
-        my $B := self.matrix2x2(self.fancyvalue(0) + self.fancyvalue(2), self.fancyvalue(1) + self.fancyvalue(3),
+        my $val1;
+        my $val2;
+        Q:PIR {
+            .local pmc me
+            me = find_lex "self"
+            $P0 = me."fancyvalue"(0)
+            $P1 = me."fancyvalue"(1)
+            $P2 = me."fancyvalue"(2)
+            $P3 = me."fancyvalue"(3)
+
+            $P4 = $P0 + $P2
+            $P5 = $P1 + $P3
+            store_lex "$val1", $P4
+            store_lex "$val2", $P5
+        };
+
+        my $B := self.matrix2x2($val1, $val2,
                                 self.fancyvalue(2), self.fancyvalue(3));
         $A.row_combine(1, 0, 1);
         assert_equal($A, $B, "cannot row_combine");

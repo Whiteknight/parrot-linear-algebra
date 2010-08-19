@@ -435,26 +435,31 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix provides numericmatrix
 */
 
     VTABLE FLOATVAL get_number_keyed(PMC * key) {
-        /* TODO: What should we return here, the real value or the absolute value? */
         DECLATTRS(SELF, attrs);
         const INTVAL rows_size = attrs->rows;
         const INTVAL cols_size = attrs->cols;
         INTVAL rows, cols;
+        FLOATVAL real, imag;
         GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
         if (rows < 0 || rows >= rows_size || cols >= cols_size || cols < 0)
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
                 PLATYPENAME ": indices out of bounds");
-        return R_ITEM_XY(attrs->storage, attrs->flags, rows_size, cols_size, rows, cols);
+        real = R_ITEM_XY(attrs->storage, attrs->flags, rows_size, cols_size, rows, cols);
+        imag = I_ITEM_XY(attrs->storage, attrs->flags, rows_size, cols_size, rows, cols);
+        return sqrt(real * real + imag + imag);
     }
 
     VTABLE FLOATVAL get_number_keyed_int(INTVAL key) {
         DECLATTRS(SELF, attrs);
         const INTVAL totalsize = attrs->rows * attrs->cols;
+        FLOATVAL real, imag;
         if (key >= totalsize || key < 0) {
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
                 PLATYPENAME ": Index out of bounds.");
         }
-        return attrs->storage[key * 2];
+        real = attrs->storage[key * 2];
+        imag = attrs->storage[key * 2 + 1];
+        return sqrt(real * real + imag * imag);
     }
 
     VTABLE INTVAL get_integer_keyed(PMC * key) {
@@ -550,6 +555,14 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix provides numericmatrix
         PMC * const item = Parrot_pmc_new(INTERP, enum_class_Complex);
         VTABLE_set_string_native(INTERP, item, value);
         VTABLE_set_pmc_keyed(INTERP, SELF, key, item);
+    }
+
+    VTABLE void set_integer_keyed(PMC * key, INTVAL value) {
+        VTABLE_set_number_keyed(INTERP, SELF, key, (FLOATVAL)value);
+    }
+
+    VTABLE void set_integer_keyed_int(INTVAL key, INTVAL value) {
+        VTABLE_set_number_keyed_int(INTERP, SELF, key, (FLOATVAL)value);
     }
 
     VTABLE void set_string_keyed_int(INTVAL key, STRING * value) {
@@ -1330,11 +1343,11 @@ Calculates the matrix equation:
 
     METHOD gemm(PMC *alpha, PMC * A, PMC *B, PMC *beta, PMC *C) {
         PMC * const c_out = VTABLE_clone(INTERP, C);
-        //if (A->vtable->base_type != B->vtable->base_type &&
-        //    C->vtable->base_type != A->vtable->base_type &&
-        //    A->vtable->base_type != enum_class_NumMatrix2D)
-        //    Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
-        //        PLATYPENAME ": gemm only accepts NumMatrix2D arguments");
+        if (A->vtable->base_type != B->vtable->base_type &&
+            C->vtable->base_type != A->vtable->base_type &&
+            A->vtable->base_type != SELF->vtable->base_type)
+            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                PLATYPENAME ": gemm only accepts NumMatrix2D arguments");
         call_gemm_pmc(INTERP, alpha, A, B, beta, c_out);
         RETURN(PMC* c_out);
     }
