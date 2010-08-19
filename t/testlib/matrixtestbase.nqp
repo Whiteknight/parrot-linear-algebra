@@ -12,7 +12,9 @@ class Pla::Matrix::MatrixTestBase is UnitTest::Testcase {
         use('UnitTest::Assertions');
     }
 
-    method default_loader() { Pla::Matrix::Loader.new; }
+    method default_loader() {
+        Pla::Matrix::Loader.new;
+        }
 
     method RequireOverride($m) {
         Exception::MethodNotFound.new(
@@ -83,6 +85,20 @@ class Pla::Matrix::MatrixTestBase is UnitTest::Testcase {
         $m{Key.new(2,1)} := $cb;
         $m{Key.new(2,2)} := $cc;
         return ($m);
+    }
+
+    method defaultmatrix3x3() {
+        return self.matrix3x3(
+            self.defaultvalue(),
+            self.defaultvalue(),
+            self.defaultvalue(),
+            self.defaultvalue(),
+            self.defaultvalue(),
+            self.defaultvalue(),
+            self.defaultvalue(),
+            self.defaultvalue(),
+            self.defaultvalue()
+        );
     }
 
     method AssertSize($m, $rows, $cols) {

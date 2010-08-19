@@ -1364,7 +1364,7 @@ Swap two rows
         const INTVAL cols = attrs->cols;
         const INTVAL flags = attrs->flags;
         INTVAL i;
-        if (srcidx < 0 || srcidx >= rows)
+        if (srcidx < 0 || srcidx >= rows || destidx < 0 || destidx >= rows)
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
                 PLATYPENAME ": Row index out of bounds");
         for (i = 0; i < cols; i++) {

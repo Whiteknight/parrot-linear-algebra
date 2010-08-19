@@ -324,25 +324,196 @@ class Pla::Matrix::NumericMatrixTest is Pla::Matrix::MatrixTest {
     method test_METHOD_gemm_AB() { self.RequireOverride("test_METHOD_gemm_AB"); }
     method test_METHOD_gemm_aAB() { self.RequireOverride("test_METHOD_gemm_aAB"); }
     method test_METHOD_gemm_aABbC() { self.RequireOverride("test_METHOD_gemm_aABbC"); }
-    method test_METHOD_gemm_BADTYPE() { self.RequireOverride("test_METHOD_gemm_BADTYPE");}
-    method test_METHOD_gemm_BADSIZE_A() { self.RequireOverride("test_METHOD_gemm_BADSIZE_A"); }
-    method test_METHOD_gemm_BADSIZE_B() { self.RequireOverride("test_METHOD_gemm_BADSIZE_B"); }
-    method test_METHOD_gemm_BADSIZE_C() { self.RequireOverride("test_METHOD_gemm_BADSIZE_C"); }
 
-    method test_METHOD_row_combine() { self.RequireOverride("test_METHOD_row_combine"); }
-    method test_METHOD_row_combine_GAIN() { self.RequireOverride("test_METHOD_row_combine_GAIN"); }
-    method test_METHOD_row_combine_NEGINDICES_A() { self.RequireOverride("test_METHOD_row_combine_NEGINDICES_A"); }
-    method test_METHOD_row_combine_BOUNDS_A() { self.RequireOverride("test_METHOD_row_combine_BOUNDS_A"); }
-    method test_METHOD_row_combine_NEGINDICES_B() { self.RequireOverride("test_METHOD_row_combine_NEGINDICES_B"); }
-    method test_METHOD_row_combine_BOUNDS_B() { self.RequireOverride("test_METHOD_row_combine_BOUNDS_B"); }
+    method test_METHOD_gemm_BADTYPE_A() {
+        assert_throws(Exception::OutOfBounds, "A is bad type",
+        {
+            my $A := "foobar";
+            my $B := self.defaultmatrix3x3();
+            my $C := self.defaultmatrix3x3();
+            $B.gemm(1.0, $A, $B, 1.0, $C);
+        });
+    }
 
-    method test_METHOD_row_swap() { todo("Write this"); }
-    method test_METHOD_row_swap_NEGINDICES_A() { todo("Write this"); }
-    method test_METHOD_row_swap_BOUNDS_A() { todo("Write this"); }
-    method test_METHOD_row_swap_NEGINDICES_B() { todo("Write this"); }
-    method test_METHOD_row_swap_BOUNDS_B() { todo("Write this"); }
+    method test_METHOD_gemm_BADTYPE_B() {
+        assert_throws(Exception::OutOfBounds, "B is bad type",
+        {
+            my $A := self.defaultmatrix3x3();
+            my $B := "foobar";
+            my $C := self.defaultmatrix3x3();
+            $A.gemm(1.0, $A, $B, 1.0, $C);
+        });
+    }
 
-    method test_METHOD_row_scale() { self.RequireOverride("test_METHOD_row_scale"); }
-    method test_METHOD_row_scale_NEGINDICES() { self.RequireOverride("test_METHOD_row_scale_NEGINDICES"); }
-    method test_METHOD_row_scale_BOUNDS() { self.RequireOverride("test_METHOD_row_scale_BOUNDS"); }
+    method test_METHOD_gemm_BADTYPE_C() {
+        assert_throws(Exception::OutOfBounds, "C is bad type",
+        {
+            my $A := self.defaultmatrix3x3();
+            my $B := self.defaultmatrix3x3();
+            my $C := "foobar";
+            $A.gemm(1.0, $A, $B, 1.0, $C);
+        });
+    }
+
+    method test_METHOD_gemm_BADSIZE_A() {
+        assert_throws(Exception::OutOfBounds, "A has incorrect size",
+        {
+            my $A := self.defaultmatrix2x2();
+            my $B := self.defaultmatrix3x3();
+            my $C := self.defaultmatrix3x3();
+            $A.gemm(1.0, $A, $B, 1.0, $C);
+        });
+    }
+
+    method test_METHOD_gemm_BADSIZE_B() {
+        assert_throws(Exception::OutOfBounds, "B has incorrect size",
+        {
+            my $A := self.defaultmatrix3x3();
+            my $B := self.defaultmatrix2x2();
+            my $C := self.defaultmatrix3x3();
+            $A.gemm(1.0, $A, $B, 1.0, $C);
+        });
+    }
+
+    method test_METHOD_gemm_BADSIZE_C() {
+        assert_throws(Exception::OutOfBounds, "C has incorrect size",
+        {
+            my $A := self.defaultmatrix3x3();
+            my $B := self.defaultmatrix3x3();
+            my $C := self.defaultmatrix2x2();
+            $A.gemm(1.0, $A, $B, 1.0, $C);
+        });
+    }
+
+    method test_METHOD_row_combine() {
+        my $A := self.fancymatrix2x2();
+        my $B := self.matrix2x2(self.fancyvalue(0) + self.fancyvalue(2), self.fancyvalue(1) + self.fancyvalue(3),
+                                self.fancyvalue(2), self.fancyvalue(3));
+        $A.row_combine(1, 0, 1);
+        assert_equal($A, $B, "cannot row_combine");
+    }
+
+    method test_METHOD_row_combine_GAIN() {
+        my $A := self.fancymatrix2x2();
+        my $B := self.matrix2x2(self.fancyvalue(0) + self.fancyvalue(2) * self.fancyvalue(0),
+                                self.fancyvalue(1) + self.fancyvalue(3)  * self.fancyvalue(0),
+                                self.fancyvalue(2), self.fancyvalue(3));
+        $A.row_combine(1, 0, self.fancyvalue(0));
+        assert_equal($A, $B, "cannot row_combine");
+    }
+
+    method test_METHOD_row_combine_NEGINDICES_A() {
+        assert_throws(Exception::OutOfBounds, "Index A is out of bounds",
+        {
+            my $A := self.defaultmatrix3x3();
+            $A.row_combine(-1, 1, 1);
+        });
+    }
+
+    method test_METHOD_row_combine_BOUNDS_A() {
+        assert_throws(Exception::OutOfBounds, "Index A is out of bounds",
+        {
+            my $A := self.defaultmatrix3x3();
+            $A.row_combine(7, 1, 1);
+        });
+    }
+
+    method test_METHOD_row_combine_NEGINDICES_B() {
+        assert_throws(Exception::OutOfBounds, "Index B is out of bounds",
+        {
+            my $A := self.defaultmatrix3x3();
+            $A.row_combine(1, -1, 1);
+        });
+    }
+
+    method test_METHOD_row_combine_BOUNDS_B() {
+        assert_throws(Exception::OutOfBounds, "Index B is out of bounds",
+        {
+            my $A := self.defaultmatrix3x3();
+            $A.row_combine(1, 7, 1);
+        });
+    }
+
+    method test_METHOD_row_swap() {
+        my $A := self.matrix();
+        $A.initialize_from_args(3, 3,
+                self.fancyvalue(0), self.fancyvalue(0), self.fancyvalue(0),
+                self.fancyvalue(1), self.fancyvalue(1), self.fancyvalue(1),
+                self.fancyvalue(2), self.fancyvalue(2), self.fancyvalue(2));
+
+        my $B := self.matrix();
+        $B.initialize_from_args(3, 3,
+                self.fancyvalue(1), self.fancyvalue(1), self.fancyvalue(1),
+                self.fancyvalue(2), self.fancyvalue(2), self.fancyvalue(2),
+                self.fancyvalue(0), self.fancyvalue(0), self.fancyvalue(0));
+        $A.row_swap(0, 2);
+        $A.row_swap(0, 1);
+        assert_equal($A, $B, "cannot row_swap");
+    }
+
+    method test_METHOD_row_swap_NEGINDICES_A() {
+        assert_throws(Exception::OutOfBounds, "Index A is out of bounds",
+        {
+            my $A := self.defaultmatrix3x3();
+            $A.row_swap(-1, 1);
+        });
+    }
+
+    method test_METHOD_row_swap_BOUNDS_A() {
+        assert_throws(Exception::OutOfBounds, "Index A is out of bounds",
+        {
+            my $A := self.defaultmatrix3x3();
+            $A.row_swap(7, 1);
+        });
+    }
+
+    method test_METHOD_row_swap_NEGINDICES_B() {
+        assert_throws(Exception::OutOfBounds, "Index B is out of bounds",
+        {
+            my $A := self.defaultmatrix3x3();
+            $A.row_swap(1, -1);
+        });
+    }
+
+    method test_METHOD_row_swap_BOUNDS_B() {
+        assert_throws(Exception::OutOfBounds, "Index B is out of bounds",
+        {
+            my $A := self.defaultmatrix3x3();
+            $A.row_swap(1, 7);
+        });
+    }
+
+    method test_METHOD_row_scale() {
+        my $A := self.matrix();
+        $A.initialize_from_args(3, 3,
+                self.fancyvalue(0), self.fancyvalue(0), self.fancyvalue(0),
+                self.fancyvalue(1), self.fancyvalue(1), self.fancyvalue(1),
+                self.fancyvalue(2), self.fancyvalue(2), self.fancyvalue(2));
+
+        my $B := self.matrix();
+        $B.initialize_from_args(3, 3,
+                self.fancyvalue(0) * 2, self.fancyvalue(0) * 2, self.fancyvalue(0) * 2,
+                self.fancyvalue(1) * 3, self.fancyvalue(1) * 3, self.fancyvalue(1) * 3,
+                self.fancyvalue(2) * 4, self.fancyvalue(2) * 4, self.fancyvalue(2) * 4);
+        $A.row_scale(0, 2);
+        $A.row_scale(1, 3);
+        $A.row_scale(2, 4);
+        assert_equal($A, $B, "cannot scale rows");
+    }
+
+    method test_METHOD_row_scale_NEGINDICES() {
+        assert_throws(Exception::OutOfBounds, "index is negative",
+        {
+            my $A := self.defaultmatrix3x3();
+            $A.row_scale(-1, 1);
+        });
+    }
+
+    method test_METHOD_row_scale_BOUNDS() {
+        assert_throws(Exception::OutOfBounds, "index is negative",
+        {
+            my $A := self.defaultmatrix3x3();
+            $A.row_scale(7, 1);
+        });
+    }
 }
