@@ -62,24 +62,24 @@ SOURCES
     $P2['linalg_group'] = $P3
     $P0['dynpmc'] = $P2
 
-    $P2 = new 'Hash'
-    $P2["src/nqp/pla.pir"] = "src/nqp/pla.nqp"
-    $P2["t/testlib/matrixtestbase.pir"] = "t/testlib/matrixtestbase.nqp"
-    $P2["t/testlib/matrixtest.pir"] = "t/testlib/matrixtest.nqp"
-    $P2["t/testlib/numericmatrixtest.pir"] = "t/testlib/numericmatrixtest.nqp"
-    $P2["t/testlib/loader.pir"] = "t/testlib/loader.nqp"
-    $P2["t/testlib/matrixtestfactory.pir"] = "t/testlib/matrixtestfactory.nqp"
-    $P0["pir_nqp-rx"] = $P2
-
     $P2 = new "ResizablePMCArray"
-    push $P2, "t/testlib/matrixtestbase.pir"
-    push $P2, "t/testlib/matrixtest.pir"
-    push $P2, "t/testlib/numericmatrixtest.pir"
-    push $P2, "t/testlib/loader.pir"
-    push $P2, "t/testlib/matrixtestfactory.pir"
     $P1 = new 'Hash'
     $P1["t/testlib/pla_test.pir"] = $P2
     $P0["pir_pir"] = $P1
+
+    $P2 = new 'Hash'
+    $P2["src/nqp/pla.pir"] = "src/nqp/pla.nqp"
+    $P0["pir_nqp-rx"] = $P2
+
+    'add_test_lib_file'($P0, "matrixtestbase")
+    'add_test_lib_file'($P0, "matrixtest")
+    'add_test_lib_file'($P0, "numericmatrixtest")
+    'add_test_lib_file'($P0, "loader")
+    'add_test_lib_file'($P0, "matrixtestfactory")
+    'add_test_lib_file'($P0, "methods/Gemm")
+    'add_test_lib_file'($P0, "methods/RowSwap")
+    'add_test_lib_file'($P0, "methods/RowCombine")
+    'add_test_lib_file'($P0, "methods/RowScale")
 
     $P2 = new 'Hash'
     $P2["pla_nqp.pbc"] = "src/nqp/pla.pir"
@@ -101,7 +101,6 @@ SOURCES
     #$S0 = $S0 . " t/harness"
     #$P0['test_exec'] = $S0
   no_test:
-
 
     # dist
     $P5 = glob('src/pmc/pla_matrix_types.h src/*.pir src/*.m examples/*.pir')
@@ -145,6 +144,24 @@ SOURCES
     end
   L1:
 .end
+
+.sub 'add_test_lib_file'
+    .param pmc config
+    .param string filename
+
+    .local pmc pirnqprx
+    pirnqprx = config["pir_nqp-rx"]
+    $S0 = "t/testlib/" . filename
+    $S1 = $S0 . ".nqp"
+    $S2 = $S0 . ".pir"
+    pirnqprx[$S2] = $S1
+
+    .local pmc platest
+    $P0 = config["pir_pir"]
+    $P1 = $P0["t/testlib/pla_test.pir"]
+    push $P1, $S2
+.end
+
 
 
 

@@ -17,8 +17,12 @@ sub MAIN () {
     my $total_failed := 0;
     my $total_files  := 0;
     my $failed_files := 0;
-    my $max_length   := 30;
-    my @files := get_all_tests("t", "t/pmc");
+    our $max_length;
+    $max_length := 30;
+    my @files := get_all_tests("t", "t/pmc",
+        "t/methods/nummatrix2d",
+        "t/methods/complexmatrix2d",
+        "t/methods/pmcmatrix2d");
     my %failures := {};
 
     for @files {
@@ -109,6 +113,7 @@ sub MAIN () {
 sub get_all_tests(*@dirs) {
     my $fs := FileSystem.instance;
     my @files := Parrot::new("ResizableStringArray");
+    our $max_length;
     for @dirs {
         my $dir := $_;
         my @rawfiles := $fs.get_contents($dir);
@@ -119,9 +124,9 @@ sub get_all_tests(*@dirs) {
                 if pir::index__ISS($filename, ".OLD") == -1 {
                     @files.push($dir ~ "/" ~ $filename);
                     my $length := pir::length__IS($dir ~ "/" ~ $filename);
-                    #if $length > $max_length {
-                    #    $max_length := $length;
-                    #}
+                    if $length > $max_length {
+                        $max_length := $length;
+                    }
                 }
             }
         }
