@@ -1,6 +1,6 @@
 
 .namespace []
-.sub "_block11"  :anon :subid("10_1282246488.40303")
+.sub "_block11"  :anon :subid("10_1282252101.93213")
 .annotate 'line', 0
     get_hll_global $P14, ["Pla";"Methods";"RowSwap"], "_block13" 
     capture_lex $P14
@@ -15,15 +15,15 @@
     capture_lex $P14
     $P149 = $P14()
     .return ($P149)
-    .const 'Sub' $P151 = "21_1282246488.40303" 
+    .const 'Sub' $P151 = "21_1282252101.93213" 
     .return ($P151)
 .end
 
 
 .namespace []
-.sub "" :load :init :subid("post22") :outer("10_1282246488.40303")
+.sub "" :load :init :subid("post22") :outer("10_1282252101.93213")
 .annotate 'line', 0
-    .const 'Sub' $P12 = "10_1282246488.40303" 
+    .const 'Sub' $P12 = "10_1282252101.93213" 
     .local pmc block
     set block, $P12
     $P154 = get_root_global ["parrot"], "P6metaclass"
@@ -32,20 +32,20 @@
 
 
 .namespace ["Pla";"Methods";"RowSwap"]
-.sub "_block13"  :subid("11_1282246488.40303") :outer("10_1282246488.40303")
+.sub "_block13"  :subid("11_1282252101.93213") :outer("10_1282252101.93213")
 .annotate 'line', 1
-    .const 'Sub' $P133 = "19_1282246488.40303" 
+    .const 'Sub' $P133 = "19_1282252101.93213" 
     capture_lex $P133
-    .const 'Sub' $P118 = "17_1282246488.40303" 
+    .const 'Sub' $P118 = "17_1282252101.93213" 
     capture_lex $P118
-    .const 'Sub' $P103 = "15_1282246488.40303" 
+    .const 'Sub' $P103 = "15_1282252101.93213" 
     capture_lex $P103
-    .const 'Sub' $P88 = "13_1282246488.40303" 
+    .const 'Sub' $P88 = "13_1282252101.93213" 
     capture_lex $P88
-    .const 'Sub' $P15 = "12_1282246488.40303" 
+    .const 'Sub' $P15 = "12_1282252101.93213" 
     capture_lex $P15
 .annotate 'line', 49
-    .const 'Sub' $P133 = "19_1282246488.40303" 
+    .const 'Sub' $P133 = "19_1282252101.93213" 
     newclosure $P148, $P133
 .annotate 'line', 1
     .return ($P148)
@@ -53,7 +53,7 @@
 
 
 .namespace ["Pla";"Methods";"RowSwap"]
-.sub "" :load :init :subid("post23") :outer("11_1282246488.40303")
+.sub "" :load :init :subid("post23") :outer("11_1282252101.93213")
 .annotate 'line', 1
     get_hll_global $P14, ["Pla";"Methods";"RowSwap"], "_block13" 
     .local pmc block
@@ -67,7 +67,7 @@
 
 .namespace ["Pla";"Methods";"RowSwap"]
 .include "except_types.pasm"
-.sub "test_METHOD_row_swap"  :subid("12_1282246488.40303") :method :outer("11_1282246488.40303")
+.sub "test_METHOD_row_swap"  :subid("12_1282252101.93213") :method :outer("11_1282252101.93213")
 .annotate 'line', 8
     new $P17, 'ExceptionHandler'
     set_addr $P17, control_16
@@ -178,9 +178,9 @@
 
 .namespace ["Pla";"Methods";"RowSwap"]
 .include "except_types.pasm"
-.sub "test_METHOD_row_swap_NEGINDICES_A"  :subid("13_1282246488.40303") :method :outer("11_1282246488.40303")
+.sub "test_METHOD_row_swap_NEGINDICES_A"  :subid("13_1282252101.93213") :method :outer("11_1282252101.93213")
 .annotate 'line', 25
-    .const 'Sub' $P93 = "14_1282246488.40303" 
+    .const 'Sub' $P93 = "14_1282252101.93213" 
     capture_lex $P93
     new $P90, 'ExceptionHandler'
     set_addr $P90, control_89
@@ -190,7 +190,7 @@
 .annotate 'line', 26
     get_hll_global $P91, ["Exception"], "OutOfBounds"
 .annotate 'line', 27
-    .const 'Sub' $P93 = "14_1282246488.40303" 
+    .const 'Sub' $P93 = "14_1282252101.93213" 
     newclosure $P100, $P93
     $P101 = "assert_throws"($P91, "Index A is out of bounds", $P100)
 .annotate 'line', 25
@@ -204,7 +204,7 @@
 
 
 .namespace ["Pla";"Methods";"RowSwap"]
-.sub "_block92"  :anon :subid("14_1282246488.40303") :outer("13_1282246488.40303")
+.sub "_block92"  :anon :subid("14_1282252101.93213") :outer("13_1282252101.93213")
 .annotate 'line', 28
     new $P94, "Undef"
     .lex "$A", $P94
@@ -222,9 +222,9 @@
 
 .namespace ["Pla";"Methods";"RowSwap"]
 .include "except_types.pasm"
-.sub "test_METHOD_row_swap_BOUNDS_A"  :subid("15_1282246488.40303") :method :outer("11_1282246488.40303")
+.sub "test_METHOD_row_swap_BOUNDS_A"  :subid("15_1282252101.93213") :method :outer("11_1282252101.93213")
 .annotate 'line', 33
-    .const 'Sub' $P108 = "16_1282246488.40303" 
+    .const 'Sub' $P108 = "16_1282252101.93213" 
     capture_lex $P108
     new $P105, 'ExceptionHandler'
     set_addr $P105, control_104
@@ -234,7 +234,7 @@
 .annotate 'line', 34
     get_hll_global $P106, ["Exception"], "OutOfBounds"
 .annotate 'line', 35
-    .const 'Sub' $P108 = "16_1282246488.40303" 
+    .const 'Sub' $P108 = "16_1282252101.93213" 
     newclosure $P115, $P108
     $P116 = "assert_throws"($P106, "Index A is out of bounds", $P115)
 .annotate 'line', 33
@@ -248,7 +248,7 @@
 
 
 .namespace ["Pla";"Methods";"RowSwap"]
-.sub "_block107"  :anon :subid("16_1282246488.40303") :outer("15_1282246488.40303")
+.sub "_block107"  :anon :subid("16_1282252101.93213") :outer("15_1282252101.93213")
 .annotate 'line', 36
     new $P109, "Undef"
     .lex "$A", $P109
@@ -266,9 +266,9 @@
 
 .namespace ["Pla";"Methods";"RowSwap"]
 .include "except_types.pasm"
-.sub "test_METHOD_row_swap_NEGINDICES_B"  :subid("17_1282246488.40303") :method :outer("11_1282246488.40303")
+.sub "test_METHOD_row_swap_NEGINDICES_B"  :subid("17_1282252101.93213") :method :outer("11_1282252101.93213")
 .annotate 'line', 41
-    .const 'Sub' $P123 = "18_1282246488.40303" 
+    .const 'Sub' $P123 = "18_1282252101.93213" 
     capture_lex $P123
     new $P120, 'ExceptionHandler'
     set_addr $P120, control_119
@@ -278,7 +278,7 @@
 .annotate 'line', 42
     get_hll_global $P121, ["Exception"], "OutOfBounds"
 .annotate 'line', 43
-    .const 'Sub' $P123 = "18_1282246488.40303" 
+    .const 'Sub' $P123 = "18_1282252101.93213" 
     newclosure $P130, $P123
     $P131 = "assert_throws"($P121, "Index B is out of bounds", $P130)
 .annotate 'line', 41
@@ -292,7 +292,7 @@
 
 
 .namespace ["Pla";"Methods";"RowSwap"]
-.sub "_block122"  :anon :subid("18_1282246488.40303") :outer("17_1282246488.40303")
+.sub "_block122"  :anon :subid("18_1282252101.93213") :outer("17_1282252101.93213")
 .annotate 'line', 44
     new $P124, "Undef"
     .lex "$A", $P124
@@ -310,9 +310,9 @@
 
 .namespace ["Pla";"Methods";"RowSwap"]
 .include "except_types.pasm"
-.sub "test_METHOD_row_swap_BOUNDS_B"  :subid("19_1282246488.40303") :method :outer("11_1282246488.40303")
+.sub "test_METHOD_row_swap_BOUNDS_B"  :subid("19_1282252101.93213") :method :outer("11_1282252101.93213")
 .annotate 'line', 49
-    .const 'Sub' $P138 = "20_1282246488.40303" 
+    .const 'Sub' $P138 = "20_1282252101.93213" 
     capture_lex $P138
     new $P135, 'ExceptionHandler'
     set_addr $P135, control_134
@@ -322,7 +322,7 @@
 .annotate 'line', 50
     get_hll_global $P136, ["Exception"], "OutOfBounds"
 .annotate 'line', 51
-    .const 'Sub' $P138 = "20_1282246488.40303" 
+    .const 'Sub' $P138 = "20_1282252101.93213" 
     newclosure $P145, $P138
     $P146 = "assert_throws"($P136, "Index B is out of bounds", $P145)
 .annotate 'line', 49
@@ -336,7 +336,7 @@
 
 
 .namespace ["Pla";"Methods";"RowSwap"]
-.sub "_block137"  :anon :subid("20_1282246488.40303") :outer("19_1282246488.40303")
+.sub "_block137"  :anon :subid("20_1282252101.93213") :outer("19_1282252101.93213")
 .annotate 'line', 52
     new $P139, "Undef"
     .lex "$A", $P139
@@ -353,9 +353,9 @@
 
 
 .namespace []
-.sub "_block150" :load :anon :subid("21_1282246488.40303")
+.sub "_block150" :load :anon :subid("21_1282252101.93213")
 .annotate 'line', 1
-    .const 'Sub' $P152 = "10_1282246488.40303" 
+    .const 'Sub' $P152 = "10_1282252101.93213" 
     $P153 = $P152()
     .return ($P153)
 .end

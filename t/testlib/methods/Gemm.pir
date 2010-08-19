@@ -1,6 +1,6 @@
 
 .namespace []
-.sub "_block11"  :anon :subid("10_1282246495.16533")
+.sub "_block11"  :anon :subid("10_1282252083.69791")
 .annotate 'line', 0
     get_hll_global $P14, ["Pla";"Methods";"Gemm"], "_block13" 
     capture_lex $P14
@@ -15,15 +15,15 @@
     capture_lex $P14
     $P236 = $P14()
     .return ($P236)
-    .const 'Sub' $P238 = "37_1282246495.16533" 
+    .const 'Sub' $P238 = "37_1282252083.69791" 
     .return ($P238)
 .end
 
 
 .namespace []
-.sub "" :load :init :subid("post38") :outer("10_1282246495.16533")
+.sub "" :load :init :subid("post38") :outer("10_1282252083.69791")
 .annotate 'line', 0
-    .const 'Sub' $P12 = "10_1282246495.16533" 
+    .const 'Sub' $P12 = "10_1282252083.69791" 
     .local pmc block
     set block, $P12
     $P241 = get_root_global ["parrot"], "P6metaclass"
@@ -32,48 +32,48 @@
 
 
 .namespace ["Pla";"Methods";"Gemm"]
-.sub "_block13"  :subid("11_1282246495.16533") :outer("10_1282246495.16533")
+.sub "_block13"  :subid("11_1282252083.69791") :outer("10_1282252083.69791")
 .annotate 'line', 1
-    .const 'Sub' $P230 = "36_1282246495.16533" 
+    .const 'Sub' $P230 = "36_1282252083.69791" 
     capture_lex $P230
-    .const 'Sub' $P225 = "35_1282246495.16533" 
+    .const 'Sub' $P225 = "35_1282252083.69791" 
     capture_lex $P225
-    .const 'Sub' $P220 = "34_1282246495.16533" 
+    .const 'Sub' $P220 = "34_1282252083.69791" 
     capture_lex $P220
-    .const 'Sub' $P215 = "33_1282246495.16533" 
+    .const 'Sub' $P215 = "33_1282252083.69791" 
     capture_lex $P215
-    .const 'Sub' $P210 = "32_1282246495.16533" 
+    .const 'Sub' $P210 = "32_1282252083.69791" 
     capture_lex $P210
-    .const 'Sub' $P205 = "31_1282246495.16533" 
+    .const 'Sub' $P205 = "31_1282252083.69791" 
     capture_lex $P205
-    .const 'Sub' $P200 = "30_1282246495.16533" 
+    .const 'Sub' $P200 = "30_1282252083.69791" 
     capture_lex $P200
-    .const 'Sub' $P195 = "29_1282246495.16533" 
+    .const 'Sub' $P195 = "29_1282252083.69791" 
     capture_lex $P195
-    .const 'Sub' $P190 = "28_1282246495.16533" 
+    .const 'Sub' $P190 = "28_1282252083.69791" 
     capture_lex $P190
-    .const 'Sub' $P164 = "26_1282246495.16533" 
+    .const 'Sub' $P164 = "26_1282252083.69791" 
     capture_lex $P164
-    .const 'Sub' $P138 = "24_1282246495.16533" 
+    .const 'Sub' $P138 = "24_1282252083.69791" 
     capture_lex $P138
-    .const 'Sub' $P112 = "22_1282246495.16533" 
+    .const 'Sub' $P112 = "22_1282252083.69791" 
     capture_lex $P112
-    .const 'Sub' $P88 = "20_1282246495.16533" 
+    .const 'Sub' $P88 = "20_1282252083.69791" 
     capture_lex $P88
-    .const 'Sub' $P64 = "18_1282246495.16533" 
+    .const 'Sub' $P64 = "18_1282252083.69791" 
     capture_lex $P64
-    .const 'Sub' $P40 = "16_1282246495.16533" 
+    .const 'Sub' $P40 = "16_1282252083.69791" 
     capture_lex $P40
-    .const 'Sub' $P34 = "15_1282246495.16533" 
+    .const 'Sub' $P34 = "15_1282252083.69791" 
     capture_lex $P34
-    .const 'Sub' $P28 = "14_1282246495.16533" 
+    .const 'Sub' $P28 = "14_1282252083.69791" 
     capture_lex $P28
-    .const 'Sub' $P22 = "13_1282246495.16533" 
+    .const 'Sub' $P22 = "13_1282252083.69791" 
     capture_lex $P22
-    .const 'Sub' $P15 = "12_1282246495.16533" 
+    .const 'Sub' $P15 = "12_1282252083.69791" 
     capture_lex $P15
 .annotate 'line', 83
-    .const 'Sub' $P230 = "36_1282246495.16533" 
+    .const 'Sub' $P230 = "36_1282252083.69791" 
     newclosure $P235, $P230
 .annotate 'line', 1
     .return ($P235)
@@ -81,7 +81,7 @@
 
 
 .namespace ["Pla";"Methods";"Gemm"]
-.sub "" :load :init :subid("post39") :outer("11_1282246495.16533")
+.sub "" :load :init :subid("post39") :outer("11_1282252083.69791")
 .annotate 'line', 1
     get_hll_global $P14, ["Pla";"Methods";"Gemm"], "_block13" 
     .local pmc block
@@ -95,7 +95,7 @@
 
 .namespace ["Pla";"Methods";"Gemm"]
 .include "except_types.pasm"
-.sub "test_METHOD_gemm_aA"  :subid("12_1282246495.16533") :method :outer("11_1282246495.16533")
+.sub "test_METHOD_gemm_aA"  :subid("12_1282252083.69791") :method :outer("11_1282252083.69791")
 .annotate 'line', 8
     new $P17, 'ExceptionHandler'
     set_addr $P17, control_16
@@ -116,7 +116,7 @@
 
 .namespace ["Pla";"Methods";"Gemm"]
 .include "except_types.pasm"
-.sub "test_METHOD_gemm_AB"  :subid("13_1282246495.16533") :method :outer("11_1282246495.16533")
+.sub "test_METHOD_gemm_AB"  :subid("13_1282252083.69791") :method :outer("11_1282252083.69791")
 .annotate 'line', 9
     new $P24, 'ExceptionHandler'
     set_addr $P24, control_23
@@ -136,7 +136,7 @@
 
 .namespace ["Pla";"Methods";"Gemm"]
 .include "except_types.pasm"
-.sub "test_METHOD_gemm_aAB"  :subid("14_1282246495.16533") :method :outer("11_1282246495.16533")
+.sub "test_METHOD_gemm_aAB"  :subid("14_1282252083.69791") :method :outer("11_1282252083.69791")
 .annotate 'line', 10
     new $P30, 'ExceptionHandler'
     set_addr $P30, control_29
@@ -156,7 +156,7 @@
 
 .namespace ["Pla";"Methods";"Gemm"]
 .include "except_types.pasm"
-.sub "test_METHOD_gemm_aABbC"  :subid("15_1282246495.16533") :method :outer("11_1282246495.16533")
+.sub "test_METHOD_gemm_aABbC"  :subid("15_1282252083.69791") :method :outer("11_1282252083.69791")
 .annotate 'line', 11
     new $P36, 'ExceptionHandler'
     set_addr $P36, control_35
@@ -176,9 +176,9 @@
 
 .namespace ["Pla";"Methods";"Gemm"]
 .include "except_types.pasm"
-.sub "test_METHOD_gemm_BADTYPE_A"  :subid("16_1282246495.16533") :method :outer("11_1282246495.16533")
+.sub "test_METHOD_gemm_BADTYPE_A"  :subid("16_1282252083.69791") :method :outer("11_1282252083.69791")
 .annotate 'line', 13
-    .const 'Sub' $P45 = "17_1282246495.16533" 
+    .const 'Sub' $P45 = "17_1282252083.69791" 
     capture_lex $P45
     new $P42, 'ExceptionHandler'
     set_addr $P42, control_41
@@ -188,7 +188,7 @@
 .annotate 'line', 14
     get_hll_global $P43, ["Exception"], "OutOfBounds"
 .annotate 'line', 15
-    .const 'Sub' $P45 = "17_1282246495.16533" 
+    .const 'Sub' $P45 = "17_1282252083.69791" 
     newclosure $P61, $P45
     $P62 = "assert_throws"($P43, "A is bad type", $P61)
 .annotate 'line', 13
@@ -202,7 +202,7 @@
 
 
 .namespace ["Pla";"Methods";"Gemm"]
-.sub "_block44"  :anon :subid("17_1282246495.16533") :outer("16_1282246495.16533")
+.sub "_block44"  :anon :subid("17_1282252083.69791") :outer("16_1282252083.69791")
 .annotate 'line', 16
     new $P46, "Undef"
     .lex "$A", $P46
@@ -239,9 +239,9 @@
 
 .namespace ["Pla";"Methods";"Gemm"]
 .include "except_types.pasm"
-.sub "test_METHOD_gemm_BADTYPE_B"  :subid("18_1282246495.16533") :method :outer("11_1282246495.16533")
+.sub "test_METHOD_gemm_BADTYPE_B"  :subid("18_1282252083.69791") :method :outer("11_1282252083.69791")
 .annotate 'line', 23
-    .const 'Sub' $P69 = "19_1282246495.16533" 
+    .const 'Sub' $P69 = "19_1282252083.69791" 
     capture_lex $P69
     new $P66, 'ExceptionHandler'
     set_addr $P66, control_65
@@ -251,7 +251,7 @@
 .annotate 'line', 24
     get_hll_global $P67, ["Exception"], "OutOfBounds"
 .annotate 'line', 25
-    .const 'Sub' $P69 = "19_1282246495.16533" 
+    .const 'Sub' $P69 = "19_1282252083.69791" 
     newclosure $P85, $P69
     $P86 = "assert_throws"($P67, "B is bad type", $P85)
 .annotate 'line', 23
@@ -265,7 +265,7 @@
 
 
 .namespace ["Pla";"Methods";"Gemm"]
-.sub "_block68"  :anon :subid("19_1282246495.16533") :outer("18_1282246495.16533")
+.sub "_block68"  :anon :subid("19_1282252083.69791") :outer("18_1282252083.69791")
 .annotate 'line', 26
     new $P70, "Undef"
     .lex "$A", $P70
@@ -302,9 +302,9 @@
 
 .namespace ["Pla";"Methods";"Gemm"]
 .include "except_types.pasm"
-.sub "test_METHOD_gemm_BADTYPE_C"  :subid("20_1282246495.16533") :method :outer("11_1282246495.16533")
+.sub "test_METHOD_gemm_BADTYPE_C"  :subid("20_1282252083.69791") :method :outer("11_1282252083.69791")
 .annotate 'line', 33
-    .const 'Sub' $P93 = "21_1282246495.16533" 
+    .const 'Sub' $P93 = "21_1282252083.69791" 
     capture_lex $P93
     new $P90, 'ExceptionHandler'
     set_addr $P90, control_89
@@ -314,7 +314,7 @@
 .annotate 'line', 34
     get_hll_global $P91, ["Exception"], "OutOfBounds"
 .annotate 'line', 35
-    .const 'Sub' $P93 = "21_1282246495.16533" 
+    .const 'Sub' $P93 = "21_1282252083.69791" 
     newclosure $P109, $P93
     $P110 = "assert_throws"($P91, "C is bad type", $P109)
 .annotate 'line', 33
@@ -328,7 +328,7 @@
 
 
 .namespace ["Pla";"Methods";"Gemm"]
-.sub "_block92"  :anon :subid("21_1282246495.16533") :outer("20_1282246495.16533")
+.sub "_block92"  :anon :subid("21_1282252083.69791") :outer("20_1282252083.69791")
 .annotate 'line', 36
     new $P94, "Undef"
     .lex "$A", $P94
@@ -365,9 +365,9 @@
 
 .namespace ["Pla";"Methods";"Gemm"]
 .include "except_types.pasm"
-.sub "test_METHOD_gemm_BADSIZE_A"  :subid("22_1282246495.16533") :method :outer("11_1282246495.16533")
+.sub "test_METHOD_gemm_BADSIZE_A"  :subid("22_1282252083.69791") :method :outer("11_1282252083.69791")
 .annotate 'line', 43
-    .const 'Sub' $P117 = "23_1282246495.16533" 
+    .const 'Sub' $P117 = "23_1282252083.69791" 
     capture_lex $P117
     new $P114, 'ExceptionHandler'
     set_addr $P114, control_113
@@ -377,7 +377,7 @@
 .annotate 'line', 44
     get_hll_global $P115, ["Exception"], "OutOfBounds"
 .annotate 'line', 45
-    .const 'Sub' $P117 = "23_1282246495.16533" 
+    .const 'Sub' $P117 = "23_1282252083.69791" 
     newclosure $P135, $P117
     $P136 = "assert_throws"($P115, "A has incorrect size", $P135)
 .annotate 'line', 43
@@ -391,7 +391,7 @@
 
 
 .namespace ["Pla";"Methods";"Gemm"]
-.sub "_block116"  :anon :subid("23_1282246495.16533") :outer("22_1282246495.16533")
+.sub "_block116"  :anon :subid("23_1282252083.69791") :outer("22_1282252083.69791")
 .annotate 'line', 46
     new $P118, "Undef"
     .lex "$A", $P118
@@ -429,9 +429,9 @@
 
 .namespace ["Pla";"Methods";"Gemm"]
 .include "except_types.pasm"
-.sub "test_METHOD_gemm_BADSIZE_B"  :subid("24_1282246495.16533") :method :outer("11_1282246495.16533")
+.sub "test_METHOD_gemm_BADSIZE_B"  :subid("24_1282252083.69791") :method :outer("11_1282252083.69791")
 .annotate 'line', 53
-    .const 'Sub' $P143 = "25_1282246495.16533" 
+    .const 'Sub' $P143 = "25_1282252083.69791" 
     capture_lex $P143
     new $P140, 'ExceptionHandler'
     set_addr $P140, control_139
@@ -441,7 +441,7 @@
 .annotate 'line', 54
     get_hll_global $P141, ["Exception"], "OutOfBounds"
 .annotate 'line', 55
-    .const 'Sub' $P143 = "25_1282246495.16533" 
+    .const 'Sub' $P143 = "25_1282252083.69791" 
     newclosure $P161, $P143
     $P162 = "assert_throws"($P141, "B has incorrect size", $P161)
 .annotate 'line', 53
@@ -455,7 +455,7 @@
 
 
 .namespace ["Pla";"Methods";"Gemm"]
-.sub "_block142"  :anon :subid("25_1282246495.16533") :outer("24_1282246495.16533")
+.sub "_block142"  :anon :subid("25_1282252083.69791") :outer("24_1282252083.69791")
 .annotate 'line', 56
     new $P144, "Undef"
     .lex "$A", $P144
@@ -493,9 +493,9 @@
 
 .namespace ["Pla";"Methods";"Gemm"]
 .include "except_types.pasm"
-.sub "test_METHOD_gemm_BADSIZE_C"  :subid("26_1282246495.16533") :method :outer("11_1282246495.16533")
+.sub "test_METHOD_gemm_BADSIZE_C"  :subid("26_1282252083.69791") :method :outer("11_1282252083.69791")
 .annotate 'line', 63
-    .const 'Sub' $P169 = "27_1282246495.16533" 
+    .const 'Sub' $P169 = "27_1282252083.69791" 
     capture_lex $P169
     new $P166, 'ExceptionHandler'
     set_addr $P166, control_165
@@ -505,7 +505,7 @@
 .annotate 'line', 64
     get_hll_global $P167, ["Exception"], "OutOfBounds"
 .annotate 'line', 65
-    .const 'Sub' $P169 = "27_1282246495.16533" 
+    .const 'Sub' $P169 = "27_1282252083.69791" 
     newclosure $P187, $P169
     $P188 = "assert_throws"($P167, "C has incorrect size", $P187)
 .annotate 'line', 63
@@ -519,7 +519,7 @@
 
 
 .namespace ["Pla";"Methods";"Gemm"]
-.sub "_block168"  :anon :subid("27_1282246495.16533") :outer("26_1282246495.16533")
+.sub "_block168"  :anon :subid("27_1282252083.69791") :outer("26_1282252083.69791")
 .annotate 'line', 66
     new $P170, "Undef"
     .lex "$A", $P170
@@ -557,7 +557,7 @@
 
 .namespace ["Pla";"Methods";"Gemm"]
 .include "except_types.pasm"
-.sub "test_METHOD_gemm_AUTOCONVERT_A_NumMatrix2D"  :subid("28_1282246495.16533") :method :outer("11_1282246495.16533")
+.sub "test_METHOD_gemm_AUTOCONVERT_A_NumMatrix2D"  :subid("28_1282252083.69791") :method :outer("11_1282252083.69791")
 .annotate 'line', 73
     new $P192, 'ExceptionHandler'
     set_addr $P192, control_191
@@ -576,7 +576,7 @@
 
 .namespace ["Pla";"Methods";"Gemm"]
 .include "except_types.pasm"
-.sub "test_METHOD_gemm_AUTOCONVERT_B_NumMatrix2D"  :subid("29_1282246495.16533") :method :outer("11_1282246495.16533")
+.sub "test_METHOD_gemm_AUTOCONVERT_B_NumMatrix2D"  :subid("29_1282252083.69791") :method :outer("11_1282252083.69791")
 .annotate 'line', 74
     new $P197, 'ExceptionHandler'
     set_addr $P197, control_196
@@ -595,7 +595,7 @@
 
 .namespace ["Pla";"Methods";"Gemm"]
 .include "except_types.pasm"
-.sub "test_METHOD_gemm_AUTOCONVERT_C_NumMatrix2D"  :subid("30_1282246495.16533") :method :outer("11_1282246495.16533")
+.sub "test_METHOD_gemm_AUTOCONVERT_C_NumMatrix2D"  :subid("30_1282252083.69791") :method :outer("11_1282252083.69791")
 .annotate 'line', 75
     new $P202, 'ExceptionHandler'
     set_addr $P202, control_201
@@ -614,7 +614,7 @@
 
 .namespace ["Pla";"Methods";"Gemm"]
 .include "except_types.pasm"
-.sub "test_METHOD_gemm_AUTOCONVERT_A_ComplexMatrix2D"  :subid("31_1282246495.16533") :method :outer("11_1282246495.16533")
+.sub "test_METHOD_gemm_AUTOCONVERT_A_ComplexMatrix2D"  :subid("31_1282252083.69791") :method :outer("11_1282252083.69791")
 .annotate 'line', 77
     new $P207, 'ExceptionHandler'
     set_addr $P207, control_206
@@ -633,7 +633,7 @@
 
 .namespace ["Pla";"Methods";"Gemm"]
 .include "except_types.pasm"
-.sub "test_METHOD_gemm_AUTOCONVERT_B_ComplexMatrix2D"  :subid("32_1282246495.16533") :method :outer("11_1282246495.16533")
+.sub "test_METHOD_gemm_AUTOCONVERT_B_ComplexMatrix2D"  :subid("32_1282252083.69791") :method :outer("11_1282252083.69791")
 .annotate 'line', 78
     new $P212, 'ExceptionHandler'
     set_addr $P212, control_211
@@ -652,7 +652,7 @@
 
 .namespace ["Pla";"Methods";"Gemm"]
 .include "except_types.pasm"
-.sub "test_METHOD_gemm_AUTOCONVERT_C_ComplexMatrix2D"  :subid("33_1282246495.16533") :method :outer("11_1282246495.16533")
+.sub "test_METHOD_gemm_AUTOCONVERT_C_ComplexMatrix2D"  :subid("33_1282252083.69791") :method :outer("11_1282252083.69791")
 .annotate 'line', 79
     new $P217, 'ExceptionHandler'
     set_addr $P217, control_216
@@ -671,7 +671,7 @@
 
 .namespace ["Pla";"Methods";"Gemm"]
 .include "except_types.pasm"
-.sub "test_METHOD_gemm_AUTOCONVERT_A_PMCMatrix2D"  :subid("34_1282246495.16533") :method :outer("11_1282246495.16533")
+.sub "test_METHOD_gemm_AUTOCONVERT_A_PMCMatrix2D"  :subid("34_1282252083.69791") :method :outer("11_1282252083.69791")
 .annotate 'line', 81
     new $P222, 'ExceptionHandler'
     set_addr $P222, control_221
@@ -690,7 +690,7 @@
 
 .namespace ["Pla";"Methods";"Gemm"]
 .include "except_types.pasm"
-.sub "test_METHOD_gemm_AUTOCONVERT_B_PMCMatrix2D"  :subid("35_1282246495.16533") :method :outer("11_1282246495.16533")
+.sub "test_METHOD_gemm_AUTOCONVERT_B_PMCMatrix2D"  :subid("35_1282252083.69791") :method :outer("11_1282252083.69791")
 .annotate 'line', 82
     new $P227, 'ExceptionHandler'
     set_addr $P227, control_226
@@ -709,7 +709,7 @@
 
 .namespace ["Pla";"Methods";"Gemm"]
 .include "except_types.pasm"
-.sub "test_METHOD_gemm_AUTOCONVERT_C_PMCMatrix2D"  :subid("36_1282246495.16533") :method :outer("11_1282246495.16533")
+.sub "test_METHOD_gemm_AUTOCONVERT_C_PMCMatrix2D"  :subid("36_1282252083.69791") :method :outer("11_1282252083.69791")
 .annotate 'line', 83
     new $P232, 'ExceptionHandler'
     set_addr $P232, control_231
@@ -727,9 +727,9 @@
 
 
 .namespace []
-.sub "_block237" :load :anon :subid("37_1282246495.16533")
+.sub "_block237" :load :anon :subid("37_1282252083.69791")
 .annotate 'line', 1
-    .const 'Sub' $P239 = "10_1282246495.16533" 
+    .const 'Sub' $P239 = "10_1282252083.69791" 
     $P240 = $P239()
     .return ($P240)
 .end

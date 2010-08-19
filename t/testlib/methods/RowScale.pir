@@ -1,6 +1,6 @@
 
 .namespace []
-.sub "_block11"  :anon :subid("10_1282246496.76324")
+.sub "_block11"  :anon :subid("10_1282252087.81622")
 .annotate 'line', 0
     get_hll_global $P14, ["Pla";"Methods";"RowScale"], "_block13" 
     capture_lex $P14
@@ -15,15 +15,15 @@
     capture_lex $P14
     $P129 = $P14()
     .return ($P129)
-    .const 'Sub' $P131 = "17_1282246496.76324" 
+    .const 'Sub' $P131 = "17_1282252087.81622" 
     .return ($P131)
 .end
 
 
 .namespace []
-.sub "" :load :init :subid("post18") :outer("10_1282246496.76324")
+.sub "" :load :init :subid("post18") :outer("10_1282252087.81622")
 .annotate 'line', 0
-    .const 'Sub' $P12 = "10_1282246496.76324" 
+    .const 'Sub' $P12 = "10_1282252087.81622" 
     .local pmc block
     set block, $P12
     $P134 = get_root_global ["parrot"], "P6metaclass"
@@ -32,16 +32,16 @@
 
 
 .namespace ["Pla";"Methods";"RowScale"]
-.sub "_block13"  :subid("11_1282246496.76324") :outer("10_1282246496.76324")
+.sub "_block13"  :subid("11_1282252087.81622") :outer("10_1282252087.81622")
 .annotate 'line', 1
-    .const 'Sub' $P113 = "15_1282246496.76324" 
+    .const 'Sub' $P113 = "15_1282252087.81622" 
     capture_lex $P113
-    .const 'Sub' $P98 = "13_1282246496.76324" 
+    .const 'Sub' $P98 = "13_1282252087.81622" 
     capture_lex $P98
-    .const 'Sub' $P15 = "12_1282246496.76324" 
+    .const 'Sub' $P15 = "12_1282252087.81622" 
     capture_lex $P15
 .annotate 'line', 34
-    .const 'Sub' $P113 = "15_1282246496.76324" 
+    .const 'Sub' $P113 = "15_1282252087.81622" 
     newclosure $P128, $P113
 .annotate 'line', 1
     .return ($P128)
@@ -49,7 +49,7 @@
 
 
 .namespace ["Pla";"Methods";"RowScale"]
-.sub "" :load :init :subid("post19") :outer("11_1282246496.76324")
+.sub "" :load :init :subid("post19") :outer("11_1282252087.81622")
 .annotate 'line', 1
     get_hll_global $P14, ["Pla";"Methods";"RowScale"], "_block13" 
     .local pmc block
@@ -63,7 +63,7 @@
 
 .namespace ["Pla";"Methods";"RowScale"]
 .include "except_types.pasm"
-.sub "test_METHOD_row_scale"  :subid("12_1282246496.76324") :method :outer("11_1282246496.76324")
+.sub "test_METHOD_row_scale"  :subid("12_1282252087.81622") :method :outer("11_1282252087.81622")
 .annotate 'line', 8
     new $P17, 'ExceptionHandler'
     set_addr $P17, control_16
@@ -186,9 +186,9 @@
 
 .namespace ["Pla";"Methods";"RowScale"]
 .include "except_types.pasm"
-.sub "test_METHOD_row_scale_NEGINDICES"  :subid("13_1282246496.76324") :method :outer("11_1282246496.76324")
+.sub "test_METHOD_row_scale_NEGINDICES"  :subid("13_1282252087.81622") :method :outer("11_1282252087.81622")
 .annotate 'line', 26
-    .const 'Sub' $P103 = "14_1282246496.76324" 
+    .const 'Sub' $P103 = "14_1282252087.81622" 
     capture_lex $P103
     new $P100, 'ExceptionHandler'
     set_addr $P100, control_99
@@ -198,7 +198,7 @@
 .annotate 'line', 27
     get_hll_global $P101, ["Exception"], "OutOfBounds"
 .annotate 'line', 28
-    .const 'Sub' $P103 = "14_1282246496.76324" 
+    .const 'Sub' $P103 = "14_1282252087.81622" 
     newclosure $P110, $P103
     $P111 = "assert_throws"($P101, "index is negative", $P110)
 .annotate 'line', 26
@@ -212,7 +212,7 @@
 
 
 .namespace ["Pla";"Methods";"RowScale"]
-.sub "_block102"  :anon :subid("14_1282246496.76324") :outer("13_1282246496.76324")
+.sub "_block102"  :anon :subid("14_1282252087.81622") :outer("13_1282252087.81622")
 .annotate 'line', 29
     new $P104, "Undef"
     .lex "$A", $P104
@@ -230,9 +230,9 @@
 
 .namespace ["Pla";"Methods";"RowScale"]
 .include "except_types.pasm"
-.sub "test_METHOD_row_scale_BOUNDS"  :subid("15_1282246496.76324") :method :outer("11_1282246496.76324")
+.sub "test_METHOD_row_scale_BOUNDS"  :subid("15_1282252087.81622") :method :outer("11_1282252087.81622")
 .annotate 'line', 34
-    .const 'Sub' $P118 = "16_1282246496.76324" 
+    .const 'Sub' $P118 = "16_1282252087.81622" 
     capture_lex $P118
     new $P115, 'ExceptionHandler'
     set_addr $P115, control_114
@@ -242,7 +242,7 @@
 .annotate 'line', 35
     get_hll_global $P116, ["Exception"], "OutOfBounds"
 .annotate 'line', 36
-    .const 'Sub' $P118 = "16_1282246496.76324" 
+    .const 'Sub' $P118 = "16_1282252087.81622" 
     newclosure $P125, $P118
     $P126 = "assert_throws"($P116, "index is negative", $P125)
 .annotate 'line', 34
@@ -256,7 +256,7 @@
 
 
 .namespace ["Pla";"Methods";"RowScale"]
-.sub "_block117"  :anon :subid("16_1282246496.76324") :outer("15_1282246496.76324")
+.sub "_block117"  :anon :subid("16_1282252087.81622") :outer("15_1282252087.81622")
 .annotate 'line', 37
     new $P119, "Undef"
     .lex "$A", $P119
@@ -273,9 +273,9 @@
 
 
 .namespace []
-.sub "_block130" :load :anon :subid("17_1282246496.76324")
+.sub "_block130" :load :anon :subid("17_1282252087.81622")
 .annotate 'line', 1
-    .const 'Sub' $P132 = "10_1282246496.76324" 
+    .const 'Sub' $P132 = "10_1282252087.81622" 
     $P133 = $P132()
     .return ($P133)
 .end
