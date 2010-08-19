@@ -708,7 +708,7 @@ Get a PMCMatrix2D from the current matrix
 
     METHOD convert_to_complex_matrix() {
         DECLATTRS(SELF, attrs);
-        PMC * const d = Parrot_pmc_new(INTERP, __PLA_Type_PMCMatrix2D);
+        PMC * const d = Parrot_pmc_new(INTERP, __PLA_Type_ComplexMatrix2D);
         const INTVAL totalsize = attrs->rows * attrs->cols;
         PMC * const meth = VTABLE_find_method(INTERP, d, CONST_STRING(INTERP, "resize"));
         INTVAL i;

@@ -385,6 +385,18 @@ class Pla::Matrix::NumericMatrixTest is Pla::Matrix::MatrixTest {
         });
     }
 
+    method test_METHOD_gemm_AUTOCONVERT_A_NumMatrix2D() { todo("Write this!"); }
+    method test_METHOD_gemm_AUTOCONVERT_B_NumMatrix2D() { todo("Write this!"); }
+    method test_METHOD_gemm_AUTOCONVERT_C_NumMatrix2D() { todo("Write this!"); }
+
+    method test_METHOD_gemm_AUTOCONVERT_A_ComplexMatrix2D() { todo("Write this!"); }
+    method test_METHOD_gemm_AUTOCONVERT_B_ComplexMatrix2D() { todo("Write this!"); }
+    method test_METHOD_gemm_AUTOCONVERT_C_ComplexMatrix2D() { todo("Write this!"); }
+
+    method test_METHOD_gemm_AUTOCONVERT_A_PMCMatrix2D() { todo("Write this!"); }
+    method test_METHOD_gemm_AUTOCONVERT_B_PMCMatrix2D() { todo("Write this!"); }
+    method test_METHOD_gemm_AUTOCONVERT_C_PMCMatrix2D() { todo("Write this!"); }
+
     method test_METHOD_row_combine() {
         my $A := self.fancymatrix2x2();
         my $val1;

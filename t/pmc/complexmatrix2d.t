@@ -193,6 +193,17 @@ method test_METHOD_gemm_aABbC() {
     my $Z := $A.'gemm'(self.complex("0.25"), $A, $B, self.complex("0.0"), $C);
 }
 
+# Test that we can call GEMM with alpha of various types
+method test_METHOD_gemm_ALPHA_TYPE() {
+    todo("Write this!");
+}
+
+# Test that we can call GEMM with beta of various types
+method test_METHOD_gemm_BETA_TYPE() {
+    todo("Write this!");
+}
+
+
 method test_METHOD_conjugate() {
     my $m := self.matrix2x2("1+1i", "2+2i", "3+3i", "4+4i");
     my $n := self.matrix2x2("1-1i", "2-2i", "3-3i", "4-4i");
