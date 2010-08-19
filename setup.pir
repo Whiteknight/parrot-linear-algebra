@@ -68,6 +68,7 @@ SOURCES
     $P2["t/testlib/matrixtest.pir"] = "t/testlib/matrixtest.nqp"
     $P2["t/testlib/numericmatrixtest.pir"] = "t/testlib/numericmatrixtest.nqp"
     $P2["t/testlib/loader.pir"] = "t/testlib/loader.nqp"
+    $P2["t/testlib/matrixtestfactory.pir"] = "t/testlib/matrixtestfactory.nqp"
     $P0["pir_nqp-rx"] = $P2
 
     $P2 = new "ResizablePMCArray"
@@ -75,6 +76,7 @@ SOURCES
     push $P2, "t/testlib/matrixtest.pir"
     push $P2, "t/testlib/numericmatrixtest.pir"
     push $P2, "t/testlib/loader.pir"
+    push $P2, "t/testlib/matrixtestfactory.pir"
     $P1 = new 'Hash'
     $P1["t/testlib/pla_test.pir"] = $P2
     $P0["pir_pir"] = $P1

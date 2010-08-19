@@ -1,28 +1,24 @@
-class Test::PmcMatrix2D is Pla::Matrix::MatrixTest;
+my $tests := Test::PmcMatrix2D.new();
+$tests.suite.run;
+
+class Test::PmcMatrix2D is Pla::MatrixTest {
+
+has $!factory;
 
 INIT {
     use('UnitTest::Testcase');
     use('UnitTest::Assertions');
 }
 
-MAIN();
-sub MAIN() {
-    my $proto := Opcode::get_root_global(pir::get_namespace__P().get_name);
-    $proto.suite.run;
-}
-
-method matrix() {
-    return (Parrot::new("PMCMatrix2D"));
-}
-
-method defaultvalue() { 1; }
-method nullvalue() { return (pir::null__P()); }
-method fancyvalue($idx) {
-    [5, 6, 7, 8][$idx];
+method factory() {
+    unless pir::defined__IP($!factory) {
+        $!factory := Pla::MatrixFactory::PMCMatrix2D.new();
+    }
+    return $!factory;
 }
 
 method test_VTABLE_get_integer_keyed() {
-    my $m := Parrot::new("PMCMatrix2D");
+    my $m := self.factory.matrix();
     my $n := 42;
     my $o;
     Q:PIR {
@@ -37,7 +33,7 @@ method test_VTABLE_get_integer_keyed() {
 }
 
 method test_VTABLE_get_number_keyed() {
-    my $m := Parrot::new("PMCMatrix2D");
+    my $m := self.factory.matrix();
     my $n := 42.5;
     my $o;
     Q:PIR {
@@ -52,7 +48,7 @@ method test_VTABLE_get_number_keyed() {
 }
 
 method test_VTABLE_get_string_keyed() {
-    my $m := Parrot::new("PMCMatrix2D");
+    my $m := self.factory.matrix();
     my $n := "Hello World";
     my $o;
     Q:PIR {
@@ -67,7 +63,7 @@ method test_VTABLE_get_string_keyed() {
 }
 
 method test_VTABLE_set_integer_keyed() {
-    my $m := Parrot::new("PMCMatrix2D");
+    my $m := self.factory.matrix();
     my $n;
     Q:PIR {
         $P0 = find_lex "$m"
@@ -81,7 +77,7 @@ method test_VTABLE_set_integer_keyed() {
 }
 
 method test_VTABLE_set_number_keyed() {
-    my $m := Parrot::new("PMCMatrix2D");
+    my $m := self.factory.matrix();
     my $n;
     Q:PIR {
         $P0 = find_lex "$m"
@@ -95,7 +91,7 @@ method test_VTABLE_set_number_keyed() {
 }
 
 method test_VTABLE_set_string_keyed() {
-    my $m := Parrot::new("PMCMatrix2D");
+    my $m := self.factory.matrix();
     my $n;
     Q:PIR {
         $P0 = find_lex "$m"
@@ -109,7 +105,7 @@ method test_VTABLE_set_string_keyed() {
 }
 
 method test_VTABLE_get_string() {
-    my $m := Parrot::new("PMCMatrix2D");
+    my $m := self.factory.matrix();
     my $n;
     Q:PIR {
         $P0 = find_lex "$m"
@@ -122,3 +118,4 @@ method test_VTABLE_get_string() {
     assert_equal(~($m), '{' ~ "\n\t[0,0] = Hello World\n" ~ '}' ~ "\n", "get_string does not work");
 }
 
+}
