@@ -116,11 +116,13 @@ sub get_all_tests(*@dirs) {
         for @rawfiles {
             my $filename := $_;
             if pir::index__ISS($filename, ".t") != -1 {
-                @files.push($dir ~ "/" ~ $filename);
-                my $length := pir::length__IS($dir ~ "/" ~ $filename);
-                #if $length > $max_length {
-                #    $max_length := $length;
-                #}
+                if pir::index__ISS($filename, ".OLD") == -1 {
+                    @files.push($dir ~ "/" ~ $filename);
+                    my $length := pir::length__IS($dir ~ "/" ~ $filename);
+                    #if $length > $max_length {
+                    #    $max_length := $length;
+                    #}
+                }
             }
         }
     }

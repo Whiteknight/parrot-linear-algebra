@@ -56,9 +56,7 @@ See F<runtime/library/distutils.pir>.
     $P3 = split "\n", <<'SOURCES'
 src/pmc/nummatrix2d.pmc
 src/pmc/pmcmatrix2d.pmc
-src/pmc/charmatrix2d.pmc
 src/pmc/complexmatrix2d.pmc
-src/pmc/matrixproxy.pmc
 SOURCES
     $S0 = pop $P3
     $P2['linalg_group'] = $P3
