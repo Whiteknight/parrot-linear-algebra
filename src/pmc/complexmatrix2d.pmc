@@ -36,11 +36,44 @@ get_complex_value_from_pmc(PARROT_INTERP, PMC * value, FLOATVAL * real, FLOATVAL
     }
 }
 
-static PMC *
-convert_to_ComplexMatrix2D(PARROT_INTERP, PMC * p)
+/* If the matrix is lazily transposed, actually transpose the physical memory
+   layout. This is necessary for calculations, especially BLAS calculations,
+   which aren't lazy-transpose-aware. */
+static void
+normalize_lazy_transpose(PARROT_INTERP, PMC * self)
 {
-    if (p->vtable->base_type == __PLA_Type_ComplexMatrix2D)
+    DECLATTRS(self, attrs);
+    if (IS_TRANSPOSED(attrs->flags)) {
+        const INTVAL rows_size = attrs->rows;
+        const INTVAL cols_size = attrs->cols;
+        const INTVAL size = rows_size * cols_size;
+        FLOATVAL * const new_s = ALLOCATE_STORAGE(size);
+        FLOATVAL * const old_s = attrs->storage;
+        INTVAL i, j;
+
+        for (i = 0; i < rows_size; ++i) {
+            for (j = 0; j < cols_size; ++j) {
+                R_ITEM_XY_COLMAJOR(new_s, rows_size, cols_size, i, j) =
+                    R_ITEM_XY_ROWMAJOR(old_s, rows_size, cols_size, i, j);
+                I_ITEM_XY_COLMAJOR(new_s, rows_size, cols_size, i, j) =
+                    I_ITEM_XY_ROWMAJOR(old_s, rows_size, cols_size, i, j);
+            }
+        }
+        attrs->storage = new_s;
+        mem_sys_free(old_s);
+        FLAG_CLEAR(attrs->flags, FLAG_TRANSPOSED);
+    }
+}
+
+static PMC *
+convert_to_ComplexMatrix2D(PARROT_INTERP, PMC * p, INTVAL forcecopy)
+{
+    if (p->vtable->base_type == __PLA_Type_ComplexMatrix2D) {
+        normalize_lazy_transpose(interp, p);
+        if (forcecopy)
+            return VTABLE_clone(interp, p);
         return p;
+    }
     else if (!VTABLE_does(interp, p, CONST_STRING(interp, "matrix")))
         Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
                 PLATYPENAME ": cannot convert unknown PMC type");
@@ -51,6 +84,7 @@ convert_to_ComplexMatrix2D(PARROT_INTERP, PMC * p)
         return dest;
     }
 }
+
 
 /* Resize the matrix internal storage to be able to hold a point at position
    (x, y). The matrix grows but does not shrink. New spaces in the matrix
@@ -198,6 +232,7 @@ call_gemm(PARROT_INTERP, FLOATVAL alpha_r, FLOATVAL alpha_i, PMC * A, PMC *B,
     alpha_p[1] = alpha_i;
     beta_p[0] = beta_r;
     beta_p[1] = beta_i;
+    fprintf(stderr, "%f %f %f %f\n", alpha_r, alpha_i, beta_r, beta_i);
     cblas_zgemm(CblasRowMajor,
         IS_TRANSPOSED_BLAS(attrs_a->flags),
         IS_TRANSPOSED_BLAS(attrs_b->flags),
@@ -1321,15 +1356,14 @@ Calculates the matrix equation:
 */
 
     METHOD gemm(PMC *alpha, PMC * A, PMC *B, PMC *beta, PMC *C) {
-        PMC * const c_out = VTABLE_clone(INTERP, C);
         FLOATVAL alpha_r, alpha_i, beta_r, beta_i;
-        A = convert_to_ComplexMatrix2D(interp, A);
-        B = convert_to_ComplexMatrix2D(interp, B);
-        C = convert_to_ComplexMatrix2D(interp, C);
+        A = convert_to_ComplexMatrix2D(interp, A, 0);
+        B = convert_to_ComplexMatrix2D(interp, B, 0);
+        C = convert_to_ComplexMatrix2D(interp, C, 1);
         get_complex_value_from_pmc(interp, alpha, &alpha_r, &alpha_i);
         get_complex_value_from_pmc(interp, beta, &beta_r, &beta_i);
-        call_gemm(INTERP, alpha_r, alpha_i, A, B, beta_r, beta_i, c_out);
-        RETURN(PMC* c_out);
+        call_gemm(INTERP, alpha_r, alpha_i, A, B, beta_r, beta_i, C);
+        RETURN(PMC* C);
     }
 
 /*
@@ -1431,6 +1465,7 @@ Get a PMCMatrix2D from the current matrix
         PMC * const meth = VTABLE_find_method(INTERP, d, CONST_STRING(INTERP, "resize"));
         INTVAL i;
         Parrot_ext_call(INTERP, meth, "PiII->", d, attrs->rows, attrs->cols);
+        normalize_lazy_transpose(INTERP, SELF);
         for (i = 0; i < totalsize; i++) {
             const FLOATVAL f = VTABLE_get_number_keyed_int(INTERP, SELF, i);
             VTABLE_set_number_keyed_int(INTERP, d, i, f);
@@ -1440,6 +1475,7 @@ Get a PMCMatrix2D from the current matrix
 
     METHOD convert_to_complex_matrix() {
         PMC * const d = VTABLE_clone(INTERP, SELF);
+        normalize_lazy_transpose(INTERP, d);
         RETURN(PMC * d);
     }
 
@@ -1450,6 +1486,7 @@ Get a PMCMatrix2D from the current matrix
         PMC * const meth = VTABLE_find_method(INTERP, d, CONST_STRING(INTERP, "resize"));
         INTVAL i;
         Parrot_ext_call(INTERP, meth, "PiII->", d, attrs->rows, attrs->cols);
+        normalize_lazy_transpose(INTERP, SELF);
         for (i = 0; i < totalsize; i++) {
             PMC * const p = VTABLE_get_pmc_keyed_int(INTERP, SELF, i);
             VTABLE_set_pmc_keyed_int(INTERP, d, i, p);
