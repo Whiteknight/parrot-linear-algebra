@@ -147,20 +147,4 @@ method test_VTABLE_i_multiply_NUMMATRIX2D() {
     }
 }
 
-# Block Get/Set method tests
-
-method test_METHOD_set_block() {
-    my $m := self.factory.matrix2x2(1.0, 2.0,
-                            3.0, 4.0);
-    my $n := self.factory.matrix3x3(0.0, 0.0, 0.0,
-                            0.0, 0.0, 0.0,
-                            0.0, 0.0, 0.0);
-    my $o := self.factory.matrix3x3(0.0, 1.0, 2.0,
-                            0.0, 3.0, 4.0,
-                            0.0, 0.0, 0.0);
-    $n.set_block(0, 1, $m);
-    assert_equal($n, $o, "cannot set block");
-    # TODO: More tests for this method and coordinate combinations, including
-    #       boundary-checking issues
-}
 
