@@ -9,3 +9,7 @@ Makefile
 src/pmc/pmc_*.h
 src/nqp/*.pir
 t/testlib/*.pir
+t/testlib/methods/*.pir
+t/methods/nummatrix2d/*.pir
+t/methods/complexmatrix2d/*.pir
+t/methods/pmcmatrix2d/*.pir
