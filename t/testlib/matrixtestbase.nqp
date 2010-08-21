@@ -16,8 +16,6 @@ class Pla::MatrixTestBase is UnitTest::Testcase {
         self.RequireOverride("factory");
     }
 
-    method default_loader() { Pla::Matrix::Loader.new; }
-
     method RequireOverride($m) {
         Exception::MethodNotFound.new(
             :message("Must subclass " ~ $m ~ " in your test class")

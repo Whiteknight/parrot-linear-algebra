@@ -6,7 +6,7 @@ class Pla::Methods::Fill is Pla::MatrixTestBase {
     }
 
     # Test that we can fill a matrix
-    method test_METHOD_fill() {
+    method test_fill() {
         my $m := self.factory.defaultmatrix2x2();
         my $n := self.factory.matrix2x2(
             self.factory.fancyvalue(0),
@@ -19,7 +19,7 @@ class Pla::Methods::Fill is Pla::MatrixTestBase {
     }
 
     # test that the fill method can be used to resize the matrix
-    method test_METHOD_fill_RESIZE() {
+    method test_fill_with_resizing() {
         my $m := self.factory.defaultmatrix2x2();
         my $n := self.factory.matrix();
         $n.fill(self.factory.defaultvalue(), 2, 2);

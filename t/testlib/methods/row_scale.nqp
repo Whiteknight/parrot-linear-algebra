@@ -5,7 +5,7 @@ class Pla::Methods::RowScale is Pla::MatrixTestBase {
         use('UnitTest::Assertions');
     }
 
-    method test_METHOD_row_scale() {
+    method test_row_scale() {
         my $A := self.factory.matrix();
         $A.initialize_from_args(3, 3,
                 self.factory.fancyvalue(0), self.factory.fancyvalue(0), self.factory.fancyvalue(0),
@@ -23,7 +23,7 @@ class Pla::Methods::RowScale is Pla::MatrixTestBase {
         assert_equal($A, $B, "cannot scale rows");
     }
 
-    method test_METHOD_row_scale_NEGINDICES() {
+    method test_negative_row_index() {
         assert_throws(Exception::OutOfBounds, "index is negative",
         {
             my $A := self.factory.defaultmatrix3x3();
@@ -31,7 +31,7 @@ class Pla::Methods::RowScale is Pla::MatrixTestBase {
         });
     }
 
-    method test_METHOD_row_scale_BOUNDS() {
+    method test_row_index_out_of_bounds() {
         assert_throws(Exception::OutOfBounds, "index is negative",
         {
             my $A := self.factory.defaultmatrix3x3();

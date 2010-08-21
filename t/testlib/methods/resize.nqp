@@ -6,14 +6,14 @@ class Pla::Methods::Resize is Pla::MatrixTestBase {
     }
 
     # Test the resize method
-    method test_METHOD_resize() {
+    method test_resize() {
         my $m := self.factory.matrix();
         $m.resize(3,3);
         self.AssertSize($m, 3, 3);
     }
 
     # Test that we cannot shrink a matrix using the resize method
-    method test_METHOD_resize_SHRINK() {
+    method test_resize_does_not_shrink() {
         my $m := self.factory.matrix();
         $m.resize(3,3);
         $m.resize(1,1);
@@ -21,7 +21,7 @@ class Pla::Methods::Resize is Pla::MatrixTestBase {
     }
 
     # Test that resize method with negative indices does nothing
-    method test_METHOD_resize_NEGATIVEINDICES() {
+    method test_negative_indices() {
         my $m := self.factory.matrix();
         $m.resize(-1, -1);
         self.AssertSize($m, 0, 0);

@@ -6,7 +6,7 @@ class Pla::Methods::IterateFunctionInplace is Pla::MatrixTestBase {
     }
 
     # Test that we can iterate a function in-place
-    method test_METHOD_iterate_function_inplace() {
+    method test_iterate_function_inplace() {
         my $m := self.factory.defaultmatrix2x2();
         my $n := self.factory.matrix();
         $n{Key.new(0,0)} := self.factory.fancyvalue(0);
@@ -25,7 +25,7 @@ class Pla::Methods::IterateFunctionInplace is Pla::MatrixTestBase {
 
     # test that iterate_function_inplace calls the callback with the proper
     # coordinates
-    method test_METHOD_iterate_function_inplace_COORDS() {
+    method test_pass_correct_coordinates() {
         my $m := self.factory.fancymatrix2x2();
         my $count := 0;
         my $x_ords := [0, 0, 1, 1];
@@ -41,7 +41,7 @@ class Pla::Methods::IterateFunctionInplace is Pla::MatrixTestBase {
     }
 
     # Test that iterate_function_inplace passes the correct args
-    method test_METHOD_iterate_function_inplace_ARGS() {
+    method test_pass_optional_arguments() {
         my $m := self.factory.fancymatrix2x2();
         my $count := 0;
         my $first := 5;
@@ -58,7 +58,7 @@ class Pla::Methods::IterateFunctionInplace is Pla::MatrixTestBase {
 
     # Test that iterate_function_external respects the transpose state of the
     # matrix
-    method test_METHOD_iterate_function_inplace_TRANSPOSE() {
+    method test_handles_lazy_transpose() {
         my $m := self.factory.fancymatrix2x2();
         $m.transpose();
         my $n := self.factory.matrix2x2(self.factory.fancyvalue(0) * 2, self.factory.fancyvalue(2) * 2,

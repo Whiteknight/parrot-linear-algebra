@@ -6,7 +6,7 @@ class Pla::Methods::InitializeFromArray is Pla::MatrixTestBase {
     }
 
     # Test that we can initialize from an array
-    method test_METHOD_initialize_from_array() {
+    method test_initialize_from_array() {
         my $a := [self.factory.fancyvalue(0), self.factory.fancyvalue(1),
                   self.factory.fancyvalue(2), self.factory.fancyvalue(3)];
         my $m := self.factory.matrix2x2(self.factory.fancyvalue(0), self.factory.fancyvalue(1),
@@ -17,7 +17,7 @@ class Pla::Methods::InitializeFromArray is Pla::MatrixTestBase {
     }
 
     # Test that we can initialize from array, including zero padding
-    method test_METHOD_initialize_from_array_ZEROPAD() {
+    method test_null_pad_extra_items() {
         my $a := [self.factory.fancyvalue(0), self.factory.fancyvalue(1),
                   self.factory.fancyvalue(2), self.factory.fancyvalue(3)];
         my $m := self.factory.matrix3x3(self.factory.fancyvalue(0), self.factory.fancyvalue(1), self.factory.fancyvalue(2),
@@ -30,7 +30,7 @@ class Pla::Methods::InitializeFromArray is Pla::MatrixTestBase {
 
     # Test that when we initialize from an array, that we only use as many
     # values as required
-    method test_METHOD_initialize_from_array_UNDERSIZE() {
+    method test_ignore_extra_values() {
         my $a := [self.factory.fancyvalue(0), self.factory.fancyvalue(1),
                   self.factory.fancyvalue(2), self.factory.fancyvalue(3)];
         my $m := self.factory.matrix();

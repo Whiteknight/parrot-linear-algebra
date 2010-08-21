@@ -6,7 +6,7 @@ class Pla::Methods::SetBlock is Pla::MatrixTestBase {
     }
 
     # Test set_block
-    method test_METHOD_set_block() {
+    method test_set_block() {
         my $m := self.factory.fancymatrix2x2();
         my $n := self.factory.matrix();
         $n{Key.new(2,2)} := self.factory.nullvalue;
@@ -30,7 +30,7 @@ class Pla::Methods::SetBlock is Pla::MatrixTestBase {
     }
 
     # Test set_block with a block of zero size
-    method test_METHOD_set_block_ZEROSIZE() {
+    method test_zero_size_block() {
         my $m := self.factory.fancymatrix2x2();
         my $n := pir::clone__PP($m);
         my $o := self.factory.matrix();
@@ -43,7 +43,7 @@ class Pla::Methods::SetBlock is Pla::MatrixTestBase {
     # go to the specified coordinates, but there is no first element so there
     # is no item at the specified coordinates. Think of the block as a
     # zero-sized point to the upper-left of the coordinate.
-    method test_METHOD_set_block_ZERO_RESIZE() {
+    method test_zero_size_block_outside_bounds() {
         my $m := self.factory.defaultmatrix2x2();
         my $o := self.factory.matrix();
         $m.set_block(3, 3, $o);
@@ -61,7 +61,7 @@ class Pla::Methods::SetBlock is Pla::MatrixTestBase {
 
     # Test that set_block can resize the matrix if the specified coordinates
     # are outside the matrix
-    method test_METHOD_set_block_RESIZE_COORDS() {
+    method test_resize_with_block_outside_bounds() {
         my $m := self.factory.defaultmatrix2x2();
         my $o := self.factory.matrix();
         $o{Key.new(0, 0)} := self.factory.fancyvalue(2);
@@ -83,7 +83,7 @@ class Pla::Methods::SetBlock is Pla::MatrixTestBase {
 
     # Test that set_block can resize the matrix if the specified coordinates
     # are outside the matrix
-    method test_METHOD_set_block_RESIZE_BLKSIZE() {
+    method test_block_larger_than_matrix() {
         my $m := self.factory.defaultmatrix2x2();
         my $o := self.factory.defaultmatrix2x2();
         my $n := self.factory.matrix3x3(self.factory.defaultvalue, self.factory.defaultvalue, self.factory.nullvalue,
@@ -95,7 +95,7 @@ class Pla::Methods::SetBlock is Pla::MatrixTestBase {
     }
 
     # Test that set_block with negative indices throws an exception
-    method test_METHOD_set_block_NEGINDICES() {
+    method test_negative_indicies() {
         assert_throws(Exception::OutOfBounds, "Can set_block with negative indices",
         {
             my $m := self.factory.defaultmatrix2x2();
@@ -106,7 +106,7 @@ class Pla::Methods::SetBlock is Pla::MatrixTestBase {
 
     # Test that we can set_block on an empty matrix and cause it to resize
     # appropriately
-    method test_METHOD_set_block_OVERFLOW() {
+    method test_set_block_on_empty_matrix() {
         my $m := self.factory.fancymatrix2x2();
         my $n := self.factory.matrix();
         $n.set_block(1, 1, $m);
@@ -129,7 +129,9 @@ class Pla::Methods::SetBlock is Pla::MatrixTestBase {
     }
 
     # Test that calling set_block with a scalar throws an exception
-    method test_METHOD_set_block_SCALAR() {
+    # TODO: Is this behavior that we want to set? If so, we can treat the
+    #       scalar as a 1x1 matrix?
+    method test_set_scalar_as_block() {
         my $m := self.factory.defaultmatrix2x2();
         my $n := "";
         assert_throws(Exception::OutOfBounds, "Can set_block a scalar", {

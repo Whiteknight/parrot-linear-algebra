@@ -6,7 +6,7 @@ class Pla::Methods::Transpose is Pla::MatrixTestBase {
     }
 
     # Test transposing square matrices
-    method test_METHOD_transpose() {
+    method test_transpose() {
         my $m := self.factory.matrix2x2(
             self.factory.fancyvalue(0),
             self.factory.fancyvalue(1),
@@ -24,7 +24,7 @@ class Pla::Methods::Transpose is Pla::MatrixTestBase {
     }
 
     # Test transposing non-square matrices
-    method test_METHOD_transpose_DIMCHANGE() {
+    method test_nonsquare_matrix_transpose() {
         my $m := self.factory.matrix();
         $m{Key.new(0,0)} := self.factory.fancyvalue(0);
         $m{Key.new(0,1)} := self.factory.fancyvalue(1);

@@ -5,7 +5,7 @@ class Pla::Methods::RowCombine is Pla::MatrixTestBase {
         use('UnitTest::Assertions');
     }
 
-    method test_METHOD_row_combine() {
+    method test_row_combine() {
         my $A := self.factory.fancymatrix2x2();
         my $val1;
         my $val2;
@@ -30,7 +30,7 @@ class Pla::Methods::RowCombine is Pla::MatrixTestBase {
         assert_equal($A, $B, "cannot row_combine");
     }
 
-    method test_METHOD_row_combine_GAIN() {
+    method test_non_unity_gain() {
         my $A := self.factory.fancymatrix2x2();
         my $B := self.factory.matrix2x2(self.factory.fancyvalue(0) + self.factory.fancyvalue(2) * self.factory.fancyvalue(0),
                                 self.factory.fancyvalue(1) + self.factory.fancyvalue(3)  * self.factory.fancyvalue(0),
@@ -39,7 +39,7 @@ class Pla::Methods::RowCombine is Pla::MatrixTestBase {
         assert_equal($A, $B, "cannot row_combine");
     }
 
-    method test_METHOD_row_combine_NEGINDICES_A() {
+    method test_negative_index_A() {
         assert_throws(Exception::OutOfBounds, "Index A is out of bounds",
         {
             my $A := self.factory.defaultmatrix3x3();
@@ -47,7 +47,7 @@ class Pla::Methods::RowCombine is Pla::MatrixTestBase {
         });
     }
 
-    method test_METHOD_row_combine_BOUNDS_A() {
+    method test_index_A_out_of_bounds() {
         assert_throws(Exception::OutOfBounds, "Index A is out of bounds",
         {
             my $A := self.factory.defaultmatrix3x3();
@@ -55,7 +55,7 @@ class Pla::Methods::RowCombine is Pla::MatrixTestBase {
         });
     }
 
-    method test_METHOD_row_combine_NEGINDICES_B() {
+    method test_negative_index_B() {
         assert_throws(Exception::OutOfBounds, "Index B is out of bounds",
         {
             my $A := self.factory.defaultmatrix3x3();
@@ -63,7 +63,7 @@ class Pla::Methods::RowCombine is Pla::MatrixTestBase {
         });
     }
 
-    method test_METHOD_row_combine_BOUNDS_B() {
+    method test_index_B_out_of_bounds() {
         assert_throws(Exception::OutOfBounds, "Index B is out of bounds",
         {
             my $A := self.factory.defaultmatrix3x3();

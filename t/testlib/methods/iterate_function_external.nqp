@@ -6,7 +6,7 @@ class Pla::Methods::IterateFunctionExternal is Pla::MatrixTestBase {
     }
 
     # Test that we can iterate_function_external, and create a new matrix
-    method test_METHOD_iterate_function_external() {
+    method test_iterate_function_external() {
         my $m := self.factory.fancymatrix2x2();
         my $sub := sub ($matrix, $value, $x, $y) {
             return $value;
@@ -16,7 +16,7 @@ class Pla::Methods::IterateFunctionExternal is Pla::MatrixTestBase {
     }
 
     # Test that iterate_function_external passes the correct coordinates
-    method test_METHOD_iterate_function_external_COORDS() {
+    method test_get_correct_coordinates() {
         my $m := self.factory.matrix2x2(self.factory.nullvalue, self.factory.nullvalue,
                                 self.factory.nullvalue, self.factory.nullvalue);
         my $n := self.factory.matrix2x2(self.factory.fancyvalue(0), self.factory.fancyvalue(1),
@@ -29,7 +29,7 @@ class Pla::Methods::IterateFunctionExternal is Pla::MatrixTestBase {
     }
 
     # Test that iterate_function_external passes the correct args
-    method test_METHOD_iterate_function_external_ARGS() {
+    method test_passes_optional_args() {
         my $m := self.factory.matrix2x2(self.factory.nullvalue, self.factory.nullvalue,
                                 self.factory.nullvalue, self.factory.nullvalue);
         my $n := self.factory.matrix2x2(self.factory.fancyvalue(3), self.factory.fancyvalue(3),
@@ -43,7 +43,7 @@ class Pla::Methods::IterateFunctionExternal is Pla::MatrixTestBase {
 
     # Test that iterate_function_external respects the transpose state of the
     # matrix
-    method test_METHOD_iterate_function_external_TRANSPOSE() {
+    method test_handles_lazy_transpose() {
         my $m := self.factory.fancymatrix2x2();
         $m.transpose();
         my $n := self.factory.matrix2x2(self.factory.fancyvalue(0) * 2, self.factory.fancyvalue(2) * 2,

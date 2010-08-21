@@ -5,7 +5,7 @@ class Pla::Methods::ConvertToNumberMatrix is Pla::MatrixTestBase {
         use('UnitTest::Assertions');
     }
 
-    method test_METHOD_convert_to_number_matrix() {
+    method test_convert_to_number_matrix() {
         my $A := self.factory.defaultmatrix2x2();
         my $B := $A.convert_to_number_matrix();
         assert_equal(pir::typeof__SP($B), "NumMatrix2D", "cannot convert");
