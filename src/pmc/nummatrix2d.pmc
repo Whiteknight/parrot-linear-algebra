@@ -1221,12 +1221,11 @@ Calculates the matrix equation:
 */
 
     METHOD gemm(FLOATVAL alpha, PMC * A, PMC *B, FLOATVAL beta, PMC *C) {
-        PMC * const c_out = VTABLE_clone(INTERP, C);
         A = convert_to_NumMatrix2D(interp, A);
         B = convert_to_NumMatrix2D(interp, B);
         C = convert_to_NumMatrix2D(interp, C);
-        call_gemm(INTERP, alpha, A, B, beta, c_out);
-        RETURN(PMC* c_out);
+        call_gemm(INTERP, alpha, A, B, beta, C);
+        RETURN(PMC* C);
     }
 
 /*

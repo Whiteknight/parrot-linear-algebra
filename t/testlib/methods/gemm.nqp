@@ -70,16 +70,62 @@ class Pla::Methods::Gemm is Pla::MatrixTestBase {
         });
     }
 
-    method test_METHOD_gemm_AUTOCONVERT_A_NumMatrix2D() { todo("Write this!"); }
-    method test_METHOD_gemm_AUTOCONVERT_B_NumMatrix2D() { todo("Write this!"); }
-    method test_METHOD_gemm_AUTOCONVERT_C_NumMatrix2D() { todo("Write this!"); }
+    # Tests that for the current type, when we call GEMM the values and
+    # results are converted to this type
+    method __test_gemm_autoconvert($Af, $Bf, $Cf) {
+        my $m := self.factory.defaultmatrix2x2();
+        my $A := $Af.fancymatrix2x2();
+        my $B := $Bf.fancymatrix2x2();
+        my $C := $Cf.fancymatrix2x2();
+        my $alpha := self.factory.fancyvalue(0);
+        my $beta := self.factory.fancyvalue(0);
+        my $D := $m.gemm($alpha, $A, $B, $beta, $C);
+        my $type_D := pir::typeof__SP($D);
+        my $type_m := pir::typeof__SP($m);
+        assert_equal($type_D, $type_m,
+            "not the right type. Found " ~ $type_D ~ " expected " ~ $type_m);
+    }
 
-    method test_METHOD_gemm_AUTOCONVERT_A_ComplexMatrix2D() { todo("Write this!"); }
-    method test_METHOD_gemm_AUTOCONVERT_B_ComplexMatrix2D() { todo("Write this!"); }
-    method test_METHOD_gemm_AUTOCONVERT_C_ComplexMatrix2D() { todo("Write this!"); }
+    method test_autoconvert_A_NumMatrix2D() {
+        my $factory := Pla::MatrixFactory::NumMatrix2D.new();
+        self.__test_gemm_autoconvert($factory, self.factory, self.factory);
+    }
 
-    method test_METHOD_gemm_AUTOCONVERT_A_PMCMatrix2D() { todo("Write this!"); }
-    method test_METHOD_gemm_AUTOCONVERT_B_PMCMatrix2D() { todo("Write this!"); }
-    method test_METHOD_gemm_AUTOCONVERT_C_PMCMatrix2D() { todo("Write this!"); }
+    method test_autoconvert_B_NumMatrix2D() {
+        my $factory := Pla::MatrixFactory::NumMatrix2D.new();
+        self.__test_gemm_autoconvert(self.factory, $factory, self.factory);
+    }
 
+    method test_autoconvert_C_NumMatrix2D() {
+        my $factory := Pla::MatrixFactory::NumMatrix2D.new();
+        self.__test_gemm_autoconvert(self.factory, self.factory, $factory);
+    }
+
+    method test_autoconvert_A_ComplexMatrix2D() {
+        my $factory := Pla::MatrixFactory::ComplexMatrix2D.new();
+        self.__test_gemm_autoconvert($factory, self.factory, self.factory);
+    }
+
+    method test_autoconvert_B_ComplexMatrix2D() {
+        my $factory := Pla::MatrixFactory::ComplexMatrix2D.new();
+        self.__test_gemm_autoconvert(self.factory, $factory, self.factory);
+    }
+
+    method test_autoconvert_C_ComplexMatrix2D() {
+        my $factory := Pla::MatrixFactory::ComplexMatrix2D.new();
+        self.__test_gemm_autoconvert(self.factory, self.factory, $factory);
+    }
+
+    method test_autoconvert_A_PMCMatrix2D() {
+        my $factory := Pla::MatrixFactory::PMCMatrix2D.new();
+        self.__test_gemm_autoconvert($factory, self.factory, self.factory);
+    }
+    method test_autoconvert_B_PMCMatrix2D() {
+        my $factory := Pla::MatrixFactory::PMCMatrix2D.new();
+        self.__test_gemm_autoconvert(self.factory, $factory, self.factory);
+    }
+    method test_autoconvert_C_PMCMatrix2D() {
+        my $factory := Pla::MatrixFactory::PMCMatrix2D.new();
+        self.__test_gemm_autoconvert(self.factory, self.factory, $factory);
+    }
 }
