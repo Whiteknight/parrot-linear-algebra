@@ -29,7 +29,8 @@ sub MAIN(@argv) {
     }
     if $mode eq "build" {
         probe_for_cblas(%PLA);
-        system_linker_settings(%PLA);
+        find_blas(%PLA);
+        find_lapack(%PLA);
     }
     if $mode eq "test" {
         run_test_harness(%PLA);
@@ -56,14 +57,37 @@ sub probe_for_cblas(%PLA) {
     }
 }
 
-sub system_linker_settings(%PLA) {
-    %PLA{'dynpmc_cflags'} := '-g -Isrc/include/';
+sub find_blas(%PLA) {
     my %config := get_config();
     my $osname := %config{'osname'};
     if $osname eq 'linux' {
         my %searches;
-        %searches{'/usr/lib/libblas.so'} := '-lblas';
+        %searches{'/usr/lib/libblas.so'} := ' -lblas';
         %searches{'/usr/lib/atlas/libcblas.so'} := '-L/usr/lib/atlas -lcblas';
+        for %searches {
+            my $searchloc := $_;
+            my $test_ldd := pir::spawnw__IS('ldd ' ~ $searchloc);
+            if $test_ldd == 0 {
+                my $flags := %PLA{'dynpmc_ldflags'};
+                my $libflags := %searches{$searchloc};
+                $flags := ~$flags ~ $libflags;
+                %PLA{'dynpmc_ldflags'} := $flags;
+                return;
+            }
+        }
+    }
+    else {
+        pir::say("Only Linux is currently supported");
+        pir::exit(1);
+    }
+}
+
+sub find_lapack(%PLA) {
+    my %config := get_config();
+    my $osname := %config{'osname'};
+    if $osname eq 'linux' {
+        my %searches;
+        %searches{'/usr/lib/liblapack-3.so'} := ' -llapack-3';
         for %searches {
             my $searchloc := $_;
             my $test_ldd := pir::spawnw__IS('ldd ' ~ $searchloc);
@@ -142,6 +166,7 @@ sub clean_c_library_files(*%kv) {
 }
 
 sub setup_dynpmc(%PLA) {
+    %PLA{'dynpmc_cflags'} := '-g -Isrc/include/';
     %PLA{'dynpmc'}{'linalg_group'} := <
         src/pmc/nummatrix2d.pmc
         src/pmc/pmcmatrix2d.pmc
