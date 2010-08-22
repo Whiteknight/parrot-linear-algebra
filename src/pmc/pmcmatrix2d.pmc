@@ -91,8 +91,8 @@ normalize_lazy_transpose(PARROT_INTERP, PMC * self)
         const INTVAL rows_size = attrs->rows;
         const INTVAL cols_size = attrs->cols;
         const INTVAL size = rows_size * cols_size;
-        FLOATVAL * const new_s = ALLOCATE_STORAGE(size);
-        FLOATVAL * const old_s = attrs->storage;
+        PMC ** const new_s = ALLOCATE_STORAGE(size);
+        PMC ** const old_s = attrs->storage;
         INTVAL i, j;
 
         for (i = 0; i < rows_size; ++i) {
