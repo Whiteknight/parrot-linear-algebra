@@ -232,7 +232,6 @@ call_gemm(PARROT_INTERP, FLOATVAL alpha_r, FLOATVAL alpha_i, PMC * A, PMC *B,
     alpha_p[1] = alpha_i;
     beta_p[0] = beta_r;
     beta_p[1] = beta_i;
-    fprintf(stderr, "%f %f %f %f\n", alpha_r, alpha_i, beta_r, beta_i);
     cblas_zgemm(CblasRowMajor,
         IS_TRANSPOSED_BLAS(attrs_a->flags),
         IS_TRANSPOSED_BLAS(attrs_b->flags),
