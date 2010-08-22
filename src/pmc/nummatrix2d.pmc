@@ -18,22 +18,6 @@
 
 INTVAL __PLA_Type_NumMatrix2D;
 
-static PMC *
-convert_to_NumMatrix2D(PARROT_INTERP, PMC * p)
-{
-    if (p->vtable->base_type == __PLA_Type_NumMatrix2D)
-        return p;
-    else if (!VTABLE_does(interp, p, CONST_STRING(interp, "matrix")))
-        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
-                PLATYPENAME ": cannot convert unknown PMC type");
-    else {
-        PMC * const meth = VTABLE_find_method(interp, p, CONST_STRING(interp, "convert_to_number_matrix"));
-        PMC * dest = PMCNULL;
-        Parrot_ext_call(interp, meth, "Pi->P", p, &dest);
-        return dest;
-    }
-}
-
 /* Resize the matrix internal storage to be able to hold a point at position
    (x, y). The matrix grows but does not shrink. New spaces in the matrix
    are initialized to 0.0. Parameters x and y are the indices that are trying
@@ -99,6 +83,26 @@ normalize_lazy_transpose(PARROT_INTERP, PMC * self)
         attrs->storage = new_s;
         mem_sys_free(old_s);
         FLAG_CLEAR(attrs->flags, FLAG_TRANSPOSED);
+    }
+}
+
+static PMC *
+convert_to_NumMatrix2D(PARROT_INTERP, PMC * p, INTVAL forcecopy)
+{
+    if (p->vtable->base_type == __PLA_Type_NumMatrix2D) {
+        normalize_lazy_transpose(interp, p);
+        if (forcecopy)
+            return VTABLE_clone(interp, p);
+        return p;
+    }
+    else if (!VTABLE_does(interp, p, CONST_STRING(interp, "matrix")))
+        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                PLATYPENAME ": cannot convert unknown PMC type");
+    else {
+        PMC * const meth = VTABLE_find_method(interp, p, CONST_STRING(interp, "convert_to_number_matrix"));
+        PMC * dest = PMCNULL;
+        Parrot_ext_call(interp, meth, "Pi->P", p, &dest);
+        return dest;
     }
 }
 
@@ -1221,9 +1225,9 @@ Calculates the matrix equation:
 */
 
     METHOD gemm(FLOATVAL alpha, PMC * A, PMC *B, FLOATVAL beta, PMC *C) {
-        A = convert_to_NumMatrix2D(interp, A);
-        B = convert_to_NumMatrix2D(interp, B);
-        C = convert_to_NumMatrix2D(interp, C);
+        A = convert_to_NumMatrix2D(interp, A, 0);
+        B = convert_to_NumMatrix2D(interp, B, 0);
+        C = convert_to_NumMatrix2D(interp, C, 1);
         call_gemm(INTERP, alpha, A, B, beta, C);
         RETURN(PMC* C);
     }
@@ -1316,6 +1320,7 @@ Get a PMCMatrix2D from the current matrix
 
     METHOD convert_to_number_matrix() {
         PMC * const d = VTABLE_clone(INTERP, SELF);
+        normalize_lazy_transpose(INTERP, d);
         RETURN(PMC * d);
     }
 
@@ -1326,6 +1331,7 @@ Get a PMCMatrix2D from the current matrix
         PMC * const meth = VTABLE_find_method(INTERP, d, CONST_STRING(INTERP, "resize"));
         INTVAL i;
         Parrot_ext_call(INTERP, meth, "PiII->", d, attrs->rows, attrs->cols);
+        normalize_lazy_transpose(INTERP, SELF);
         for (i = 0; i < totalsize; i++) {
             const FLOATVAL f = VTABLE_get_number_keyed_int(INTERP, SELF, i);
             VTABLE_set_number_keyed_int(INTERP, d, i, f);
@@ -1340,6 +1346,7 @@ Get a PMCMatrix2D from the current matrix
         PMC * const meth = VTABLE_find_method(INTERP, d, CONST_STRING(INTERP, "resize"));
         INTVAL i;
         Parrot_ext_call(INTERP, meth, "PiII->", d, attrs->rows, attrs->cols);
+        normalize_lazy_transpose(INTERP, SELF);
         for (i = 0; i < totalsize; i++) {
             const FLOATVAL f = VTABLE_get_number_keyed_int(INTERP, SELF, i);
             VTABLE_set_number_keyed_int(INTERP, d, i, f);
