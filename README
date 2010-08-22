@@ -128,9 +128,9 @@ To get, build, test, and install Parrot-Linear-Algebra, follow these steps
 
     git clone git://github.com/Whiteknight/parrot-linear-algebra.git pla
     cd pla
-    parrot setup.pir build
-    parrot setup.pir test
-    parrot setup.pir install
+    parrot-nqp setup.nqp build
+    parrot-nqp setup.nqp test
+    parrot-nqp setup.nqp install
 
 Testing only works if you have Kakapo installed on your system. To install,
 you may need root privileges on your system. There is currently no known way
