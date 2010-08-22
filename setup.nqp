@@ -35,7 +35,8 @@ sub MAIN(@argv) {
         run_test_harness(%PLA);
         pir::exit__vI(0);
     }
-    setup_dynpmc_sources(%PLA);
+    setup_c_library_files(%PLA);
+    setup_dynpmc(%PLA);
     setup_testlib(%PLA);
     setup_nqp_bootstrapper(%PLA);
 
@@ -49,14 +50,14 @@ sub get_args() {
 }
 
 sub probe_for_cblas(%PLA) {
-    if probe_include("cblas.h", :verbose(0)) {
+    if probe_include("cblas.h", :verbose(1)) {
         pir::say("Cannot find cblas.h\nPlease install libatlas-base-dev");
         pir::exit__vI(1);
     }
 }
 
 sub system_linker_settings(%PLA) {
-    %PLA{'dynpmc_cflags'} := '-g';
+    %PLA{'dynpmc_cflags'} := '-g -Isrc/include/';
     my %config := get_config();
     my $osname := %config{'osname'};
     if $osname eq 'linux' {
@@ -67,7 +68,10 @@ sub system_linker_settings(%PLA) {
             my $searchloc := $_;
             my $test_ldd := pir::spawnw__IS('ldd ' ~ $searchloc);
             if $test_ldd == 0 {
-                %PLA{'dynpmc_ldflags'} := %searches{$searchloc};
+                my $flags := %PLA{'dynpmc_ldflags'};
+                my $libflags := %searches{$searchloc};
+                $flags := ~$flags ~ $libflags;
+                %PLA{'dynpmc_ldflags'} := $flags;
                 return;
             }
         }
@@ -84,7 +88,60 @@ sub run_test_harness(%PLA) {
     pir::exit(+$result);
 }
 
-sub setup_dynpmc_sources(%PLA) {
+sub setup_c_library_files(%PLA) {
+    register_step_before('build', compile_c_library_files);
+    register_step_after('clean', clean_c_library_files);
+
+    my @cfiles := <
+        src/lib/matrix_common
+        src/lib/math_common
+    >;
+
+    %PLA{'cc_dynpmc'}{'linalg_group'} := @cfiles;
+
+    my @files := %PLA{'cc_dynpmc'}{'linalg_group'};
+    my $obj := get_obj();
+    my $ldflags := "";
+    for @files {
+        my $file := $_;
+        my $objfile := $file ~ $obj;
+        $ldflags := $ldflags ~ " ";
+        $ldflags := $ldflags ~ $objfile;
+    }
+    my $flags := %PLA{'dynpmc_ldflags'};
+    #$flags := $flags ~ $ldflags;
+    $flags := ~$flags ~ " " ~ $ldflags;
+    %PLA{'dynpmc_ldflags'} := $flags;
+}
+
+sub compile_c_library_files(*%args) {
+    my @files := %args{'cc_dynpmc'}{'linalg_group'};
+    my $obj := get_obj();
+    my $cflags := get_cflags() ~ " -g -Isrc/include";
+    my $ldflags := "";
+    my $libheader := "src/include/pla_matrix_library.h";
+    for @files {
+        my $file := $_;
+        my $objfile := $file ~ $obj;
+        my $cfile := $file ~ ".c";
+        unless newer($objfile, [$cfile]) {
+            __compile_cc($objfile, $cfile, $cflags);
+        }
+        $ldflags := $ldflags ~ " " ~ $objfile;
+    }
+}
+
+sub clean_c_library_files(*%kv) {
+    my @files := %kv{'cc_dynpmc'}{'linalg_group'};
+    my $obj := get_obj();
+    for @files {
+        my $file := $_;
+        my $objfile := $file ~ $obj;
+        unlink($objfile, :verbose(1));
+    }
+}
+
+sub setup_dynpmc(%PLA) {
     %PLA{'dynpmc'}{'linalg_group'} := <
         src/pmc/nummatrix2d.pmc
         src/pmc/pmcmatrix2d.pmc

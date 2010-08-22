@@ -1,4 +1,4 @@
-#include "pla_matrix_types.h"
+#include "pla.h"
 
 #define ALLOCATE_STORAGE(s) (PMC **)mem_sys_allocate_zeroed(s * sizeof (PMC *))
 #define PLATYPENAME "PMCMatrix2D"
@@ -54,8 +54,6 @@ resize_matrix(PARROT_INTERP, PMC * self, INTVAL row, INTVAL col)
     if (old_s)
         mem_sys_free(old_s);
 }
-
-
 
 static void
 init_from_pmc_array(PARROT_INTERP, PMC * self, INTVAL rows_size, INTVAL cols_size, PMC * values) {

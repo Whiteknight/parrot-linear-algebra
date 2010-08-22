@@ -1,5 +1,4 @@
-#include "pla_matrix_types.h"
-#include <cblas.h>
+#include "pla.h"
 
 #define ALLOCATE_STORAGE(s) (FLOATVAL *)mem_sys_allocate_zeroed(s * sizeof (FLOATVAL) * 2)
 #define PLATYPENAME "ComplexMatrix2D"
@@ -7,34 +6,6 @@
     (Parrot_ComplexMatrix2D_attributes *)((p)->data)
 
 INTVAL __PLA_Type_ComplexMatrix2D;
-
-static void
-get_complex_value_from_pmc(PARROT_INTERP, PMC * value, FLOATVAL * real, FLOATVAL * imag)
-{
-    switch (value->vtable->base_type) {
-        case enum_class_String:
-            value = Parrot_pmc_new_init(interp, enum_class_Complex, value);
-        case enum_class_Complex:
-            *real = VTABLE_get_number_keyed_int(interp, value, 0);
-            *imag = VTABLE_get_number_keyed_int(interp, value, 1);
-            break;
-        case enum_class_Float:
-            *real = VTABLE_get_number(interp, value);
-            *imag = 0.0;
-            break;
-        case enum_class_Integer:
-            {
-                const INTVAL _r = VTABLE_get_integer(interp, value);
-                *real = (FLOATVAL)_r;
-            }
-            *imag = 0.0;
-            break;
-        default:
-            /* TODO: We should support HLL-mapped types here. */
-            Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
-                PLATYPENAME ": cannot set unknown PMC type");
-    }
-}
 
 /* If the matrix is lazily transposed, actually transpose the physical memory
    layout. This is necessary for calculations, especially BLAS calculations,
@@ -114,6 +85,7 @@ resize_matrix(PARROT_INTERP, PMC * self, INTVAL row, INTVAL col)
     FLOATVAL * new_s = ALLOCATE_STORAGE(newsize);
 
     INTVAL i, j;
+
     for (i = 0; i < old_rows; i++) {
         for (j = 0; j < old_cols; j++) {
             R_ITEM_XY_ROWMAJOR(new_s, new_rows, new_cols, i, j) =
@@ -372,26 +344,6 @@ add_matrices(PARROT_INTERP, PMC * A, PMC * B, INTVAL sub)
                     R_ITEM_XY_ROWMAJOR(s_b, rows, cols, i, j);
             }
         }
-    }
-}
-
-
-static void
-intkey_to_coords(PARROT_INTERP, const INTVAL rows, const INTVAL cols,
-    const INTVAL key, INTVAL * row, INTVAL * col)
-{
-    if (rows == 0) {
-        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
-            PLATYPENAME ": Index out of bounds.");
-    } else {
-        const INTVAL r = key / rows;
-        const INTVAL c = key % rows;
-        if (key < 0 || r > rows || c > cols) {
-            Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
-                PLATYPENAME ": Index out of bounds.");
-        }
-        *row = r;
-        *col = c;
     }
 }
 

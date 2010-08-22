@@ -1,4 +1,4 @@
-#include "pla_matrix_types.h"
+#include "pla.h"
 
 #define DECLATTRS(p, a) Parrot_MatrixProxy_attributes * const (a) = \
     (Parrot_MatrixProxy_attributes *)((p)->data)

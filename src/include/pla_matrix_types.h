@@ -1,8 +1,6 @@
 #ifndef _PLA_MATRIX_TYPES_H_
 #define _PLA_MATRIX_TYPES_H_
 
-#include <cblas.h>
-
 extern INTVAL __PLA_Type_NumMatrix2D;
 extern INTVAL __PLA_Type_ComplexMatrix2D;
 extern INTVAL __PLA_Type_PMCMatrix2D;

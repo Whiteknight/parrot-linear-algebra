@@ -1,20 +1,9 @@
-#include "pla_matrix_types.h"
-#include <math.h>
-#include <cblas.h>
+#include "pla.h"
 
 #define ALLOCATE_STORAGE(s) (FLOATVAL *)mem_sys_allocate_zeroed(s * sizeof (FLOATVAL))
 #define PLATYPENAME "NumMatrix2D"
 #define DECLATTRS(p, a) Parrot_NumMatrix2D_attributes * const (a) = \
     (Parrot_NumMatrix2D_attributes *)((p)->data)
-
-/* Relative error between two large numbers */
-#define FLOATVAL_EPSILON_REL 0.0001
-
-/* Absolute difference between two small numbers */
-#define FLOATVAL_EPSILON_ABS 0.00001
-
-/* Above we do relative error, below we use abs */
-#define FLOATVAL_REL_THRESHOLD 10
 
 INTVAL __PLA_Type_NumMatrix2D;
 
@@ -235,30 +224,6 @@ call_gemm(PARROT_INTERP, FLOATVAL alpha, PMC * A, PMC *B, FLOATVAL beta, PMC *C)
         M
     );
 }
-
-/* Check if two floats are equalish. Above a certain threshold we want to do a
-   relative error calculation because precision between subsequent large
-   numbers can be much larger than standard epsilon values. Below the threshold
-   we want to do an absolute calculation because as the values approach zero the
-   error value quickly begins to diverge, even for very similar values. The
-   values for absolute difference, relative error, and threshold need to be
-   tuned. */
-static INTVAL
-floats_are_equal(FLOATVAL a, FLOATVAL b)
-{
-    FLOATVAL diff = fabs(a - b);
-    if (a == b)
-        return 1;
-    if (diff > FLOATVAL_EPSILON_ABS)
-        return 0;
-    if (a > FLOATVAL_REL_THRESHOLD) {
-        FLOATVAL err = diff / b;
-        if (err > FLOATVAL_EPSILON_REL)
-            return 0;
-    }
-    return 1;
-}
-
 
 pmclass NumMatrix2D dynpmc auto_attrs provides matrix provides numericmatrix {
     ATTR FLOATVAL * storage;

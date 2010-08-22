@@ -1,4 +1,4 @@
-#include "pla_matrix_types.h"
+#include "pla.h"
 
 #define ALLOCATE_STORAGE(s) (char *)mem_sys_allocate_zeroed(s * sizeof (char))
 
