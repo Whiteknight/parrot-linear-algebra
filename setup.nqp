@@ -1,3 +1,4 @@
+#!parrot-nqp
 INIT {
     pir::load_bytecode('distutils.pbc');
 }
