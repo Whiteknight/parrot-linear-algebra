@@ -1092,11 +1092,13 @@ with data in order.
 
 */
 
-    METHOD initialize_from_array(INTVAL rows_size, INTVAL cols_size, PMC *values) {
+    METHOD initialize_from_array(INTVAL rows_size, INTVAL cols_size,
+        PMC *values) {
         init_from_pmc_array(INTERP, SELF, rows_size, cols_size, values);
     }
 
-    METHOD initialize_from_args(INTVAL rows_size, INTVAL cols_size, PMC *values :slurpy) {
+    METHOD initialize_from_args(INTVAL rows_size, INTVAL cols_size,
+        PMC *values :slurpy) {
         init_from_pmc_array(INTERP, SELF, rows_size, cols_size, values);
     }
 
@@ -1110,7 +1112,8 @@ with data in order.
 
 */
 
-    METHOD get_block(INTVAL rows_idx, INTVAL cols_idx, INTVAL rows_size, INTVAL cols_size) {
+    METHOD get_block(INTVAL rows_idx, INTVAL cols_idx, INTVAL rows_size,
+        INTVAL cols_size) {
         DECLATTRS(SELF, attrs);
         FLOATVAL * const s = attrs->storage;
         const INTVAL rows = attrs->rows;

@@ -56,7 +56,9 @@ resize_matrix(PARROT_INTERP, PMC * self, INTVAL row, INTVAL col)
 }
 
 static void
-init_from_pmc_array(PARROT_INTERP, PMC * self, INTVAL rows_size, INTVAL cols_size, PMC * values) {
+init_from_pmc_array(PARROT_INTERP, PMC * self, INTVAL rows_size,
+    INTVAL cols_size, PMC * values)
+{
     DECLATTRS(self, attrs);
     PMC ** s;
     INTVAL self_rows, self_cols, i, j, num = 0;
@@ -632,7 +634,8 @@ value with the return value of the called function.
         RETURN(PMC * new_matrix);
     }
 
-    METHOD get_block(INTVAL rows_idx, INTVAL cols_idx, INTVAL rows_size, INTVAL cols_size) {
+    METHOD get_block(INTVAL rows_idx, INTVAL cols_idx, INTVAL rows_size,
+        INTVAL cols_size) {
         DECLATTRS(SELF, attrs);
         PMC ** const s = attrs->storage;
         const INTVAL rows = attrs->rows;
