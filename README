@@ -34,7 +34,7 @@ PLA currently provides these PMC types:
     A 2-D matrix containing Complex values, optimized to store complex values
     directly instead of using an array of Parrot's Complex PMC type.
 
-* CharMatrix2D
+* CharMatrix2D (Testing)
 
     A 2-D character matrix that doubles as an array of strings with
     fixed-row-length storage.
@@ -56,14 +56,14 @@ dependencies.
 
 Here are a list of dependencies for PLA:
 
-* Parrot 2.3.0
+* Parrot 2.7.0
 
     PLA is an extension for Parrot and requires Parrot to build and run.
     Releases of PLA will target supported releases of Parrot. Supported
     releases are typically X.0, X.3, X.6, X.9. Releases for Parrot can be
     retrieved from
 
-    http://www.parrot.org
+        http://www.parrot.org
 
     Development between releases will typically target the latest supported
     release, though it may begin to target more recent development releases in
@@ -82,6 +82,10 @@ Here are a list of dependencies for PLA:
     to be more accepting of small differences in various interfaces, but this
     work is moving slowly.
 
+    PLA may eventually support direct linkage to the BLAS library, instead of
+    requiring a C language implementation (CBLAS or ATLAS). This is not
+    supported yet but is on the roadmap.
+
     We recommend the ATLAS library for current development and testing work.
     On Ubuntu or other Debian-based distros, you can type this incantation to
     get it automatically:
@@ -94,11 +98,21 @@ Here are a list of dependencies for PLA:
         sudo yum install atlas-devel
 
     Notice that the default vesions of the atlas library are only generally
-    optimized. If you are able try to use a platform-specific variant (such
+    optimized. If you are able, try to use a platform-specific variant (such
     as "-sse2" or "-3dnow") for better performance. See the ATLAS homepage for
     more information:
 
         http://math-atlas.sourceforge.net/
+
+* LAPACK
+
+    LAPACK is a library of linear algebra routines which rely heavily on the
+    local BLAS implementation. For more information about LAPACK, see the
+    project homepage at:
+
+        http://www.netlib.org/lapack
+
+    LAPACK bindings are currently in development.
 
 * Kakapo
 
@@ -124,7 +138,7 @@ Here are a list of dependencies for PLA:
 == BUILDING ==
 
 To get, build, test, and install Parrot-Linear-Algebra, follow these steps
-(on Linux):
+(on Linux) once all the prerequisites have been prepared:
 
     git clone git://github.com/Whiteknight/parrot-linear-algebra.git pla
     cd pla
@@ -135,6 +149,23 @@ To get, build, test, and install Parrot-Linear-Algebra, follow these steps
 Testing only works if you have Kakapo installed on your system. To install,
 you may need root privileges on your system. There is currently no known way
 to build or deploy PLA on Windows.
+
+== DIRECTORY STRUCTURE ==
+
+    + /
+        + dynext/      : Location for generated libraries
+        + examples/    : Example programs in various languages
+        + ports/       : Generated information about porting
+        + src/         : Source code
+            + include/ : Include files
+            + lib/     : Library files
+            + pmc/     : PMC definition files
+            + nqp/     : The NQP bootstrapper
+            + rakudo/  : Wrapper files for use in Rakudo Perl 6
+        + t/           : Tests
+            + methods/ : Tests for methods
+            + pmc/     : Tests for various PMC types
+            + testlib/ : Common test library
 
 == CREDITS ==
 
