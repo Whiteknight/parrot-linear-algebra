@@ -1,6 +1,6 @@
 Makefile
 *.pbc
-*.c
+src/pmc/*.c
 *.o
 *~
 *.so
