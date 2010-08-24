@@ -1,6 +1,7 @@
 #!parrot-nqp
 INIT {
     pir::load_bytecode('distutils.pbc');
+    pir::load_bytecode('nqp-setting.pbc');
 }
 
 MAIN(get_args());
@@ -21,6 +22,7 @@ sub MAIN(@argv) {
         :project_uri('http://github.com/Whiteknight/parrot-linear-algebra'),
         :version("0.1")
     );
+    setup_PLA_keys(%PLA);
     my $mode;
     if +@argv == 0 {
         $mode := 'build';
@@ -41,44 +43,69 @@ sub MAIN(@argv) {
     setup_dynpmc(%PLA);
     setup_testlib(%PLA);
     setup_nqp_bootstrapper(%PLA);
+    setup_dynpmc_flags(%PLA);
 
     setup(@argv, %PLA);
 }
 
 sub new_hash(*%hash) { %hash; }
+sub new_array(*@array) { @array; }
 sub get_args() {
     my $interp := pir::getinterp__P();
     $interp[2];
 }
 
+
+# final step, coerce the list of dynpmc ldflags into a string
+sub setup_dynpmc_flags(%PLA) {
+    %PLA{'dynpmc_ldflags'} := %PLA{'dynpmc_ldflags_list'}.join(' ');
+    %PLA{'dynpmc_cflags'} := %PLA{'dynpmc_cflags_list'}.join(' ');
+}
+
+sub setup_PLA_keys(%PLA) {
+    %PLA{'cc_dynpmc'} := new_hash();
+    %PLA{'dynpmc_ldflags_list'} := new_array();
+    %PLA{'dynpmc_cflags_list'} := new_array();
+    %PLA{'inst_lib'} := new_array();
+    %PLA{'pir_pir'} := new_hash();
+    %PLA{'pir_pir'}{'t/testlib/pla_test.pir'} := new_array();
+}
+
+#
 sub probe_for_cblas(%PLA) {
     if probe_include("cblas.h", :verbose(1)) {
         pir::say("Cannot find cblas.h\nPlease install libatlas-base-dev");
         pir::exit__vI(1);
+    } else {
+        %PLA{'dynpmc_cflags_list'}.push("-D_PLA_HAVE_CBLAS_H");
     }
 }
 
 sub find_blas(%PLA) {
     my %config := get_config();
     my $osname := %config{'osname'};
+    my $found_blas := 0;
     if $osname eq 'linux' {
         my %searches;
-        %searches{'/usr/lib/libblas.so'} := ' -lblas';
-        %searches{'/usr/lib/atlas/libcblas.so'} := '-L/usr/lib/atlas -lcblas';
+        %searches{'/usr/lib/libblas.so'} := ['-lblas', '-D_PLA_HAVE_ATLAS'];
+        %searches{'/usr/lib/atlas/libcblas.so'} := ['-L/usr/lib/atlas -lcblas', '-D_PLA_HAVE_ATLAS'];
         for %searches {
             my $searchloc := $_;
             my $test_ldd := pir::spawnw__IS('ldd ' ~ $searchloc);
             if $test_ldd == 0 {
-                my $flags := %PLA{'dynpmc_ldflags'};
-                my $libflags := %searches{$searchloc};
-                $flags := ~$flags ~ $libflags;
-                %PLA{'dynpmc_ldflags'} := $flags;
+                $found_blas := 1;
+                %PLA{'dynpmc_ldflags_list'}.push(%searches{$searchloc}[0]);
+                %PLA{'dynpmc_cflags_list'}.push(%searches{$searchloc}[1]);
                 return;
             }
         }
     }
     else {
         pir::say("Only Linux is currently supported");
+        pir::exit(1);
+    }
+    if $found_blas == 0 {
+        pir::say("Cannot find BLAS");
         pir::exit(1);
     }
 }
@@ -88,23 +115,18 @@ sub find_lapack(%PLA) {
     my $osname := %config{'osname'};
     if $osname eq 'linux' {
         my %searches;
-        %searches{'/usr/lib/liblapack-3.so'} := ' -llapack-3';
+        %searches{'/usr/lib/liblapack-3.so'} := ['-llapack-3', '-D_PLA_HAVE_LAPACK'];
         for %searches {
             my $searchloc := $_;
             my $test_ldd := pir::spawnw__IS('ldd ' ~ $searchloc);
             if $test_ldd == 0 {
-                my $flags := %PLA{'dynpmc_ldflags'};
-                my $libflags := %searches{$searchloc};
-                $flags := ~$flags ~ $libflags;
-                %PLA{'dynpmc_ldflags'} := $flags;
+                %PLA{'dynpmc_ldflags_list'}.push(%searches{$searchloc}[0]);
+                %PLA{'dynpmc_cflags_list'}.push(%searches{$searchloc}[1]);
                 return;
             }
         }
     }
-    else {
-        pir::say("Only Linux is currently supported");
-        pir::exit(1);
-    }
+    # No LAPACK? No problem! We compile without it
 }
 
 sub run_test_harness(%PLA) {
@@ -121,38 +143,26 @@ sub setup_c_library_files(%PLA) {
         src/lib/matrix_common
         src/lib/math_common
     >;
+    my $obj := get_obj();
+    for @cfiles {
+        %PLA{'dynpmc_ldflags_list'}.push($_ ~ $obj);
+    }
 
     %PLA{'cc_dynpmc'}{'linalg_group'} := @cfiles;
-
-    my @files := %PLA{'cc_dynpmc'}{'linalg_group'};
-    my $obj := get_obj();
-    my $ldflags := "";
-    for @files {
-        my $file := $_;
-        my $objfile := $file ~ $obj;
-        $ldflags := $ldflags ~ " ";
-        $ldflags := $ldflags ~ $objfile;
-    }
-    my $flags := %PLA{'dynpmc_ldflags'};
-    #$flags := $flags ~ $ldflags;
-    $flags := ~$flags ~ " " ~ $ldflags;
-    %PLA{'dynpmc_ldflags'} := $flags;
 }
 
 sub compile_c_library_files(*%args) {
     my @files := %args{'cc_dynpmc'}{'linalg_group'};
     my $obj := get_obj();
-    my $cflags := get_cflags() ~ " -g -Isrc/include";
-    my $ldflags := "";
+    my $cflags := get_cflags() ~ %args{'dynpmc_cflags'};
     my $libheader := "src/include/pla_matrix_library.h";
     for @files {
         my $file := $_;
         my $objfile := $file ~ $obj;
         my $cfile := $file ~ ".c";
-        unless newer($objfile, [$cfile]) {
+        unless newer($objfile, [$cfile, $libheader]) {
             __compile_cc($objfile, $cfile, $cflags);
         }
-        $ldflags := $ldflags ~ " " ~ $objfile;
     }
 }
 
@@ -167,7 +177,8 @@ sub clean_c_library_files(*%kv) {
 }
 
 sub setup_dynpmc(%PLA) {
-    %PLA{'dynpmc_cflags'} := '-g -Isrc/include/';
+    %PLA{'dynpmc_cflags_list'}.push('-g');
+    %PLA{'dynpmc_cflags_list'}.push('-Isrc/include/');
     %PLA{'dynpmc'}{'linalg_group'} := <
         src/pmc/nummatrix2d.pmc
         src/pmc/pmcmatrix2d.pmc
@@ -201,12 +212,11 @@ sub setup_testlib(%PLA) {
         methods/set_block
         methods/transpose
     >;
-    %PLA<pir_pir>{'t/testlib/pla_test.pir'} := <>;
     for @testlib {
         my $nqp_file := 't/testlib/' ~ $_ ~ '.nqp';
         my $pir_file := 't/testlib/' ~ $_ ~ '.pir';
         %PLA<pir_nqp-rx>{$pir_file} := $nqp_file;
-        pir::push__vPP(%PLA<pir_pir>{'t/testlib/pla_test.pir'}, $pir_file);
+        %PLA<pir_pir>{'t/testlib/pla_test.pir'}.push($pir_file);
     }
     %PLA{'pbc_pir'}{'t/testlib/pla_test.pbc'} := 't/testlib/pla_test.pir';
 }
@@ -214,7 +224,7 @@ sub setup_testlib(%PLA) {
 sub setup_nqp_bootstrapper(%PLA) {
     %PLA{'pir_nqp-rx'}{'src/nqp/pla.pir'} := 'src/nqp/pla.nqp';
     %PLA{'pbc_pir'}{'pla_nqp.pbc'} := 'src/nqp/pla.pir';
-    %PLA{'inst_lib'} := <pla_nqp.pbc>;
+    %PLA{'inst_lib'}.push('pla_nqp.pbc');
 }
 
 
