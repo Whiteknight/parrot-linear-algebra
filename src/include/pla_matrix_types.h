@@ -178,6 +178,5 @@ do { \
 #define IS_DIAGONAL(flags)        ((((flags) & (FLAG_DIAGONAL)) == FLAG_DIAGONAL))
 #define IS_TRIDIAGONAL(flags)     (((flags) & (FLAG_TRIDIAGONAL)))
 #define IS_TRANSPOSED(flags)      (((flags) & (FLAG_TRANSPOSED)))
-#define IS_TRANSPOSED_BLAS(flags) (IS_TRANSPOSED(flags) ? CblasTrans : CblasNoTrans)
 
 #endif /* _PLA_MATRIX_TYPES_H_ */
