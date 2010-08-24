@@ -1,9 +1,5 @@
 #include "pla.h"
-
-#define ALLOCATE_STORAGE(s) (FLOATVAL *)mem_sys_allocate_zeroed(s * sizeof (FLOATVAL))
 #define PLATYPENAME "NumMatrix2D"
-#define DECLATTRS(p, a) Parrot_NumMatrix2D_attributes * const (a) = \
-    (Parrot_NumMatrix2D_attributes *)((p)->data)
 
 INTVAL __PLA_Type_NumMatrix2D;
 
@@ -21,7 +17,7 @@ INTVAL __PLA_Type_NumMatrix2D;
 static void
 resize_matrix(PARROT_INTERP, PMC * self, INTVAL row, INTVAL col)
 {
-    DECLATTRS(self, attrs);
+    DECLATTRS_NumMatrix2D(self, attrs);
     /* Store the old values */
     const INTVAL old_rows = attrs->rows;
     const INTVAL old_cols = attrs->cols;
@@ -32,7 +28,7 @@ resize_matrix(PARROT_INTERP, PMC * self, INTVAL row, INTVAL col)
     const INTVAL new_rows = INDEX_MAX(old_rows, row + 1);
     const INTVAL new_cols = INDEX_MAX(old_cols, col + 1);
     const INTVAL newsize = new_rows * new_cols;
-    FLOATVAL * new_s = ALLOCATE_STORAGE(newsize);
+    FLOATVAL * new_s = ALLOCATE_STORAGE_NumMatrix2D(newsize);
 
     INTVAL i, j;
     for (i = 0; i < old_rows; i++) {
@@ -48,18 +44,37 @@ resize_matrix(PARROT_INTERP, PMC * self, INTVAL row, INTVAL col)
         mem_sys_free(old_s);
 }
 
+static void
+multiply_matrices(PARROT_INTERP, FLOATVAL alpha, PMC * A, PMC * B, FLOATVAL beta, PMC * C)
+{
+    DECLATTRS_NumMatrix2D(A, attrs_a);
+    DECLATTRS_NumMatrix2D(B, attrs_b);
+    DECLATTRS_NumMatrix2D(C, attrs_c);
+    if (attrs_c->rows != attrs_a->rows)
+        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
+            PLATYPENAME ": A, C indices do not match in gemm");
+    if (attrs_c->cols != attrs_b->cols)
+        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
+            PLATYPENAME ": B, C indices do not match in gemm");
+    if (attrs_b->rows != attrs_a->cols)
+        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
+            PLATYPENAME ": A, B indeces do not match in gemm");
+    call_dgemm(alpha, attrs_a->flags, attrs_a->storage, attrs_a->rows, attrs_a->cols,
+        attrs_b->flags, attrs_b->storage, attrs_b->cols, beta, attrs_c->storage);
+}
+
 /* If the matrix is lazily transposed, actually transpose the physical memory
    layout. This is necessary for calculations, especially BLAS calculations,
    which aren't lazy-transpose-aware. */
 static void
 normalize_lazy_transpose(PARROT_INTERP, PMC * self)
 {
-    DECLATTRS(self, attrs);
+    DECLATTRS_NumMatrix2D(self, attrs);
     if (IS_TRANSPOSED(attrs->flags)) {
         const INTVAL rows_size = attrs->rows;
         const INTVAL cols_size = attrs->cols;
         const INTVAL size = rows_size * cols_size;
-        FLOATVAL * const new_s = ALLOCATE_STORAGE(size);
+        FLOATVAL * const new_s = ALLOCATE_STORAGE_NumMatrix2D(size);
         FLOATVAL * const old_s = attrs->storage;
         INTVAL i, j;
 
@@ -100,7 +115,7 @@ static void
 init_from_pmc_array(PARROT_INTERP, PMC * self, INTVAL rows_size,
     INTVAL cols_size, PMC * values)
 {
-    DECLATTRS(self, attrs);
+    DECLATTRS_NumMatrix2D(self, attrs);
     FLOATVAL * s;
     INTVAL self_rows, self_cols, i, j, num = 0;
     const INTVAL init_elems = VTABLE_elements(interp, values);
@@ -125,7 +140,7 @@ init_from_pmc_array(PARROT_INTERP, PMC * self, INTVAL rows_size,
 static void
 add_scalar_float(PARROT_INTERP, PMC * self, FLOATVAL v)
 {
-    DECLATTRS(self, attrs);
+    DECLATTRS_NumMatrix2D(self, attrs);
     const INTVAL rows_size = attrs->rows;
     const INTVAL cols_size = attrs->cols;
     FLOATVAL * const s = attrs->storage;
@@ -142,7 +157,7 @@ add_scalar_float(PARROT_INTERP, PMC * self, FLOATVAL v)
 static void
 multiply_scalar_float(PARROT_INTERP, PMC * self, FLOATVAL v)
 {
-    DECLATTRS(self, attrs);
+    DECLATTRS_NumMatrix2D(self, attrs);
     const INTVAL rows_size = attrs->rows;
     const INTVAL cols_size = attrs->cols;
     FLOATVAL * const s = attrs->storage;
@@ -160,8 +175,8 @@ multiply_scalar_float(PARROT_INTERP, PMC * self, FLOATVAL v)
 static void
 add_matrices(PARROT_INTERP, PMC * A, PMC * B, INTVAL sub)
 {
-    DECLATTRS(A, attrs_a);
-    DECLATTRS(B, attrs_b);
+    DECLATTRS_NumMatrix2D(A, attrs_a);
+    DECLATTRS_NumMatrix2D(B, attrs_b);
     const INTVAL rows = attrs_a->rows;
     const INTVAL cols = attrs_a->cols;
     FLOATVAL * const s_a = attrs_a->storage;
@@ -217,7 +232,7 @@ Destrow the matrix and free it's allocated storage
 */
 
     VTABLE void init() {
-        DECLATTRS(SELF, a);
+        DECLATTRS_NumMatrix2D(SELF, a);
         a->storage = NULL;
         a->rows = 0;
         a->cols = 0;
@@ -226,7 +241,7 @@ Destrow the matrix and free it's allocated storage
     }
 
     VTABLE void destroy() {
-        DECLATTRS(SELF, a);
+        DECLATTRS_NumMatrix2D(SELF, a);
         FLOATVAL * const s = a->storage;
         if (s)
             mem_sys_free(s);
@@ -257,7 +272,7 @@ elements.
 */
 
     VTABLE FLOATVAL get_number_keyed(PMC * key) {
-        DECLATTRS(SELF, attrs);
+        DECLATTRS_NumMatrix2D(SELF, attrs);
         const INTVAL rows_size = attrs->rows;
         const INTVAL cols_size = attrs->cols;
         INTVAL rows, cols;
@@ -312,7 +327,7 @@ Nth number. The array is arranged in memory row by row.
 */
 
     VTABLE FLOATVAL get_number_keyed_int(INTVAL key) {
-        DECLATTRS(SELF, attrs);
+        DECLATTRS_NumMatrix2D(SELF, attrs);
         const INTVAL total_size = attrs->rows * attrs->cols;
         if (key >= total_size) {
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
@@ -361,7 +376,7 @@ must have two elements.
 */
 
     VTABLE void set_number_keyed(PMC * key, FLOATVAL value) {
-        DECLATTRS(SELF, attrs);
+        DECLATTRS_NumMatrix2D(SELF, attrs);
         INTVAL rows, cols, rows_size = attrs->rows, cols_size = attrs->cols;
         GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
         if (rows >= rows_size || cols >= cols_size) {
@@ -384,7 +399,7 @@ must have two elements.
     }
 
     VTABLE void set_number_keyed_int(INTVAL key, FLOATVAL value) {
-        DECLATTRS(SELF, attrs);
+        DECLATTRS_NumMatrix2D(SELF, attrs);
         const INTVAL total_size = attrs->rows * attrs->cols;
         if (key >= total_size) {
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
@@ -414,7 +429,7 @@ Get a string representation of the matrix.
 */
 
     VTABLE STRING *get_string() {
-        DECLATTRS(SELF, attrs);
+        DECLATTRS_NumMatrix2D(SELF, attrs);
         INTVAL i, j;
         PMC * const builder = Parrot_pmc_new(INTERP, enum_class_StringBuilder);
         STRING * const newline = Parrot_str_new(INTERP, "\n", 1);
@@ -606,8 +621,8 @@ Add the integer value to every element in the matrix.
 */
 
     MULTI PMC *multiply(NumMatrix2D *value, PMC *dest) {
-        DECLATTRS(SELF, selfattr);
-        DECLATTRS(value, valattr);
+        DECLATTRS_NumMatrix2D(SELF, selfattr);
+        DECLATTRS_NumMatrix2D(value, valattr);
         const INTVAL new_rows = selfattr->rows;
         const INTVAL new_cols = valattr->cols;
 
@@ -618,7 +633,7 @@ Add the integer value to every element in the matrix.
 
         dest = Parrot_pmc_new(INTERP, VTABLE_type(INTERP, SELF));
         resize_matrix(INTERP, dest, new_rows - 1, new_cols - 1);
-        call_dgemm(INTERP, 1.0, SELF, value, 0.0, dest);
+        multiply_matrices(INTERP, 1.0, SELF, value, 0.0, dest);
         return dest;
     }
 
@@ -663,7 +678,7 @@ Add the integer value to every element in the matrix.
 
     MULTI void i_multiply(NumMatrix2D* value) {
         PMC * const temp = VTABLE_clone(INTERP, SELF);
-        call_dgemm(INTERP, 1.0, temp, value, 0.0, SELF);
+        multiply_matrices(INTERP, 1.0, temp, value, 0.0, SELF);
     }
 
     MULTI void i_multiply(DEFAULT* value) {
@@ -698,7 +713,7 @@ Add the integer value to every element in the matrix.
 */
 
     VTABLE PMC * get_attr_str(STRING * idx) {
-        DECLATTRS(SELF, attrs);
+        DECLATTRS_NumMatrix2D(SELF, attrs);
         if (Parrot_str_equal(INTERP, idx, CONST_STRING(INTERP, "rows"))) {
             PMC * const rows = Parrot_pmc_new(INTERP, enum_class_Integer);
             VTABLE_set_integer_native(INTERP, rows, attrs->rows);
@@ -727,11 +742,11 @@ Add the integer value to every element in the matrix.
 
     VTABLE PMC * clone() {
         PMC * const c = Parrot_pmc_new(INTERP, SELF->vtable->base_type);
-        DECLATTRS(SELF, old_atts);
-        DECLATTRS(c, new_atts);
+        DECLATTRS_NumMatrix2D(SELF, old_atts);
+        DECLATTRS_NumMatrix2D(c, new_atts);
         INTVAL const newsize = old_atts->rows * old_atts->cols;
         FLOATVAL * const old_s = old_atts->storage;
-        FLOATVAL * const new_s = ALLOCATE_STORAGE(newsize);
+        FLOATVAL * const new_s = ALLOCATE_STORAGE_NumMatrix2D(newsize);
         memcpy(new_s, old_s, newsize * sizeof(FLOATVAL));
         memcpy(new_atts, old_atts, sizeof(Parrot_NumMatrix2D_attributes));
         new_atts->storage = new_s;
@@ -748,8 +763,8 @@ Add the integer value to every element in the matrix.
 
     VTABLE INTVAL is_equal(PMC * other) {
         if (other->vtable->base_type == SELF->vtable->base_type) {
-            DECLATTRS(SELF, self_attrs);
-            DECLATTRS(other, other_attrs);
+            DECLATTRS_NumMatrix2D(SELF, self_attrs);
+            DECLATTRS_NumMatrix2D(other, other_attrs);
             const INTVAL self_rows = self_attrs->rows;
             const INTVAL self_cols = self_attrs->cols;
             const INTVAL self_flags = self_attrs->flags;
@@ -789,7 +804,7 @@ Add the integer value to every element in the matrix.
 */
 
     VTABLE void freeze(PMC *info) {
-        DECLATTRS(SELF, attrs);
+        DECLATTRS_NumMatrix2D(SELF, attrs);
         INTVAL const rows = attrs->rows;
         INTVAL const cols = attrs->cols;
         INTVAL const flags = attrs->flags;
@@ -807,7 +822,7 @@ Add the integer value to every element in the matrix.
     }
 
     VTABLE void thaw(PMC *info) {
-        DECLATTRS(SELF, attrs);
+        DECLATTRS_NumMatrix2D(SELF, attrs);
         INTVAL const rows = VTABLE_shift_integer(INTERP, info);
         INTVAL const cols = VTABLE_shift_integer(INTERP, info);
         INTVAL const flags = VTABLE_shift_integer(INTERP, info);
@@ -861,7 +876,7 @@ sizes, growing the matrix if needed.
                 INTVAL rows_size :optional, INTVAL has_rows_size :opt_flag,
                 INTVAL cols_size :optional, INTVAL has_cols_size :opt_flag
                ) {
-        DECLATTRS(SELF, attrs);
+        DECLATTRS_NumMatrix2D(SELF, attrs);
         FLOATVAL * s  = attrs->storage;
         INTVAL const curr_rows_size = attrs->rows;
         INTVAL const curr_cols_size = attrs->cols;
@@ -896,7 +911,7 @@ sizes, growing the matrix if needed.
     METHOD item_at(INTVAL row, INTVAL col,
         FLOATVAL value :optional,
         INTVAL has_value :opt_flag) {
-        DECLATTRS(SELF, attrs);
+        DECLATTRS_NumMatrix2D(SELF, attrs);
         const INTVAL rows = attrs->rows;
         const INTVAL cols = attrs->cols;
         if (row >= rows || col >= cols || row < 0 || col < 0) {
@@ -921,7 +936,7 @@ Transposes the matrix lazily.
 */
 
     METHOD transpose() {
-        DECLATTRS(SELF, attrs);
+        DECLATTRS_NumMatrix2D(SELF, attrs);
         INTVAL transposed = IS_TRANSPOSED(attrs->flags);
 
         SWAP_XY(attrs);
@@ -946,11 +961,11 @@ than the transpose() method.
 */
 
     METHOD mem_transpose() {
-        DECLATTRS(SELF, attrs);
+        DECLATTRS_NumMatrix2D(SELF, attrs);
         const INTVAL rows = attrs->rows;
         const INTVAL cols = attrs->cols;
         const INTVAL newsize = rows * cols;
-        FLOATVAL * const new_s = ALLOCATE_STORAGE(newsize);
+        FLOATVAL * const new_s = ALLOCATE_STORAGE_NumMatrix2D(newsize);
         FLOATVAL * const old_s = attrs->storage;
 
         INTVAL i, j;
@@ -983,13 +998,13 @@ computation to a new matrix. Return the new matrix of results.
 */
 
     METHOD iterate_function_inplace(PMC * func, PMC * args :slurpy) {
-        DECLATTRS(SELF, attrs);
+        DECLATTRS_NumMatrix2D(SELF, attrs);
         const INTVAL rows = attrs->rows;
         const INTVAL cols = attrs->cols;
         const INTVAL newsize = rows * cols;
         const INTVAL flags = attrs->flags;
         FLOATVAL * const old_s = attrs->storage;
-        FLOATVAL * const new_s = ALLOCATE_STORAGE(newsize);
+        FLOATVAL * const new_s = ALLOCATE_STORAGE_NumMatrix2D(newsize);
         INTVAL i, j;
 
         if (newsize == 0 || old_s == NULL)
@@ -1009,7 +1024,7 @@ computation to a new matrix. Return the new matrix of results.
     }
 
     METHOD iterate_function_external(PMC * func, PMC * args :slurpy) {
-        DECLATTRS(SELF, attrs);
+        DECLATTRS_NumMatrix2D(SELF, attrs);
         PMC * const new_matrix = Parrot_pmc_new(INTERP, SELF->vtable->base_type);
         Parrot_NumMatrix2D_attributes * new_attrs;
         const INTVAL rows = attrs->rows;
@@ -1077,7 +1092,7 @@ with data in order.
 
     METHOD get_block(INTVAL rows_idx, INTVAL cols_idx, INTVAL rows_size,
         INTVAL cols_size) {
-        DECLATTRS(SELF, attrs);
+        DECLATTRS_NumMatrix2D(SELF, attrs);
         FLOATVAL * const s = attrs->storage;
         const INTVAL rows = attrs->rows;
         const INTVAL cols = attrs->cols;
@@ -1094,7 +1109,7 @@ with data in order.
                 PLATYPENAME ": Can not get block with negative size");
         else {
             PMC * const new_matrix = Parrot_pmc_new(INTERP, SELF->vtable->base_type);
-            DECLATTRS(new_matrix, new_attrs);
+            DECLATTRS_NumMatrix2D(new_matrix, new_attrs);
             FLOATVAL * new_s;
             resize_matrix(INTERP, new_matrix, rows_size - 1, cols_size - 1);
             new_s = new_attrs->storage;
@@ -1109,8 +1124,8 @@ with data in order.
     }
 
     METHOD set_block(INTVAL rows_idx, INTVAL cols_idx, PMC * blck) {
-        DECLATTRS(SELF, self_attrs);
-        DECLATTRS(blck, blck_attrs);
+        DECLATTRS_NumMatrix2D(SELF, self_attrs);
+        DECLATTRS_NumMatrix2D(blck, blck_attrs);
         FLOATVAL * self_s = self_attrs->storage;
         FLOATVAL * const blck_s = blck_attrs->storage;
         INTVAL self_rows = self_attrs->rows;
@@ -1159,7 +1174,7 @@ Calculates the matrix equation:
         A = convert_to_NumMatrix2D(interp, A, 0);
         B = convert_to_NumMatrix2D(interp, B, 0);
         C = convert_to_NumMatrix2D(interp, C, 1);
-        call_dgemm(INTERP, alpha, A, B, beta, C);
+        multiply_matrices(INTERP, alpha, A, B, beta, C);
         RETURN(PMC* C);
     }
 
@@ -1182,7 +1197,7 @@ Swap two rows
 */
 
     METHOD row_combine(INTVAL srcidx, INTVAL destidx, FLOATVAL gain) {
-        DECLATTRS(SELF, attrs);
+        DECLATTRS_NumMatrix2D(SELF, attrs);
         FLOATVAL * const s = attrs->storage;
         const INTVAL rows = attrs->rows;
         const INTVAL cols = attrs->cols;
@@ -1198,7 +1213,7 @@ Swap two rows
     }
 
     METHOD row_scale(INTVAL idx, FLOATVAL gain) {
-        DECLATTRS(SELF, attrs);
+        DECLATTRS_NumMatrix2D(SELF, attrs);
         FLOATVAL * const s = attrs->storage;
         const INTVAL rows = attrs->rows;
         const INTVAL cols = attrs->cols;
@@ -1214,7 +1229,7 @@ Swap two rows
 
 
     METHOD row_swap(INTVAL idx_a, INTVAL idx_b) {
-        DECLATTRS(SELF, attrs);
+        DECLATTRS_NumMatrix2D(SELF, attrs);
         FLOATVAL * const s = attrs->storage;
         const INTVAL rows = attrs->rows;
         const INTVAL cols = attrs->cols;
@@ -1256,7 +1271,7 @@ Get a PMCMatrix2D from the current matrix
     }
 
     METHOD convert_to_complex_matrix() {
-        DECLATTRS(SELF, attrs);
+        DECLATTRS_NumMatrix2D(SELF, attrs);
         PMC * const d = Parrot_pmc_new(INTERP, __PLA_Type_ComplexMatrix2D);
         const INTVAL totalsize = attrs->rows * attrs->cols;
         PMC * const meth = VTABLE_find_method(INTERP, d, CONST_STRING(INTERP, "resize"));
@@ -1271,7 +1286,7 @@ Get a PMCMatrix2D from the current matrix
     }
 
     METHOD convert_to_pmc_matrix() {
-        DECLATTRS(SELF, attrs);
+        DECLATTRS_NumMatrix2D(SELF, attrs);
         PMC * const d = Parrot_pmc_new(INTERP, __PLA_Type_PMCMatrix2D);
         const INTVAL totalsize = attrs->rows * attrs->cols;
         PMC * const meth = VTABLE_find_method(INTERP, d, CONST_STRING(INTERP, "resize"));

@@ -61,4 +61,21 @@ extern void zgemm_(
 );
 
 #  endif /* _PLA_HAVE_CBLAS_H */
+
+void call_dgemm(
+    FLOATVAL alpha,
+    INTVAL flags_A, FLOATVAL * A, INTVAL rows_A, INTVAL cols_A,
+    INTVAL flags_B, FLOATVAL * B, INTVAL cols_B,
+    FLOATVAL beta,
+    FLOATVAL * C
+);
+
+void call_zgemm(
+    FLOATVAL alpha_r, FLOATVAL alpha_i,
+    INTVAL flags_a, FLOATVAL * A, INTVAL rows_a, INTVAL cols_a,
+    INTVAL flags_b, FLOATVAL * B, INTVAL cols_b,
+    FLOATVAL beta_r, FLOATVAL beta_i,
+    FLOATVAL * C
+);
+
 #endif /* _PLA_BLAS_H_ */

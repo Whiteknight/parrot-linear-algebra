@@ -3,80 +3,62 @@
 /* Wrapper to call the dgemm function from BLAS with PMC arguments. Assumes
    A, B, and C are all NumMatrix2D. */
 void
-call_dgemm(PARROT_INTERP, FLOATVAL alpha, PMC * A, PMC *B, FLOATVAL beta, PMC *C)
+call_dgemm(FLOATVAL alpha,
+    INTVAL flags_A, FLOATVAL * A, INTVAL rows_A, INTVAL cols_A,
+    INTVAL flags_B, FLOATVAL * B, INTVAL cols_B,
+    FLOATVAL beta,  FLOATVAL * C)
 {
-    DECLATTRS(A, attrs_a);
-    DECLATTRS(B, attrs_b);
-    DECLATTRS(C, attrs_c);
-    const INTVAL M = attrs_a->rows;
-    const INTVAL N = attrs_b->cols;
-    const INTVAL K = attrs_a->cols;
-    if (attrs_c->rows != M)
-        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
-            "PLA DGEMM: A, C indices do not match in gemm");
-    if (attrs_c->cols != N)
-        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
-            "PLA DGEMM: B, C indices do not match in gemm");
-    if (attrs_b->rows != K)
-        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
-            "PLA DGEMM: A, B indeces do not match in gemm");
+    const INTVAL M = rows_A;
+    const INTVAL N = cols_B;
+    const INTVAL K = cols_A;
     dgemm(CblasRowMajor,
-        IS_TRANSPOSED_BLAS(attrs_a->flags),
-        IS_TRANSPOSED_BLAS(attrs_b->flags),
+        IS_TRANSPOSED_BLAS(flags_A),
+        IS_TRANSPOSED_BLAS(flags_B),
         M,
         N,
         K,
         alpha,
-        attrs_a->storage,
+        A,
         M,
-        attrs_b->storage,
+        B,
         N,
         beta,
-        attrs_c->storage,
+        C,
         M
     );
 }
 
 /* Wrapper to call the zdgemm function from BLAS with PMC arguments. Assumes
    A, B, and C are all ComplexMatrix2D. */
-static void
-call_zgemm(PARROT_INTERP, FLOATVAL alpha_r, FLOATVAL alpha_i, PMC * A, PMC *B,
-    FLOATVAL beta_r, FLOATVAL beta_i, PMC *C)
+void
+call_zgemm(FLOATVAL alpha_r, FLOATVAL alpha_i,
+    INTVAL flags_a, FLOATVAL * A, INTVAL rows_a, INTVAL cols_a,
+    INTVAL flags_b, FLOATVAL * B, INTVAL cols_b,
+    FLOATVAL beta_r, FLOATVAL beta_i, FLOATVAL * C)
 {
-    DECLATTRS(A, attrs_a);
-    DECLATTRS(B, attrs_b);
-    DECLATTRS(C, attrs_c);
-    const INTVAL M = attrs_a->rows;
-    const INTVAL N = attrs_b->cols;
-    const INTVAL K = attrs_a->cols;
+    const INTVAL M = rows_a;
+    const INTVAL N = cols_b;
+    const INTVAL K = cols_a;
     FLOATVAL alpha_p[2];
     FLOATVAL beta_p[2];
-    if (attrs_c->rows != M)
-        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
-            "PLA ZGEMM: A, C indices do not match in gemm");
-    if (attrs_c->cols != N)
-        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
-            "PLA ZGEMM: B, C indices do not match in gemm");
-    if (attrs_b->rows != K)
-        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
-            "PLA ZGEMM: A, B indeces do not match in gemm");
+
     alpha_p[0] = alpha_r;
     alpha_p[1] = alpha_i;
     beta_p[0] = beta_r;
     beta_p[1] = beta_i;
     zgemm(CblasRowMajor,
-        IS_TRANSPOSED_BLAS(attrs_a->flags),
-        IS_TRANSPOSED_BLAS(attrs_b->flags),
+        IS_TRANSPOSED_BLAS(flags_a),
+        IS_TRANSPOSED_BLAS(flags_b),
         M,
         N,
         K,
         alpha_p,
-        attrs_a->storage,
+        A,
         M,
-        attrs_b->storage,
+        B,
         N,
         beta_p,
-        attrs_c->storage,
+        C,
         M
     );
 }
