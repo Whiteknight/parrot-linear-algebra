@@ -181,50 +181,6 @@ set_scalar_at_xy(PARROT_INTERP, PMC * self, FLOATVAL value, INTVAL row,
     I_ITEM_XY(s, flags, rows_size, cols_size, row, col) = 0;
 }
 
-/* Wrapper to call the dgemm function from BLAS with PMC arguments. Assumes
-   A, B, and C are all ComplexMatrix2D. */
-static void
-call_gemm(PARROT_INTERP, FLOATVAL alpha_r, FLOATVAL alpha_i, PMC * A, PMC *B,
-    FLOATVAL beta_r, FLOATVAL beta_i, PMC *C)
-{
-    DECLATTRS(A, attrs_a);
-    DECLATTRS(B, attrs_b);
-    DECLATTRS(C, attrs_c);
-    const INTVAL M = attrs_a->rows;
-    const INTVAL N = attrs_b->cols;
-    const INTVAL K = attrs_a->cols;
-    FLOATVAL alpha_p[2];
-    FLOATVAL beta_p[2];
-    if (attrs_c->rows != M)
-        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
-            PLATYPENAME ": A, C indices do not match in gemm");
-    if (attrs_c->cols != N)
-        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
-            PLATYPENAME ": B, C indices do not match in gemm");
-    if (attrs_b->rows != K)
-        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
-            PLATYPENAME ": A, B indeces do not match in gemm");
-    alpha_p[0] = alpha_r;
-    alpha_p[1] = alpha_i;
-    beta_p[0] = beta_r;
-    beta_p[1] = beta_i;
-    cblas_zgemm(CblasRowMajor,
-        IS_TRANSPOSED_BLAS(attrs_a->flags),
-        IS_TRANSPOSED_BLAS(attrs_b->flags),
-        M,
-        N,
-        K,
-        alpha_p,
-        attrs_a->storage,
-        M,
-        attrs_b->storage,
-        N,
-        beta_p,
-        attrs_c->storage,
-        M
-    );
-}
-
 /* Add a scalar to every element of the matrix */
 static void
 add_scalar_float(PARROT_INTERP, PMC * self, FLOATVAL v)
@@ -921,7 +877,7 @@ Add the integer value to every element in the matrix.
 
         dest = Parrot_pmc_new(INTERP, VTABLE_type(INTERP, SELF));
         resize_matrix(INTERP, dest, new_rows - 1, new_cols - 1);
-        call_gemm(INTERP, 1.0, 0.0, SELF, value, 0.0, 0.0, dest);
+        call_zgemm(INTERP, 1.0, 0.0, SELF, value, 0.0, 0.0, dest);
         return dest;
     }
 
@@ -972,7 +928,7 @@ Add the integer value to every element in the matrix.
 
     MULTI void i_multiply(ComplexMatrix2D* value) {
         PMC * const temp = VTABLE_clone(INTERP, SELF);
-        call_gemm(INTERP, 1.0, 0.0, temp, value, 0.0, 0.0, SELF);
+        call_zgemm(INTERP, 1.0, 0.0, temp, value, 0.0, 0.0, SELF);
     }
 
     MULTI void i_multiply(Complex *value) {
@@ -1320,7 +1276,7 @@ Calculates the matrix equation:
         C = convert_to_ComplexMatrix2D(interp, C, 1);
         get_complex_value_from_pmc(interp, alpha, &alpha_r, &alpha_i);
         get_complex_value_from_pmc(interp, beta, &beta_r, &beta_i);
-        call_gemm(INTERP, alpha_r, alpha_i, A, B, beta_r, beta_i, C);
+        call_zgemm(INTERP, alpha_r, alpha_i, A, B, beta_r, beta_i, C);
         RETURN(PMC* C);
     }
 

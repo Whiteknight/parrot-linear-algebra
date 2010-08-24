@@ -142,6 +142,7 @@ sub setup_c_library_files(%PLA) {
     my @cfiles := <
         src/lib/matrix_common
         src/lib/math_common
+        src/lib/pla_blas
     >;
     my $obj := get_obj();
     for @cfiles {
@@ -155,12 +156,19 @@ sub compile_c_library_files(*%args) {
     my @files := %args{'cc_dynpmc'}{'linalg_group'};
     my $obj := get_obj();
     my $cflags := get_cflags() ~ %args{'dynpmc_cflags'};
-    my $libheader := "src/include/pla_matrix_library.h";
+    my @prereqs := <
+        cfile_goes_here
+        src/include/pla.h
+        src/include/pla_matrix_library.h
+        src/include/pla_blas.h
+        src/include/pla_lapack.h
+    >;
     for @files {
         my $file := $_;
         my $objfile := $file ~ $obj;
         my $cfile := $file ~ ".c";
-        unless newer($objfile, [$cfile, $libheader]) {
+        @prereqs[0] := $cfile;
+        unless newer($objfile, @prereqs) {
             __compile_cc($objfile, $cfile, $cflags);
         }
     }

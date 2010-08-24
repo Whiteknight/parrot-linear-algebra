@@ -188,43 +188,6 @@ add_matrices(PARROT_INTERP, PMC * A, PMC * B, INTVAL sub)
     }
 }
 
-/* Wrapper to call the dgemm function from BLAS with PMC arguments. Assumes
-   A, B, and C are all NumMatrix2D. */
-static void
-call_gemm(PARROT_INTERP, FLOATVAL alpha, PMC * A, PMC *B, FLOATVAL beta, PMC *C)
-{
-    DECLATTRS(A, attrs_a);
-    DECLATTRS(B, attrs_b);
-    DECLATTRS(C, attrs_c);
-    const INTVAL M = attrs_a->rows;
-    const INTVAL N = attrs_b->cols;
-    const INTVAL K = attrs_a->cols;
-    if (attrs_c->rows != M)
-        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
-            PLATYPENAME ": A, C indices do not match in gemm");
-    if (attrs_c->cols != N)
-        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
-            PLATYPENAME ": B, C indices do not match in gemm");
-    if (attrs_b->rows != K)
-        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
-            PLATYPENAME ": A, B indeces do not match in gemm");
-    cblas_dgemm(CblasRowMajor,
-        IS_TRANSPOSED_BLAS(attrs_a->flags),
-        IS_TRANSPOSED_BLAS(attrs_b->flags),
-        M,
-        N,
-        K,
-        alpha,
-        attrs_a->storage,
-        M,
-        attrs_b->storage,
-        N,
-        beta,
-        attrs_c->storage,
-        M
-    );
-}
-
 pmclass NumMatrix2D dynpmc auto_attrs provides matrix provides numericmatrix {
     ATTR FLOATVAL * storage;
     ATTR INTVAL rows;
@@ -655,7 +618,7 @@ Add the integer value to every element in the matrix.
 
         dest = Parrot_pmc_new(INTERP, VTABLE_type(INTERP, SELF));
         resize_matrix(INTERP, dest, new_rows - 1, new_cols - 1);
-        call_gemm(INTERP, 1.0, SELF, value, 0.0, dest);
+        call_dgemm(INTERP, 1.0, SELF, value, 0.0, dest);
         return dest;
     }
 
@@ -700,7 +663,7 @@ Add the integer value to every element in the matrix.
 
     MULTI void i_multiply(NumMatrix2D* value) {
         PMC * const temp = VTABLE_clone(INTERP, SELF);
-        call_gemm(INTERP, 1.0, temp, value, 0.0, SELF);
+        call_dgemm(INTERP, 1.0, temp, value, 0.0, SELF);
     }
 
     MULTI void i_multiply(DEFAULT* value) {
@@ -1196,7 +1159,7 @@ Calculates the matrix equation:
         A = convert_to_NumMatrix2D(interp, A, 0);
         B = convert_to_NumMatrix2D(interp, B, 0);
         C = convert_to_NumMatrix2D(interp, C, 1);
-        call_gemm(INTERP, alpha, A, B, beta, C);
+        call_dgemm(INTERP, alpha, A, B, beta, C);
         RETURN(PMC* C);
     }
 
