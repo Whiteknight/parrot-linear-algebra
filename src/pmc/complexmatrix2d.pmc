@@ -340,6 +340,8 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix provides numericmatrix
 
 =head1 VTABLEs
 
+=head System VTABLEs
+
 =over 4
 
 =item* init
@@ -468,6 +470,8 @@ linear array of values. The matrix data is stored by rows.
 
 These routines are used for low-level access. Attempting to access a value
 outside the bounds of the matrix will throw an OUT_OF_BOUNDS exception.
+
+=over 4
 
 =item* get_number_keyed_int
 
@@ -1615,15 +1619,19 @@ same type as SELF.
 
 =item* row_combine(srcidx, destidx, gain)
 
-Add a multiple of the source row to the destination row.
+add a multiple of the source row to the destination row. If either of the row
+indices are outside the bounds of the matrix, an OUT_OF_BOUNDS exception is
+thrown.
 
 =item* row_scale(idx, gain)
 
-Multiply all elements in the row by a gain factor.
+Multiply all elements in the row by a gain factor. If the row index is outside
+the bounds of the matrix and OUT_OF_BOUNDS exception is thrown.
 
 =item* row_swap(idx_a, idx_b)
 
-Swap two rows
+Swap two rows. If either of the row indices are outside the bounds of the
+matrix, an OUT_OF_BOUNDS exception is thrown.
 
 =cut
 
