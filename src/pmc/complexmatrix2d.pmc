@@ -597,7 +597,7 @@ integer, and 0 for the complex value.
 
 =head2 Integer-Keyed Setter VTABLEs
 
-These VTABLEs treat the matrix as a linear array in memory and allowed fast
+These VTABLEs treat the matrix as a linear array in memory and allow fast
 lookup based on the integer offset of values in the array. These are low-level
 routines and are not intended for general use.
 
@@ -609,11 +609,22 @@ In that case, an OUT_OF_BOUNDS exception will be thrown.
 
 =item* set_pmc_keyed_int
 
+Set a PMC at the specified location. The rules for extracting a complex value
+out of the input PMC are the same as used for set_pmc_keyed()
+
 =item* set_number_keyed_int
+
+Set the complex value at the specified location to the given real value. The
+complex part of the value will be 0.
 
 =item* set_integer_keyed_int
 
+Set the complex value at the specified location to the given real value. The
+complex part of the value will be 0
+
 =item* set_string_keyed_int
+
+Convert the string to a Complex PMC, and set that at the specified location.
 
 =back
 
@@ -655,11 +666,19 @@ In that case, an OUT_OF_BOUNDS exception will be thrown.
 
 =item* get_string
 
+Get a string representation of the matrix, suitable for printing to the console
+
 =item* get_attr_string
+
+Get a named attribute. The name can be one of "rows", "cols", or "size".
 
 =item* clone
 
+Clone the matrix
+
 =item* is_equal
+
+Determine if two matrices are equal in size and composition.
 
 =back
 
@@ -790,7 +809,12 @@ In that case, an OUT_OF_BOUNDS exception will be thrown.
 
 =item* freeze
 
+Freeze the PMC for serialization to a string suitable for long-term storage in
+a file.
+
 =item* thaw
+
+Thaw a serialized PMC
 
 =back
 
@@ -854,6 +878,8 @@ Add two matrices together, element-by-element.
 
 =item* add(Complex)
 
+Add a complex value to each element of the matrix
+
 =item* add(DEFAULT)
 
 Take the number representation of the argument PMC and add it to every element
@@ -912,13 +938,23 @@ Add the integer value to every element in the matrix.
 
 =item* i_add(ComplexMatrix2D)
 
+Add a matrix into SELF
+
 =item* i_add(Complex)
+
+Add a Complex value to every element of SELF
 
 =item* i_add(DEFAULT)
 
+Add the numeric value of the given PMC to every element of SELF
+
 =item* i_add_int
 
+Add the integer value to every element of SELF
+
 =item* i_add_float
+
+Add the floating-point value to every element of SELF
 
 =back
 
@@ -955,22 +991,26 @@ Add the integer value to every element in the matrix.
 
 =item* subtract(ComplexMatrix2D)
 
-Add two matrices together, element-by-element.
+Perform the matrix operation
+
+    C = SELF - A
 
 =item* subtract(Complex)
 
+Subtract a complex value from each element of the matrix
+
 =item* subtract(DEFAULT)
 
-Take the number representation of the argument PMC and add it to every element
-in the matrix.
+Take the number representation of the argument PMC and subtract it from every
+element in the matrix.
 
 =item* subtract_float
 
-Add the float value to every element in the matrix.
+Subtract the float value from every element in the matrix.
 
 =item* subtract_int
 
-Add the integer value to every element in the matrix.
+Subtract the integer value from every element in the matrix.
 
 =back
 
@@ -1018,13 +1058,27 @@ Add the integer value to every element in the matrix.
 
 =item* i_subtract(ComplexMatrix2D)
 
+Perform the matrix operation
+
+    SELF = SELF - A
+
 =item* i_subtract(Complex)
+
+Substract a complex value from each element of the matrix
 
 =item* i_subtract(DEFAULT)
 
+Subtract the numeric value of the PMC from the real part of each element in the
+matrix
+
 =item* i_subtract_int
 
+Subtract the integer value from the real part of each element in the matrix
+
 =item* i_subtract_float
+
+Subtract the floating point value from the real part of each element in the
+matrix
 
 =back
 
@@ -1061,13 +1115,25 @@ Add the integer value to every element in the matrix.
 
 =item* multiply(ComplexMatrix2D)
 
+Perform the matrix operation
+
+    C = SELF × A
+
 =item* multiply(Complex)
+
+Multiply each element in the matrix by the complex value
 
 =item* multiply(DEFAULT)
 
+Multiply each element in the matrix by the numeric value of the PMC
+
 =item* multiply_int
 
+Multiply each element in the matrix by the integer
+
 =item* multiply_float
+
+Multiply each element in the matrix by the floating point number
 
 =back
 
@@ -1125,13 +1191,25 @@ Add the integer value to every element in the matrix.
 
 =item* i_multiply(ComplexMatrix2D)
 
+Perform the matrix operation
+
+    SELF = SELF × A
+
 =item* i_multiply(Complex)
+
+Multiply every element in SELF by the complex value
 
 =item* i_multiply(DEFAULT)
 
+Multiply every element in SELF by the numeric value of the PMC
+
 =item* i_multiply_int
 
+Multiply every element in SELF by the integer
+
 =item* i_multiply_float
+
+Multiply every element in SELF by the floating point number
 
 =back
 
@@ -1170,6 +1248,11 @@ Add the integer value to every element in the matrix.
 
 =item* resize()
 
+Resize the matrix to include at least the specified number of rows and columns.
+
+Resizing the matrix never causes the matrix to shrink. If you need a subset of
+the matrix, use get_block instead.
+
 =cut
 
 */
@@ -1183,7 +1266,8 @@ Add the integer value to every element in the matrix.
 =item* fill()
 
 Fill the matrix with a single value. if sizes are provided, fill to those
-sizes, growing the matrix if needed.
+sizes, growing the matrix if needed. Elements outside the specified area are
+unaffected. Calling fill() never causes the matrix to shrink.
 
 =cut
 
@@ -1222,6 +1306,8 @@ sizes, growing the matrix if needed.
 
 =item* item_at()
 
+Return a single Complex PMC from the item at the specified coordinates
+
 =cut
 
 */
@@ -1249,7 +1335,10 @@ sizes, growing the matrix if needed.
 
 =item* transpose()
 
-Transposes the matrix.
+Transposes the matrix lazily. This operation is O(n). Some operations, such as
+mathematical operations do not work on a matrix which has been lazily
+transposed, so those operations will force the matrix memory to be eagerly
+transposed.
 
 =cut
 
@@ -1275,7 +1364,8 @@ Transposes the matrix.
 =item* mem_transpose()
 
 Transposes the actual data storage of the matrix. More expensive up-front
-than the transpose() method.
+than the transpose() method, but the resulting memory structure is more suitable
+for use in certain mathematical operations.
 
 =cut
 
@@ -1308,6 +1398,8 @@ than the transpose() method.
 
 =item* conjugate
 
+Convert the matrix to the complex conjugate of itself.
+
 =cut
 
 */
@@ -1332,10 +1424,13 @@ than the transpose() method.
 
 =item* iterate_function_inplace()
 
-Calls a function for every element in the array, replacing the current
+Calls a function for every element in the matrix, replacing the current
 value with the return value of the called function.
 
 =item* iterate_function_external()
+
+Calls a function for every element in the matrix, creating a new matrix with
+the returned values of the called function.
 
 =cut
 
@@ -1382,7 +1477,11 @@ value with the return value of the called function.
 
 =item* initialize_from_array
 
+Initialize the matrix using a list of values from an array.
+
 =item* initialize_from_args
+
+Initialize the matrix using values from a variadic (slurpy) argument list.
 
 =cut
 
@@ -1402,7 +1501,14 @@ value with the return value of the called function.
 
 =item* get_block
 
+Get a specified sub-block of the matrix. If the bounds of the sub-block are
+outside the bounds of the matrix, an OUT_OF_BOUNDS exception is thrown.
+
 =item* set_block
+
+Set a block in the matrix, growing it if needed.
+
+=cut
 
 */
 
@@ -1486,6 +1592,10 @@ Calculates the matrix equation:
 
     Z = aAB + bC
 
+The matrices must all be ComplexMatrix2D, or must be convertable to it. The
+matrix SELF is not used in the calculation, but the result matrix will have the
+same type as SELF.
+
 =cut
 
 */
@@ -1505,7 +1615,7 @@ Calculates the matrix equation:
 
 =item* row_combine(srcidx, destidx, gain)
 
-add a multiple of the source row to the destination row.
+Add a multiple of the source row to the destination row.
 
 =item* row_scale(idx, gain)
 
@@ -1579,15 +1689,18 @@ Swap two rows
 
 =item* convert_to_number_matrix
 
-Get a NumMatrix2D from the current matrix
+Get a NumMatrix2D from the current matrix. If the matrix is already a
+NumMatrix2D, return a clone.
 
 =item* convert_to_complex_matrix
 
-Get a ComplexMatrix2D from the current matrix
+Get a ComplexMatrix2D from the current matrix. If the matrix is already a
+ComplexMatrix2D, return a clone.
 
 =item* convert_to_pmc_matrix
 
-Get a PMCMatrix2D from the current matrix
+Get a PMCMatrix2D from the current matrix. If the matrix is already a
+PMCMatrix2D, return a clone.
 
 =cut
 
