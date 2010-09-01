@@ -119,19 +119,19 @@ pmclass PMCMatrix2D dynpmc auto_attrs provides matrix {
 
 =head1 VTABLEs
 
-=head System VTABLEs
+=head2 System VTABLEs
 
 =over 4
 
-=item* init
+=item * init
 
 Initialize the new PMC
 
-=item* destroy
+=item * destroy
 
 Destroy the PMC and free all associated memory
 
-=item* mark
+=item * mark
 
 Mark the contents of the matrix for GC
 
@@ -184,19 +184,19 @@ an OUT_OF_BOUNDS exception.
 
 =over 4
 
-=item* get_number_keyed
+=item * get_number_keyed
 
 Get the PMC at the location X, Y.
 
-=item* get_integer_keyed
+=item * get_integer_keyed
 
 Get the integer from the PMC at the location X, Y.
 
-=item* get_string_keyed
+=item * get_string_keyed
 
 Get a string representation of the PMC at the location X, Y.
 
-=item* get_pmc_keyed
+=item * get_pmc_keyed
 
 Get a PMC at the location X, Y.
 
@@ -245,21 +245,23 @@ outside the bounds of the matrix will throw an OUT_OF_BOUNDS exception.
 
 =over 4
 
-=item* get_number_keyed_int
+=item * get_number_keyed_int
 
 Get a floating point number from the PMC at the specified location.
 
-=item* get_integer_keyed_int
+=item * get_integer_keyed_int
 
 Get an integer from the PMC at the specifed location.
 
-=item* get_string_keyed_int
+=item * get_string_keyed_int
 
 Get the string representation of the PMC at the specified location.
 
-=item* get_pmc_keyed_int
+=item * get_pmc_keyed_int
 
 Get the PMC at the specified location
+
+=back
 
 =cut
 
@@ -305,24 +307,26 @@ data.
 
 =over 4
 
-=item* set_number_keyed
+=item * set_number_keyed
 
 Create a Float PMC with the specified value, and insert it at the specified
 location
 
-=item* set_integer_keyed
+=item * set_integer_keyed
 
 Create an Integer PMC with the specified value, and insert it at the specified
 location
 
-=item* set_pmc_keyed
+=item * set_pmc_keyed
 
 Set the PMC at the specified location.
 
-=item* set_string_keyed
+=item * set_string_keyed
 
 Create a String PMC with the specified value, and insert it at the specified
 location
+
+=back
 
 =cut
 
@@ -374,21 +378,21 @@ In that case, an OUT_OF_BOUNDS exception will be thrown.
 
 =over 4
 
-=item* set_pmc_keyed_int
+=item * set_pmc_keyed_int
 
 Set a PMC at the specified location.
 
-=item* set_number_keyed_int
+=item * set_number_keyed_int
 
 Create a Float PMC with the specified value, and insert it at the specified
 location
 
-=item* set_integer_keyed_int
+=item * set_integer_keyed_int
 
 Create an Integer PMC with the specified value, and insert it at the specified
 location
 
-=item* set_string_keyed_int
+=item * set_string_keyed_int
 
 Create a String PMC with the specified value, and insert it at the specified
 location
@@ -427,19 +431,19 @@ location
 
 =over 4
 
-=item* get_string
+=item * get_string
 
 Get a string representation of the matrix, suitable for printing to the console
 
-=item* get_attr_string
+=item * get_attr_string
 
 Get a named attribute. The name can be one of "rows", "cols", or "size".
 
-=item* clone
+=item * clone
 
 Clone the matrix
 
-=item* is_equal
+=item * is_equal
 
 Determine if two matrices are equal in size and composition.
 
@@ -567,12 +571,12 @@ Determine if two matrices are equal in size and composition.
 
 =over 4
 
-=item* freeze
+=item * freeze
 
 Freeze the PMC for serialization to a string suitable for long-term storage in
 a file.
 
-=item* thaw
+=item * thaw
 
 Thaw a serialized PMC
 
@@ -624,13 +628,11 @@ Thaw a serialized PMC
 
 /*
 
-=back
-
 =head1 METHODS
 
 =over 4
 
-=item* resize()
+=item * resize()
 
 Resize the matrix to include at least the specified number of rows and columns.
 
@@ -647,7 +649,7 @@ the matrix, use get_block instead.
 
 /*
 
-=item* fill()
+=item * fill()
 
 Fill the matrix with a single value. if sizes are provided, fill to those
 sizes, growing the matrix if needed. Elements outside the specified area are
@@ -692,7 +694,7 @@ unaffected. Calling fill() never causes the matrix to shrink.
 
 /*
 
-=item* item_at()
+=item * item_at()
 
 Return a single PMC at the specified coordinates
 
@@ -720,7 +722,7 @@ Return a single PMC at the specified coordinates
 
 /*
 
-=item* transpose()
+=item * transpose()
 
 Transposes the matrix lazily. This operation is O(1).
 
@@ -745,7 +747,7 @@ Transposes the matrix lazily. This operation is O(1).
 
 /*
 
-=item* mem_transpose()
+=item * mem_transpose()
 
 Transposes the actual data storage of the matrix. More expensive O(n) up-front
 than the transpose() method.
@@ -777,12 +779,12 @@ than the transpose() method.
 
 /*
 
-=item* iterate_function_inplace()
+=item * iterate_function_inplace()
 
 Calls a function for every element in the matrix, replacing the current
 value with the return value of the called function.
 
-=item* iterate_function_external()
+=item * iterate_function_external()
 
 Calls a function for every element in the matrix, adding the result of each
 computation to a new matrix. Return the new matrix of results.
@@ -848,12 +850,12 @@ computation to a new matrix. Return the new matrix of results.
 
 /*
 
-=item* initialize_from_array()
+=item * initialize_from_array()
 
 Initialize matrix values from a linear array, filling each row with data
 in order.
 
-=item* initialize_from_args()
+=item * initialize_from_args()
 
 Initialize matrix values from an array of function arguments, filling each row
 with data in order.
@@ -872,12 +874,12 @@ with data in order.
 
 /*
 
-=item* get_block
+=item * get_block
 
 Get a specified sub-block of the matrix. If the bounds of the sub-block are
 outside the bounds of the matrix, an OUT_OF_BOUNDS exception is thrown.
 
-=item* set_block
+=item * set_block
 
 Set a block in the matrix, growing it if needed.
 
@@ -955,17 +957,17 @@ Set a block in the matrix, growing it if needed.
 
 /*
 
-=item* convert_to_number_matrix
+=item * convert_to_number_matrix
 
 Get a NumMatrix2D from the current matrix. If the matrix is already a
 NumMatrix2D, return a clone.
 
-=item* convert_to_complex_matrix
+=item * convert_to_complex_matrix
 
 Get a ComplexMatrix2D from the current matrix. If the matrix is already a
 ComplexMatrix2D, return a clone.
 
-=item* convert_to_pmc_matrix
+=item * convert_to_pmc_matrix
 
 Get a PMCMatrix2D from the current matrix. If the matrix is already a
 PMCMatrix2D, return a clone.
@@ -1015,7 +1017,7 @@ PMCMatrix2D, return a clone.
 
 =back
 
-=end
+=cut
 
 */
 }

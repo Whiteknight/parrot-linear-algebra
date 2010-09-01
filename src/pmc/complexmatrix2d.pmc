@@ -340,15 +340,15 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix provides numericmatrix
 
 =head1 VTABLEs
 
-=head System VTABLEs
+=head2 System VTABLEs
 
 =over 4
 
-=item* init
+=item * init
 
 Initialize the new PMC
 
-=item* destroy
+=item * destroy
 
 Destroy the PMC and free all associated memory
 
@@ -386,21 +386,21 @@ an OUT_OF_BOUNDS exception.
 
 =over 4
 
-=item* get_number_keyed
+=item * get_number_keyed
 
 Get a floating point value at the location specified by the key.
 
 The floating point value is calculated as the magnitude of the complex value
 at the point in the matrix.
 
-=item* get_integer_keyed
+=item * get_integer_keyed
 
 Get an integer value at the location specified by the key.
 
 The integer value is the magnitude of the complex value at the specified
 location, cast from a floating point to an integer value.
 
-=item* get_string_keyed
+=item * get_string_keyed
 
 Get the string representation of the complex value at the point specified by
 the key.
@@ -408,7 +408,7 @@ the key.
 The returned string has the same format as is used by the Parrot built-in
 Complex PMC type.
 
-=item* get_pmc_keyed
+=item * get_pmc_keyed
 
 Get a Complex PMC from the point specified by the key.
 
@@ -473,22 +473,22 @@ outside the bounds of the matrix will throw an OUT_OF_BOUNDS exception.
 
 =over 4
 
-=item* get_number_keyed_int
+=item * get_number_keyed_int
 
 Get a floating point number, the magnitude of the complex value, at the
 specified location in the array
 
-=item* get_integer_keyed_int
+=item * get_integer_keyed_int
 
 Get an integer, cast from the magnitude of the complex value, at the specified
 location in the array
 
-=item* get_string_keyed_int
+=item * get_string_keyed_int
 
 Get a string representation of the value at the specified point. Stringification
 is done the same as Parrot's Complex PMC type.
 
-=item* get_pmc_keyed_int
+=item * get_pmc_keyed_int
 
 Get a Complex PMC from the value at the specified point.
 
@@ -548,23 +548,23 @@ data.
 
 =over 4
 
-=item* set_pmc_keyed
+=item * set_pmc_keyed
 
 Set the value at the specified location to the complex value represented by the
 given PMC. Different PMC types have different behaviors in this operation.
 
-=item* set_number_keyed
+=item * set_number_keyed
 
 Set the value at the specified location to have a real value given by the
 number, and 0 for the complex value.
 
-=item* set_string_keyed
+=item * set_string_keyed
 
 Set the value at the specified location to the value represented by the string.
 The string is parsed by creating a temporary Complex PMC type, so all the same
 rules for that type apply to the input string format.
 
-=item* set_integer_keyed
+=item * set_integer_keyed
 
 Set the value at the specified location to have a real value given by the
 integer, and 0 for the complex value.
@@ -611,22 +611,22 @@ In that case, an OUT_OF_BOUNDS exception will be thrown.
 
 =over 4
 
-=item* set_pmc_keyed_int
+=item * set_pmc_keyed_int
 
 Set a PMC at the specified location. The rules for extracting a complex value
 out of the input PMC are the same as used for set_pmc_keyed()
 
-=item* set_number_keyed_int
+=item * set_number_keyed_int
 
 Set the complex value at the specified location to the given real value. The
 complex part of the value will be 0.
 
-=item* set_integer_keyed_int
+=item * set_integer_keyed_int
 
 Set the complex value at the specified location to the given real value. The
 complex part of the value will be 0
 
-=item* set_string_keyed_int
+=item * set_string_keyed_int
 
 Convert the string to a Complex PMC, and set that at the specified location.
 
@@ -668,19 +668,19 @@ Convert the string to a Complex PMC, and set that at the specified location.
 
 =over 4
 
-=item* get_string
+=item * get_string
 
 Get a string representation of the matrix, suitable for printing to the console
 
-=item* get_attr_string
+=item * get_attr_string
 
 Get a named attribute. The name can be one of "rows", "cols", or "size".
 
-=item* clone
+=item * clone
 
 Clone the matrix
 
-=item* is_equal
+=item * is_equal
 
 Determine if two matrices are equal in size and composition.
 
@@ -811,12 +811,12 @@ Determine if two matrices are equal in size and composition.
 
 =over 4
 
-=item* freeze
+=item * freeze
 
 Freeze the PMC for serialization to a string suitable for long-term storage in
 a file.
 
-=item* thaw
+=item * thaw
 
 Thaw a serialized PMC
 
@@ -876,24 +876,24 @@ Thaw a serialized PMC
 
 =over 4
 
-=item* add(ComplexMatrix2D)
+=item * add(ComplexMatrix2D)
 
 Add two matrices together, element-by-element.
 
-=item* add(Complex)
+=item * add(Complex)
 
 Add a complex value to each element of the matrix
 
-=item* add(DEFAULT)
+=item * add(DEFAULT)
 
 Take the number representation of the argument PMC and add it to every element
 in the matrix.
 
-=item* add_float
+=item * add_float
 
 Add the float value to every element in the matrix.
 
-=item* add_int
+=item * add_int
 
 Add the integer value to every element in the matrix.
 
@@ -940,23 +940,23 @@ Add the integer value to every element in the matrix.
 
 =over 4
 
-=item* i_add(ComplexMatrix2D)
+=item * i_add(ComplexMatrix2D)
 
 Add a matrix into SELF
 
-=item* i_add(Complex)
+=item * i_add(Complex)
 
 Add a Complex value to every element of SELF
 
-=item* i_add(DEFAULT)
+=item * i_add(DEFAULT)
 
 Add the numeric value of the given PMC to every element of SELF
 
-=item* i_add_int
+=item * i_add_int
 
 Add the integer value to every element of SELF
 
-=item* i_add_float
+=item * i_add_float
 
 Add the floating-point value to every element of SELF
 
@@ -993,26 +993,26 @@ Add the floating-point value to every element of SELF
 
 =over 4
 
-=item* subtract(ComplexMatrix2D)
+=item * subtract(ComplexMatrix2D)
 
 Perform the matrix operation
 
     C = SELF - A
 
-=item* subtract(Complex)
+=item * subtract(Complex)
 
 Subtract a complex value from each element of the matrix
 
-=item* subtract(DEFAULT)
+=item * subtract(DEFAULT)
 
 Take the number representation of the argument PMC and subtract it from every
 element in the matrix.
 
-=item* subtract_float
+=item * subtract_float
 
 Subtract the float value from every element in the matrix.
 
-=item* subtract_int
+=item * subtract_int
 
 Subtract the integer value from every element in the matrix.
 
@@ -1060,26 +1060,26 @@ Subtract the integer value from every element in the matrix.
 
 =over 4
 
-=item* i_subtract(ComplexMatrix2D)
+=item * i_subtract(ComplexMatrix2D)
 
 Perform the matrix operation
 
     SELF = SELF - A
 
-=item* i_subtract(Complex)
+=item * i_subtract(Complex)
 
 Substract a complex value from each element of the matrix
 
-=item* i_subtract(DEFAULT)
+=item * i_subtract(DEFAULT)
 
 Subtract the numeric value of the PMC from the real part of each element in the
 matrix
 
-=item* i_subtract_int
+=item * i_subtract_int
 
 Subtract the integer value from the real part of each element in the matrix
 
-=item* i_subtract_float
+=item * i_subtract_float
 
 Subtract the floating point value from the real part of each element in the
 matrix
@@ -1117,25 +1117,25 @@ matrix
 
 =over 4
 
-=item* multiply(ComplexMatrix2D)
+=item * multiply(ComplexMatrix2D)
 
 Perform the matrix operation
 
     C = SELF × A
 
-=item* multiply(Complex)
+=item * multiply(Complex)
 
 Multiply each element in the matrix by the complex value
 
-=item* multiply(DEFAULT)
+=item * multiply(DEFAULT)
 
 Multiply each element in the matrix by the numeric value of the PMC
 
-=item* multiply_int
+=item * multiply_int
 
 Multiply each element in the matrix by the integer
 
-=item* multiply_float
+=item * multiply_float
 
 Multiply each element in the matrix by the floating point number
 
@@ -1193,25 +1193,25 @@ Multiply each element in the matrix by the floating point number
 
 =over 4
 
-=item* i_multiply(ComplexMatrix2D)
+=item * i_multiply(ComplexMatrix2D)
 
 Perform the matrix operation
 
     SELF = SELF × A
 
-=item* i_multiply(Complex)
+=item * i_multiply(Complex)
 
 Multiply every element in SELF by the complex value
 
-=item* i_multiply(DEFAULT)
+=item * i_multiply(DEFAULT)
 
 Multiply every element in SELF by the numeric value of the PMC
 
-=item* i_multiply_int
+=item * i_multiply_int
 
 Multiply every element in SELF by the integer
 
-=item* i_multiply_float
+=item * i_multiply_float
 
 Multiply every element in SELF by the floating point number
 
@@ -1250,7 +1250,7 @@ Multiply every element in SELF by the floating point number
 
 =over 4
 
-=item* resize()
+=item * resize()
 
 Resize the matrix to include at least the specified number of rows and columns.
 
@@ -1267,7 +1267,7 @@ the matrix, use get_block instead.
 
 /*
 
-=item* fill()
+=item * fill()
 
 Fill the matrix with a single value. if sizes are provided, fill to those
 sizes, growing the matrix if needed. Elements outside the specified area are
@@ -1308,7 +1308,7 @@ unaffected. Calling fill() never causes the matrix to shrink.
 
 /*
 
-=item* item_at()
+=item * item_at()
 
 Return a single Complex PMC from the item at the specified coordinates
 
@@ -1337,7 +1337,7 @@ Return a single Complex PMC from the item at the specified coordinates
 
 /*
 
-=item* transpose()
+=item * transpose()
 
 Transposes the matrix lazily. This operation is O(1). Some operations, such as
 mathematical operations do not work on a matrix which has been lazily
@@ -1365,7 +1365,7 @@ transposed.
 
 /*
 
-=item* mem_transpose()
+=item * mem_transpose()
 
 Transposes the actual data storage of the matrix. More expensive O(n) up-front
 than the transpose() method, but the resulting memory structure is more suitable
@@ -1400,7 +1400,7 @@ for use in certain mathematical operations.
 
 /*
 
-=item* conjugate
+=item * conjugate
 
 Convert the matrix to the complex conjugate of itself.
 
@@ -1426,12 +1426,12 @@ Convert the matrix to the complex conjugate of itself.
 
 /*
 
-=item* iterate_function_inplace()
+=item * iterate_function_inplace()
 
 Calls a function for every element in the matrix, replacing the current
 value with the return value of the called function.
 
-=item* iterate_function_external()
+=item * iterate_function_external()
 
 Calls a function for every element in the matrix, creating a new matrix with
 the returned values of the called function.
@@ -1479,11 +1479,11 @@ the returned values of the called function.
 
 /*
 
-=item* initialize_from_array
+=item * initialize_from_array
 
 Initialize the matrix using a list of values from an array.
 
-=item* initialize_from_args
+=item * initialize_from_args
 
 Initialize the matrix using values from a variadic (slurpy) argument list.
 
@@ -1503,12 +1503,12 @@ Initialize the matrix using values from a variadic (slurpy) argument list.
 
 /*
 
-=item* get_block
+=item * get_block
 
 Get a specified sub-block of the matrix. If the bounds of the sub-block are
 outside the bounds of the matrix, an OUT_OF_BOUNDS exception is thrown.
 
-=item* set_block
+=item * set_block
 
 Set a block in the matrix, growing it if needed.
 
@@ -1590,7 +1590,7 @@ Set a block in the matrix, growing it if needed.
 
 /*
 
-=item* gemm
+=item * gemm
 
 Calculates the matrix equation:
 
@@ -1617,18 +1617,18 @@ same type as SELF.
 
 /*
 
-=item* row_combine(srcidx, destidx, gain)
+=item * row_combine(srcidx, destidx, gain)
 
 add a multiple of the source row to the destination row. If either of the row
 indices are outside the bounds of the matrix, an OUT_OF_BOUNDS exception is
 thrown.
 
-=item* row_scale(idx, gain)
+=item * row_scale(idx, gain)
 
 Multiply all elements in the row by a gain factor. If the row index is outside
 the bounds of the matrix and OUT_OF_BOUNDS exception is thrown.
 
-=item* row_swap(idx_a, idx_b)
+=item * row_swap(idx_a, idx_b)
 
 Swap two rows. If either of the row indices are outside the bounds of the
 matrix, an OUT_OF_BOUNDS exception is thrown.
@@ -1695,17 +1695,17 @@ matrix, an OUT_OF_BOUNDS exception is thrown.
 
 /*
 
-=item* convert_to_number_matrix
+=item * convert_to_number_matrix
 
 Get a NumMatrix2D from the current matrix. If the matrix is already a
 NumMatrix2D, return a clone.
 
-=item* convert_to_complex_matrix
+=item * convert_to_complex_matrix
 
 Get a ComplexMatrix2D from the current matrix. If the matrix is already a
 ComplexMatrix2D, return a clone.
 
-=item* convert_to_pmc_matrix
+=item * convert_to_pmc_matrix
 
 Get a PMCMatrix2D from the current matrix. If the matrix is already a
 PMCMatrix2D, return a clone.
@@ -1755,7 +1755,7 @@ PMCMatrix2D, return a clone.
 
 =back
 
-=end
+=cut
 
 */
 }

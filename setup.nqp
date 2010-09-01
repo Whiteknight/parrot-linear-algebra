@@ -44,6 +44,7 @@ sub MAIN(@argv) {
     setup_testlib(%PLA);
     setup_nqp_bootstrapper(%PLA);
     setup_dynpmc_flags(%PLA);
+    setup_docs(%PLA);
 
     setup(@argv, %PLA);
 }
@@ -247,6 +248,12 @@ sub setup_nqp_bootstrapper(%PLA) {
     %PLA{'pir_nqp-rx'}{'src/nqp/pla.pir'} := 'src/nqp/pla.nqp';
     %PLA{'pbc_pir'}{'pla_nqp.pbc'} := 'src/nqp/pla.pir';
     %PLA{'inst_lib'}.push('pla_nqp.pbc');
+}
+
+sub setup_docs(%PLA) {
+    %PLA{'html_pod'}{'docs/nummatrix2d.html'} := 'src/pmc/nummatrix2d.pmc';
+    %PLA{'html_pod'}{'docs/pmcmatrix2d.html'} := 'src/pmc/pmcmatrix2d.pmc';
+    %PLA{'html_pod'}{'docs/complexmatrix2d.html'} := 'src/pmc/complexmatrix2d.pmc';
 }
 
 
