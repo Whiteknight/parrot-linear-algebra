@@ -32,8 +32,8 @@ sub MAIN(@argv) {
         $mode := @argv[0];
     }
     if $mode eq "build" {
-        probe_for_cblas(%PLA);
         find_blas(%PLA);
+        probe_for_cblas_h(%PLA);
         find_lapack(%PLA);
     }
     if $mode eq "test" {
@@ -45,6 +45,7 @@ sub MAIN(@argv) {
     setup_testlib(%PLA);
     setup_nqp_bootstrapper(%PLA);
     setup_dynpmc_flags(%PLA);
+    setup_docs(%PLA);
 
     setup(@argv, %PLA);
 }
@@ -70,15 +71,18 @@ sub setup_PLA_keys(%PLA) {
     %PLA{'inst_lib'} := new_array();
     %PLA{'pir_pir'} := new_hash();
     %PLA{'pir_pir'}{'t/testlib/pla_test.pir'} := new_array();
+    %PLA{'need_cblas_h'} := 0;
 }
 
 #
-sub probe_for_cblas(%PLA) {
-    if probe_include("cblas.h", :verbose(1)) {
-        pir::say("Cannot find cblas.h\nPlease install libatlas-base-dev");
-        pir::exit__vI(1);
-    } else {
-        %PLA{'dynpmc_cflags_list'}.push("-D_PLA_HAVE_CBLAS_H");
+sub probe_for_cblas_h(%PLA) {
+    if %PLA{'need_cblas_h'} {
+        if probe_include("cblas.h", :verbose(1)) {
+            pir::say("Cannot find cblas.h. This is required if you are using CBLAS or ATLAS");
+            pir::exit(1);
+        } else {
+            %PLA{'dynpmc_cflags_list'}.push("-D_PLA_HAVE_CBLAS_H");
+        }
     }
 }
 
@@ -87,19 +91,7 @@ sub find_blas(%PLA) {
     my $osname := %config{'osname'};
     my $found_blas := 0;
     if $osname eq 'linux' {
-        my %searches;
-        %searches{'/usr/lib/libblas.so'} := ['-lblas', '-D_PLA_HAVE_ATLAS'];
-        %searches{'/usr/lib/atlas/libcblas.so'} := ['-L/usr/lib/atlas -lcblas', '-D_PLA_HAVE_ATLAS'];
-        for %searches {
-            my $searchloc := $_;
-            my $test_ldd := pir::spawnw__IS('ldd ' ~ $searchloc);
-            if $test_ldd == 0 {
-                $found_blas := 1;
-                %PLA{'dynpmc_ldflags_list'}.push(%searches{$searchloc}[0]);
-                %PLA{'dynpmc_cflags_list'}.push(%searches{$searchloc}[1]);
-                return;
-            }
-        }
+        $found_blas := find_blas_linux(%PLA);
     }
     else {
         pir::say("Only Linux is currently supported");
@@ -109,6 +101,29 @@ sub find_blas(%PLA) {
         pir::say("Cannot find BLAS");
         pir::exit(1);
     }
+}
+
+sub find_blas_linux(%PLA) {
+    my $found_blas := 0;
+    my %searches;
+    # TODO: We should search in /usr/lib and /usr/local/lib for each
+    %searches{'/usr/lib/libblas-3.so'} := ['-lblas-3', '-D_PLA_HAVE_BLAS', 0];
+    %searches{'/usr/lib/libblas.so'} := ['-lblas', '-D_PLA_HAVE_ATLAS', 1];
+    %searches{'/usr/lib/atlas/libcblas.so'} := ['-L/usr/lib/atlas -lcblas', '-D_PLA_HAVE_ATLAS', 1];
+    for %searches {
+        my $searchloc := $_;
+        my $test_ldd := pir::spawnw__IS('ldd ' ~ $searchloc);
+        if $test_ldd == 0 {
+            $found_blas := 1;
+            my @options := %searches{$searchloc};
+            %PLA{'dynpmc_ldflags_list'}.push(@options[0]);
+            %PLA{'dynpmc_cflags_list'}.push(@options[1]);
+            %PLA{'need_cblas_h'} := @options[2];
+            pir::say("=== PLA: Using BLAS library $searchloc");
+            return $found_blas;
+        }
+    }
+    return $found_blas;
 }
 
 sub find_lapack(%PLA) {
@@ -234,6 +249,12 @@ sub setup_nqp_bootstrapper(%PLA) {
     %PLA{'pir_nqp-rx'}{'src/nqp/pla.pir'} := 'src/nqp/pla.nqp';
     %PLA{'pbc_pir'}{'pla_nqp.pbc'} := 'src/nqp/pla.pir';
     %PLA{'inst_lib'}.push('pla_nqp.pbc');
+}
+
+sub setup_docs(%PLA) {
+    %PLA{'html_pod'}{'docs/nummatrix2d.html'} := 'src/pmc/nummatrix2d.pmc';
+    %PLA{'html_pod'}{'docs/pmcmatrix2d.html'} := 'src/pmc/pmcmatrix2d.pmc';
+    %PLA{'html_pod'}{'docs/complexmatrix2d.html'} := 'src/pmc/complexmatrix2d.pmc';
 }
 
 
