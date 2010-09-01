@@ -22,25 +22,25 @@
             "type" : "repository"
         },
         "update"   : {
-            "type" : "parrot_setup"
+            "type" : "nqp_setup"
         },
         "build"    : {
-            "type" : "parrot_setup"
+            "type" : "nqp_setup"
         },
         "test"     : {
-            "type" : "parrot_setup"
+            "type" : "nqp_setup"
         },
         "smoke"    : {
-            "type" : "parrot_setup"
+            "type" : "nqp_setup"
         },
         "install"  : {
-            "type" : "parrot_setup"
+            "type" : "nqp_setup"
         },
         "uninstall": {
-            "type" : "parrot_setup"
+            "type" : "nqp_setup"
         },
         "clean"    : {
-            "type" : "parrot_setup"
+            "type" : "nqp_setup"
         }
     },
     "dependency-info"  : {
