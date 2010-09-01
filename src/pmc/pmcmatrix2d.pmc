@@ -1,6 +1,18 @@
 #include "pla.h"
-
 #define PLATYPENAME "PMCMatrix2D"
+
+/*
+
+=head1 PMCMatrix2D
+
+=head2 Description
+
+PMCMatrix2D is a 2-dimensional matrix-like container object for the Parrot
+Virtual Machine.
+
+=cut
+
+*/
 
 INTVAL __PLA_Type_PMCMatrix2D;
 

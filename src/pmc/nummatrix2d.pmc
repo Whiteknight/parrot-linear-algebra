@@ -1,6 +1,21 @@
 #include "pla.h"
 #define PLATYPENAME "NumMatrix2D"
 
+/*
+
+=head1 NumMatrix2D
+
+=head2 Description
+
+NumMatrix2D is a 2-dimensional real-valued matrix type for the Parrot Virtual
+Machine. It supports a variety of element-wise and matrix operations, including
+bindings to the BLAS and LAPACK libraries.
+
+=cut
+
+*/
+
+
 INTVAL __PLA_Type_NumMatrix2D;
 
 /* Resize the matrix internal storage to be able to hold a point at position
@@ -215,9 +230,9 @@ pmclass NumMatrix2D dynpmc auto_attrs provides matrix provides numericmatrix {
 
 /*
 
-=head1 VTABLEs
+=head2 VTABLEs
 
-=head2 System VTABLEs
+=head3 System VTABLEs
 
 =over 4
 
@@ -253,7 +268,7 @@ Destrow the matrix and free it's allocated storage
 
 /*
 
-=head2 Keyed Lookup VTABLEs
+=head3 Keyed Lookup VTABLEs
 
 In each of these cases, the specified Key PMC must have exactly two elements
 to specify a location in the matrix.
@@ -318,7 +333,7 @@ elements.
 
 /*
 
-=head2 Integer-Keyed Lookup VTABLES
+=head3 Integer-Keyed Lookup VTABLES
 
 These VTABLEs treat the matrix, which is a contiguous region in memory, as a
 linear array of values. The matrix data is stored by rows.
@@ -383,7 +398,7 @@ Nth number. The array is arranged in memory row by row.
 
 /*
 
-=head2 Keyed Setter VTABLES
+=head3 Keyed Setter VTABLES
 
 These VTABLEs insert new values into the matrix at a point specified by the
 Key PMC. The Key PMC must have exactly two elements. If the matrix is not large
@@ -440,7 +455,7 @@ must have two elements.
 
 /*
 
-=head2 Integer-Keyed Setter VTABLEs
+=head3 Integer-Keyed Setter VTABLEs
 
 These VTABLEs treat the matrix as a linear array in memory and allow fast
 lookup based on the integer offset of values in the array. These are low-level
@@ -501,7 +516,7 @@ Convert the string to a Complex PMC, and set that at the specified location.
 
 /*
 
-=head2 Miscellaneous VTABLEs
+=head3 Miscellaneous VTABLEs
 
 =over 4
 
@@ -618,7 +633,7 @@ Determine if two matrices are equal in size and composition.
 
 /*
 
-=head2 Serialization/Deserialization VTABLEs
+=head3 Serialization/Deserialization VTABLEs
 
 =over 4
 
@@ -679,7 +694,7 @@ Thaw a serialized PMC
 
 /*
 
-=head2 Addition VTABLEs
+=head3 Addition VTABLEs
 
 =over 4
 
@@ -733,7 +748,7 @@ Add the integer value to every element in the matrix.
 
 /*
 
-=head2 In-Place Addition VTABLEs
+=head3 In-Place Addition VTABLEs
 
 =over 4
 
@@ -770,7 +785,7 @@ Add the integer value to every element in the matrix.
 
 /*
 
-=head2 Subtraction VTABLEs
+=head3 Subtraction VTABLEs
 
 =over 4
 
@@ -824,7 +839,7 @@ Add the integer value to every element in the matrix.
 
 /*
 
-=head2 In-Place Subtraction VTABLES
+=head3 In-Place Subtraction VTABLES
 
 =over 4
 
@@ -861,7 +876,7 @@ Add the integer value to every element in the matrix.
 
 /*
 
-=head2 Multiplication VTABLEs
+=head3 Multiplication VTABLEs
 
 =over 4
 
@@ -917,7 +932,7 @@ Add the integer value to every element in the matrix.
 
 /*
 
-=head2 In-Place Multiplication VTABLEs
+=head3 In-Place Multiplication VTABLEs
 
 =over 4
 
@@ -956,7 +971,7 @@ Add the integer value to every element in the matrix.
 
 /*
 
-=head1 METHODS
+=head2 METHODS
 
 =over 4
 

@@ -1,6 +1,19 @@
 #include "pla.h"
-
 #define PLATYPENAME "ComplexMatrix2D"
+
+/*
+
+=head1 ComplexMatrix2D
+
+=head2 Description
+
+ComplexMatrix2D is a 2-dimensional complex-valued matrix type for the Parrot
+Virtual Machine. It supports a variety of element-wise and matrix operations,
+including bindings to the BLAS and LAPACK libraries.
+
+=cut
+
+*/
 
 INTVAL __PLA_Type_ComplexMatrix2D;
 
