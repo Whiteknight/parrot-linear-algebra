@@ -20,7 +20,8 @@ sub MAIN(@argv) {
         :checkout_uri('git://github.com/Whiteknight/parrot-linear-algebra.git'),
         :browser_uri('http://github.com/Whiteknight/parrot-linear-algebra'),
         :project_uri('http://github.com/Whiteknight/parrot-linear-algebra'),
-        :version("0.1")
+        :version('0.1'),
+        :setup('setup.nqp')
     );
     setup_PLA_keys(%PLA);
     my $mode;
