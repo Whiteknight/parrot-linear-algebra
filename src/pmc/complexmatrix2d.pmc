@@ -46,7 +46,8 @@ convert_to_ComplexMatrix2D(PARROT_INTERP, PMC * p, INTVAL forcecopy)
         Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
                 PLATYPENAME ": cannot convert unknown PMC type");
     else {
-        PMC * const meth = VTABLE_find_method(interp, p, CONST_STRING(interp, "convert_to_complex_matrix"));
+        STRING * const converter = CONST_STRING(interp, "convert_to_complex_matrix");
+        PMC * const meth = VTABLE_find_method(interp, p, converter);
         PMC * dest = PMCNULL;
         Parrot_ext_call(interp, meth, "Pi->P", p, &dest);
         return dest;
@@ -289,6 +290,7 @@ multiply_matrices(PARROT_INTERP, FLOATVAL alpha_r, FLOATVAL alpha_i, PMC * A,
 
 /* item-by-item addition or subtraction
    A = A + B */
+// TODO: Support adding other types of matrices here, also.
 static void
 add_matrices(PARROT_INTERP, PMC * A, PMC * B, INTVAL sub)
 {
@@ -342,6 +344,14 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix provides numericmatrix
 
 =item* init
 
+Initialize the new PMC
+
+=item* destroy
+
+Destroy the PMC and free all associated memory
+
+=back
+
 =cut
 
 */
@@ -364,13 +374,43 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix provides numericmatrix
 
 /*
 
+=head2 Keyed lookup VTABLEs
+
+In each of these cases, the specified Key PMC must have exactly two elements
+to specify a location in the matrix.
+
+Attempting to retrieve a value outside the boundaries of the matrix will throw
+an OUT_OF_BOUNDS exception.
+
+=over 4
+
 =item* get_number_keyed
+
+Get a floating point value at the location specified by the key.
+
+The floating point value is calculated as the magnitude of the complex value
+at the point in the matrix.
 
 =item* get_integer_keyed
 
+Get an integer value at the location specified by the key.
+
+The integer value is the magnitude of the complex value at the specified
+location, cast from a floating point to an integer value.
+
 =item* get_string_keyed
 
+Get the string representation of the complex value at the point specified by
+the key.
+
+The returned string has the same format as is used by the Parrot built-in
+Complex PMC type.
+
 =item* get_pmc_keyed
+
+Get a Complex PMC from the point specified by the key.
+
+=back
 
 =cut
 
@@ -391,26 +431,8 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix provides numericmatrix
         return sqrt(real * real + imag + imag);
     }
 
-    VTABLE FLOATVAL get_number_keyed_int(INTVAL key) {
-        DECLATTRS_ComplexMatrix2D(SELF, attrs);
-        const INTVAL totalsize = attrs->rows * attrs->cols;
-        FLOATVAL real, imag;
-        if (key >= totalsize || key < 0) {
-            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
-                PLATYPENAME ": Index out of bounds.");
-        }
-        real = attrs->storage[key * 2];
-        imag = attrs->storage[key * 2 + 1];
-        return sqrt(real * real + imag * imag);
-    }
-
     VTABLE INTVAL get_integer_keyed(PMC * key) {
         const FLOATVAL f = VTABLE_get_number_keyed(INTERP, SELF, key);
-        return (INTVAL)f;
-    }
-
-    VTABLE INTVAL get_integer_keyed_int(INTVAL key) {
-        const FLOATVAL f = VTABLE_get_number_keyed_int(INTERP, SELF, key);
         return (INTVAL)f;
     }
 
@@ -431,6 +453,65 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix provides numericmatrix
         return Parrot_sprintf_c(INTERP, "%vg%+vgi", real, imag);
     }
 
+    VTABLE PMC * get_pmc_keyed(PMC * key) {
+        INTVAL rows, cols;
+        GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
+        return get_complex_pmc_at_xy(INTERP, SELF, rows, cols);
+    }
+
+/*
+
+=head2 Integer-Keyed Lookup VTABLES
+
+These VTABLEs treat the matrix, which is a contiguous region in memory, as a
+linear array of values. The matrix data is stored by rows.
+
+These routines are used for low-level access. Attempting to access a value
+outside the bounds of the matrix will throw an OUT_OF_BOUNDS exception.
+
+=item* get_number_keyed_int
+
+Get a floating point number, the magnitude of the complex value, at the
+specified location in the array
+
+=item* get_integer_keyed_int
+
+Get an integer, cast from the magnitude of the complex value, at the specified
+location in the array
+
+=item* get_string_keyed_int
+
+Get a string representation of the value at the specified point. Stringification
+is done the same as Parrot's Complex PMC type.
+
+=item* get_pmc_keyed_int
+
+Get a Complex PMC from the value at the specified point.
+
+=back
+
+=cut
+
+*/
+
+    VTABLE FLOATVAL get_number_keyed_int(INTVAL key) {
+        DECLATTRS_ComplexMatrix2D(SELF, attrs);
+        const INTVAL totalsize = attrs->rows * attrs->cols;
+        FLOATVAL real, imag;
+        if (key >= totalsize || key < 0) {
+            Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                PLATYPENAME ": Index out of bounds.");
+        }
+        real = attrs->storage[key * 2];
+        imag = attrs->storage[key * 2 + 1];
+        return sqrt(real * real + imag * imag);
+    }
+
+    VTABLE INTVAL get_integer_keyed_int(INTVAL key) {
+        const FLOATVAL f = VTABLE_get_number_keyed_int(INTERP, SELF, key);
+        return (INTVAL)f;
+    }
+
     VTABLE STRING * get_string_keyed_int(INTVAL key) {
         DECLATTRS_ComplexMatrix2D(SELF, attrs);
         FLOATVAL real, imag;
@@ -444,12 +525,6 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix provides numericmatrix
         return Parrot_sprintf_c(INTERP, "%vg%+vgi", real, imag);
     }
 
-    VTABLE PMC * get_pmc_keyed(PMC * key) {
-        INTVAL rows, cols;
-        GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
-        return get_complex_pmc_at_xy(INTERP, SELF, rows, cols);
-    }
-
     VTABLE PMC * get_pmc_keyed_int(INTVAL key) {
         DECLATTRS_ComplexMatrix2D(SELF, attrs);
         INTVAL row, col;
@@ -459,9 +534,38 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix provides numericmatrix
 
 /*
 
+=head2 Keyed Setter VTABLES
+
+These VTABLEs insert new values into the matrix at a point specified by the
+Key PMC. The Key PMC must have exactly two elements. If the matrix is not large
+enough to accomodate the specified location, it will be grown with zero-padding
+so that it is at least large enough to hold the specified point and all existing
+data.
+
+=over 4
+
 =item* set_pmc_keyed
 
+Set the value at the specified location to the complex value represented by the
+given PMC. Different PMC types have different behaviors in this operation.
+
+=item* set_number_keyed
+
+Set the value at the specified location to have a real value given by the
+number, and 0 for the complex value.
+
 =item* set_string_keyed
+
+Set the value at the specified location to the value represented by the string.
+The string is parsed by creating a temporary Complex PMC type, so all the same
+rules for that type apply to the input string format.
+
+=item* set_integer_keyed
+
+Set the value at the specified location to have a real value given by the
+integer, and 0 for the complex value.
+
+=back
 
 =cut
 
@@ -473,24 +577,10 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix provides numericmatrix
         set_complex_pmc_at_xy(INTERP, SELF, value, rows, cols);
     }
 
-    VTABLE void set_pmc_keyed_int(INTVAL key, PMC * value) {
-        DECLATTRS_ComplexMatrix2D(SELF, attrs);
-        INTVAL row, col;
-        intkey_to_coords(INTERP, attrs->rows, attrs->cols, key, &row, &col);
-        set_complex_pmc_at_xy(INTERP, SELF, value, row, col);
-    }
-
     VTABLE void set_number_keyed(PMC * key, FLOATVAL value) {
         INTVAL rows, cols;
         GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
         set_scalar_at_xy(INTERP, SELF, value, rows, cols);
-    }
-
-    VTABLE void set_number_keyed_int(INTVAL key, FLOATVAL value) {
-        DECLATTRS_ComplexMatrix2D(SELF, attrs);
-        INTVAL row, col;
-        intkey_to_coords(INTERP, attrs->rows, attrs->cols, key, &row, &col);
-        set_scalar_at_xy(INTERP, SELF, value, row, col);
     }
 
     VTABLE void set_string_keyed(PMC * key, STRING * value) {
@@ -501,6 +591,48 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix provides numericmatrix
 
     VTABLE void set_integer_keyed(PMC * key, INTVAL value) {
         VTABLE_set_number_keyed(INTERP, SELF, key, (FLOATVAL)value);
+    }
+
+/*
+
+=head2 Integer-Keyed Setter VTABLEs
+
+These VTABLEs treat the matrix as a linear array in memory and allowed fast
+lookup based on the integer offset of values in the array. These are low-level
+routines and are not intended for general use.
+
+Unlike the PMC-keyed VTABLEs, these routines will not automatically grow the
+matrix if an index is provided which is outside the boundaries of the matrix.
+In that case, an OUT_OF_BOUNDS exception will be thrown.
+
+=over 4
+
+=item* set_pmc_keyed_int
+
+=item* set_number_keyed_int
+
+=item* set_integer_keyed_int
+
+=item* set_string_keyed_int
+
+=back
+
+=cut
+
+*/
+
+    VTABLE void set_pmc_keyed_int(INTVAL key, PMC * value) {
+        DECLATTRS_ComplexMatrix2D(SELF, attrs);
+        INTVAL row, col;
+        intkey_to_coords(INTERP, attrs->rows, attrs->cols, key, &row, &col);
+        set_complex_pmc_at_xy(INTERP, SELF, value, row, col);
+    }
+
+    VTABLE void set_number_keyed_int(INTVAL key, FLOATVAL value) {
+        DECLATTRS_ComplexMatrix2D(SELF, attrs);
+        INTVAL row, col;
+        intkey_to_coords(INTERP, attrs->rows, attrs->cols, key, &row, &col);
+        set_scalar_at_xy(INTERP, SELF, value, row, col);
     }
 
     VTABLE void set_integer_keyed_int(INTVAL key, INTVAL value) {
@@ -517,7 +649,19 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix provides numericmatrix
 
 /*
 
+=head2 Miscellaneous VTABLEs
+
+=over 4
+
 =item* get_string
+
+=item* get_attr_string
+
+=item* clone
+
+=item* is_equal
+
+=back
 
 =cut
 
@@ -640,9 +784,15 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix provides numericmatrix
 
 /*
 
+=head2 Serialization/Deserialization VTABLEs
+
+=over 4
+
 =item* freeze
 
 =item* thaw
+
+=back
 
 =cut
 
@@ -694,9 +844,15 @@ pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix provides numericmatrix
 
 /*
 
+=head2 Addition VTABLEs
+
+=over 4
+
 =item* add(ComplexMatrix2D)
 
 Add two matrices together, element-by-element.
+
+=item* add(Complex)
 
 =item* add(DEFAULT)
 
@@ -710,6 +866,8 @@ Add the float value to every element in the matrix.
 =item* add_int
 
 Add the integer value to every element in the matrix.
+
+=back
 
 =cut
 
@@ -748,13 +906,21 @@ Add the integer value to every element in the matrix.
 
 /*
 
+=head2 In-Place Addition VTABLEs
+
+=over 4
+
 =item* i_add(ComplexMatrix2D)
+
+=item* i_add(Complex)
 
 =item* i_add(DEFAULT)
 
 =item* i_add_int
 
 =item* i_add_float
+
+=back
 
 =cut
 
@@ -783,9 +949,15 @@ Add the integer value to every element in the matrix.
 
 /*
 
+=head2 Subtraction VTABLEs
+
+=over 4
+
 =item* subtract(ComplexMatrix2D)
 
 Add two matrices together, element-by-element.
+
+=item* subtract(Complex)
 
 =item* subtract(DEFAULT)
 
@@ -799,6 +971,8 @@ Add the float value to every element in the matrix.
 =item* subtract_int
 
 Add the integer value to every element in the matrix.
+
+=back
 
 =cut
 
@@ -838,13 +1012,21 @@ Add the integer value to every element in the matrix.
 
 /*
 
+=head2 In-Place Subtraction VTABLEs
+
+=over 4
+
 =item* i_subtract(ComplexMatrix2D)
+
+=item* i_subtract(Complex)
 
 =item* i_subtract(DEFAULT)
 
 =item* i_subtract_int
 
 =item* i_subtract_float
+
+=back
 
 =cut
 
@@ -873,9 +1055,21 @@ Add the integer value to every element in the matrix.
 
 /*
 
+=head2 Multiplication VTABLEs
+
+=over 4
+
 =item* multiply(ComplexMatrix2D)
 
+=item* multiply(Complex)
+
 =item* multiply(DEFAULT)
+
+=item* multiply_int
+
+=item* multiply_float
+
+=back
 
 =cut
 
@@ -911,16 +1105,6 @@ Add the integer value to every element in the matrix.
         return dest;
     }
 
-/*
-
-=item* multiply_int
-
-=item* multiply_float
-
-=cut
-
-*/
-
     VTABLE PMC *multiply_int(INTVAL v, PMC * dest) {
         dest = VTABLE_clone(INTERP, SELF);
         multiply_scalar_float(INTERP, dest, (FLOATVAL)v);
@@ -935,9 +1119,21 @@ Add the integer value to every element in the matrix.
 
 /*
 
-=item* i_multiply(NumMatrix2D)
+=head2 In-Place Multiplication VTABLEs
+
+=over 4
+
+=item* i_multiply(ComplexMatrix2D)
+
+=item* i_multiply(Complex)
 
 =item* i_multiply(DEFAULT)
+
+=item* i_multiply_int
+
+=item* i_multiply_float
+
+=back
 
 =cut
 
@@ -957,16 +1153,6 @@ Add the integer value to every element in the matrix.
         multiply_scalar_float(INTERP, SELF, v);
     }
 
-/*
-
-=item i_multiply_int
-
-=item i_multiply_float
-
-=cut
-
-*/
-
     VTABLE void i_multiply_int(INTVAL v) {
         multiply_scalar_float(INTERP, SELF, (FLOATVAL)v);
     }
@@ -978,13 +1164,11 @@ Add the integer value to every element in the matrix.
 
 /*
 
-=back
-
 =head1 METHODS
 
 =over 4
 
-=item resize()
+=item* resize()
 
 =cut
 
@@ -996,7 +1180,7 @@ Add the integer value to every element in the matrix.
 
 /*
 
-=item fill()
+=item* fill()
 
 Fill the matrix with a single value. if sizes are provided, fill to those
 sizes, growing the matrix if needed.
@@ -1036,7 +1220,7 @@ sizes, growing the matrix if needed.
 
 /*
 
-=item item_at()
+=item* item_at()
 
 =cut
 
@@ -1063,7 +1247,7 @@ sizes, growing the matrix if needed.
 
 /*
 
-=item transpose()
+=item* transpose()
 
 Transposes the matrix.
 
@@ -1088,7 +1272,7 @@ Transposes the matrix.
 
 /*
 
-=item mem_transpose()
+=item* mem_transpose()
 
 Transposes the actual data storage of the matrix. More expensive up-front
 than the transpose() method.
@@ -1122,7 +1306,7 @@ than the transpose() method.
 
 /*
 
-=item conjugate
+=item* conjugate
 
 =cut
 
@@ -1146,10 +1330,12 @@ than the transpose() method.
 
 /*
 
-=item iterate_function_inplace()
+=item* iterate_function_inplace()
 
 Calls a function for every element in the array, replacing the current
 value with the return value of the called function.
+
+=item* iterate_function_external()
 
 =cut
 
@@ -1192,6 +1378,16 @@ value with the return value of the called function.
         RETURN(PMC * new_matrix);
     }
 
+/*
+
+=item* initialize_from_array
+
+=item* initialize_from_args
+
+=cut
+
+*/
+
     METHOD initialize_from_array(INTVAL rows_size, INTVAL cols_size,
         PMC *values) {
         init_from_pmc_array(INTERP, SELF, rows_size, cols_size, values);
@@ -1201,6 +1397,14 @@ value with the return value of the called function.
         PMC *values :slurpy) {
         init_from_pmc_array(INTERP, SELF, rows_size, cols_size, values);
     }
+
+/*
+
+=item* get_block
+
+=item* set_block
+
+*/
 
     METHOD get_block(INTVAL rows_idx, INTVAL cols_idx, INTVAL rows_size,
         INTVAL cols_size) {
@@ -1299,15 +1503,15 @@ Calculates the matrix equation:
 
 /*
 
-=item row_combine(srcidx, destidx, gain)
+=item* row_combine(srcidx, destidx, gain)
 
 add a multiple of the source row to the destination row.
 
-=item row_scale(idx, gain)
+=item* row_scale(idx, gain)
 
 Multiply all elements in the row by a gain factor.
 
-=item row_swap(idx_a, idx_b)
+=item* row_swap(idx_a, idx_b)
 
 Swap two rows
 
@@ -1373,15 +1577,15 @@ Swap two rows
 
 /*
 
-=item convert_to_number_matrix
+=item* convert_to_number_matrix
 
 Get a NumMatrix2D from the current matrix
 
-=item convert_to_complex_matrix
+=item* convert_to_complex_matrix
 
 Get a ComplexMatrix2D from the current matrix
 
-=item convert_to_pmc_matrix
+=item* convert_to_pmc_matrix
 
 Get a PMCMatrix2D from the current matrix
 
