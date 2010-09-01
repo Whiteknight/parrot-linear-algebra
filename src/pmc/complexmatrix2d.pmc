@@ -1339,7 +1339,7 @@ Return a single Complex PMC from the item at the specified coordinates
 
 =item* transpose()
 
-Transposes the matrix lazily. This operation is O(n). Some operations, such as
+Transposes the matrix lazily. This operation is O(1). Some operations, such as
 mathematical operations do not work on a matrix which has been lazily
 transposed, so those operations will force the matrix memory to be eagerly
 transposed.
@@ -1367,7 +1367,7 @@ transposed.
 
 =item* mem_transpose()
 
-Transposes the actual data storage of the matrix. More expensive up-front
+Transposes the actual data storage of the matrix. More expensive O(n) up-front
 than the transpose() method, but the resulting memory structure is more suitable
 for use in certain mathematical operations.
 
