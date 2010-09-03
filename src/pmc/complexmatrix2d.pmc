@@ -144,7 +144,7 @@ get_complex_pmc_at_xy(PARROT_INTERP, PMC *self, INTVAL rows, INTVAL cols)
             PLATYPENAME ": indices out of bounds");
     real = R_ITEM_XY(s, flags, rows_size, cols_size, rows, cols);
     imag = I_ITEM_XY(s, flags, rows_size, cols_size, rows, cols);
-    newcomplex = Parrot_pmc_new(interp, enum_class_Complex);
+    newcomplex = get_external_pmc(interp, enum_class_Complex);
     VTABLE_set_number_keyed_int(interp, newcomplex, 0, real);
     VTABLE_set_number_keyed_int(interp, newcomplex, 1, imag);
     return newcomplex;
@@ -601,7 +601,7 @@ integer, and 0 for the complex value.
     }
 
     VTABLE void set_string_keyed(PMC * key, STRING * value) {
-        PMC * const item = Parrot_pmc_new(INTERP, enum_class_Complex);
+        PMC * const item = get_external_pmc(INTERP, enum_class_Complex);
         VTABLE_set_string_native(INTERP, item, value);
         VTABLE_set_pmc_keyed(INTERP, SELF, key, item);
     }
@@ -670,7 +670,7 @@ Convert the string to a Complex PMC, and set that at the specified location.
     VTABLE void set_string_keyed_int(INTVAL key, STRING * value) {
         DECLATTRS_ComplexMatrix2D(SELF, attrs);
         INTVAL row, col;
-        PMC * const item = Parrot_pmc_new(INTERP, enum_class_Complex);
+        PMC * const item = get_external_pmc(INTERP, enum_class_Complex);
         VTABLE_set_string_native(INTERP, item, value);
         VTABLE_set_pmc_keyed_int(INTERP, SELF, key, item);
     }
@@ -706,7 +706,7 @@ Determine if two matrices are equal in size and composition.
     VTABLE STRING *get_string() {
         DECLATTRS_ComplexMatrix2D(SELF, attrs);
         INTVAL rows, cols;
-        PMC * const builder = Parrot_pmc_new(INTERP, enum_class_StringBuilder);
+        PMC * const builder = get_external_pmc(INTERP, enum_class_StringBuilder);
         STRING * const newline = Parrot_str_new(INTERP, "\n", 1);
         FLOATVAL * const s = attrs->storage;
         const INTVAL rows_size = attrs->rows;
@@ -740,17 +740,17 @@ Determine if two matrices are equal in size and composition.
     VTABLE PMC * get_attr_str(STRING * idx) {
         DECLATTRS_ComplexMatrix2D(SELF, attrs);
         if (Parrot_str_equal(INTERP, idx, CONST_STRING(INTERP, "rows"))) {
-            PMC * const rows = Parrot_pmc_new(INTERP, enum_class_Integer);
+            PMC * const rows = get_external_pmc(INTERP, enum_class_Integer);
             VTABLE_set_integer_native(INTERP, rows, attrs->rows);
             return rows;
         }
         else if (Parrot_str_equal(INTERP, idx, CONST_STRING(INTERP, "cols"))) {
-            PMC * const cols = Parrot_pmc_new(INTERP, enum_class_Integer);
+            PMC * const cols = get_external_pmc(INTERP, enum_class_Integer);
             VTABLE_set_integer_native(INTERP, cols, attrs->cols);
             return cols;
         }
         else if (Parrot_str_equal(INTERP, idx, CONST_STRING(INTERP, "size"))) {
-            PMC * const size = Parrot_pmc_new(INTERP, enum_class_Integer);
+            PMC * const size = get_external_pmc(INTERP, enum_class_Integer);
             VTABLE_set_integer_native(INTERP, size, attrs->cols * attrs->rows);
             return size;
         }

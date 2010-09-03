@@ -18,3 +18,12 @@ intkey_to_coords(PARROT_INTERP, const INTVAL rows, const INTVAL cols,
         *col = c;
     }
 }
+
+/* Get an instance of an externally-defined (non-PLA) PMC type. Account for
+   subtypes */
+PMC *
+get_external_pmc(PARROT_INTERP, const INTVAL type)
+{
+    INTVAL realtype = Parrot_get_ctx_HLL_type(interp, type);
+    return Parrot_pmc_new(interp, realtype);
+}

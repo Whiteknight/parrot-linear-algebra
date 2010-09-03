@@ -359,19 +359,19 @@ location
     }
 
     VTABLE void set_integer_keyed(PMC * key, INTVAL value) {
-        PMC * const item = Parrot_pmc_new(INTERP, enum_class_Integer);
+        PMC * const item = get_external_pmc(INTERP, enum_class_Integer);
         VTABLE_set_integer_native(INTERP, item, value);
         VTABLE_set_pmc_keyed(INTERP, SELF, key, item);
     }
 
     VTABLE void set_number_keyed(PMC * key, FLOATVAL value) {
-        PMC * const item = Parrot_pmc_new(INTERP, enum_class_Float);
+        PMC * const item = get_external_pmc(INTERP, enum_class_Float);
         VTABLE_set_number_native(INTERP, item, value);
         VTABLE_set_pmc_keyed(INTERP, SELF, key, item);
     }
 
     VTABLE void set_string_keyed(PMC * key, STRING * value) {
-        PMC * const item = Parrot_pmc_new(INTERP, enum_class_String);
+        PMC * const item = get_external_pmc(INTERP, enum_class_String);
         VTABLE_set_string_native(INTERP, item, value);
         VTABLE_set_pmc_keyed(INTERP, SELF, key, item);
     }
@@ -426,13 +426,13 @@ location
     }
 
     VTABLE void set_string_keyed_int(INTVAL key, STRING * value) {
-        PMC * const item = Parrot_pmc_new(INTERP, enum_class_String);
+        PMC * const item = get_external_pmc(INTERP, enum_class_String);
         VTABLE_set_string_native(INTERP, item, value);
         VTABLE_set_pmc_keyed_int(INTERP, SELF, key, item);
     }
 
     VTABLE void set_number_keyed_int(INTVAL key, FLOATVAL value) {
-        PMC * const item = Parrot_pmc_new(INTERP, enum_class_Float);
+        PMC * const item = get_external_pmc(INTERP, enum_class_Float);
         VTABLE_set_number_native(INTERP, item, value);
         VTABLE_set_pmc_keyed_int(INTERP, SELF, key, item);
     }
@@ -468,7 +468,7 @@ Determine if two matrices are equal in size and composition.
     VTABLE STRING *get_string() {
         DECLATTRS_PMCMatrix2D(SELF, attrs);
         INTVAL rows, cols;
-        PMC * builder = Parrot_pmc_new(INTERP, enum_class_StringBuilder);
+        PMC * builder = get_external_pmc(INTERP, enum_class_StringBuilder);
         STRING * const strend = Parrot_str_new(INTERP, "}", 1);
         STRING * const newline = Parrot_str_new(INTERP, "\n", 1);
         PMC ** const s = attrs->storage;
@@ -500,17 +500,17 @@ Determine if two matrices are equal in size and composition.
     VTABLE PMC * get_attr_str(STRING * idx) {
         DECLATTRS_PMCMatrix2D(SELF, attrs);
         if (Parrot_str_equal(INTERP, idx, CONST_STRING(INTERP, "rows"))) {
-            PMC * const rows = Parrot_pmc_new(INTERP, enum_class_Integer);
+            PMC * const rows = get_external_pmc(INTERP, enum_class_Integer);
             VTABLE_set_integer_native(INTERP, rows, attrs->rows);
             return rows;
         }
         else if (Parrot_str_equal(INTERP, idx, CONST_STRING(INTERP, "cols"))) {
-            PMC * const cols = Parrot_pmc_new(INTERP, enum_class_Integer);
+            PMC * const cols = get_external_pmc(INTERP, enum_class_Integer);
             VTABLE_set_integer_native(INTERP, cols, attrs->cols);
             return cols;
         }
         else if (Parrot_str_equal(INTERP, idx, CONST_STRING(INTERP, "size"))) {
-            PMC * const size = Parrot_pmc_new(INTERP, enum_class_Integer);
+            PMC * const size = get_external_pmc(INTERP, enum_class_Integer);
             VTABLE_set_integer_native(INTERP, size, attrs->cols * attrs->rows);
             return size;
         }

@@ -19,10 +19,14 @@ sub MAIN () {
     my $failed_files := 0;
     our $max_length;
     $max_length := 30;
-    my @files := get_all_tests("t", "t/pmc",
-        "t/methods/nummatrix2d",
-        "t/methods/complexmatrix2d",
-        "t/methods/pmcmatrix2d");
+    my @files := get_all_tests(
+        't',
+        't/pmc',
+        't/methods/nummatrix2d',
+        't/methods/complexmatrix2d',
+        't/methods/pmcmatrix2d',
+        #'t/pir-subclass'
+        );
     my %failures := {};
 
     for @files {
@@ -32,7 +36,7 @@ sub MAIN () {
         %failures{$filename} := [];
 
         my $test_output := run_test($filename);
-        my $plan := $test_output[0];
+        my $plan        := $test_output[0];
         my @plan_parts  := $plan.split('..');
         my $num_tests   := @plan_parts[1];
         my $curr_test   := 0;
@@ -43,9 +47,7 @@ sub MAIN () {
 
         for $test_output {
             my $line := $_;
-
             if ( $line ) {
-
                 my $line_parts := $line.split("ok ");
                 my $right_side := $line_parts[1];
                 my $right_side_parts := $right_side.split(' ');
@@ -143,13 +145,31 @@ sub print_filename($filename, $max_length) {
 }
 
 sub run_test($filename) {
-    my $sub := Nqp::compile_file($filename);
+    my $sub;
+    my $pirfile := is_pir_test($filename);
+    if $pirfile == 0 {
+        $sub := Nqp::compile_file($filename);
+        $sub := $sub[0];
+    } else {
+        Q:PIR {
+            $P1 = find_lex "$filename"
+            $P0 = new ['FileHandle']
+            $P0.'open'($P1)
+            $P2 = $P0.'readall'()
+            $P0.'close'()
+            $P3 = compreg 'PIR'
+            $P4 = $P3($P2)
+            $P4 = $P4[0]
+            store_lex '$sub', $P4
+        };
+    }
     my $stdout := Parrot::new("StringHandle");
     $stdout.open("blah", "rw");
     my %save_handles := Program::swap_handles(:stdout($stdout), :stderr($stdout));
-    $sub[0]();
+    $sub();
     Program::swap_handles(|%save_handles);
-    return ($stdout.readall().split("\n"));
+    my $result := $stdout.readall();
+    return ($result.split("\n"));
 }
 
 sub reset_test_environment() {
@@ -160,4 +180,12 @@ sub reset_test_environment() {
         $P0 = new "Undef"
         set_hll_global [ 'Test'; 'Builder'; '_singleton' ], 'singleton', $P0
     };
+}
+
+sub is_pir_test($filename) {
+    my $idx := pir::index__ISS($filename, 't/pir');
+    if $idx == 0 {
+        return 1;
+    }
+    return 0;
 }
