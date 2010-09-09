@@ -6,6 +6,7 @@ src/pmc/*.c
 *.so
 *.dump
 *_group.*
+docs/*.html
 src/pmc/pmc_*.h
 src/nqp/*.pir
 t/testlib/*.pir
