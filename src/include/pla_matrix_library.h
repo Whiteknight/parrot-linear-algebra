@@ -9,5 +9,6 @@ void intkey_to_coords(PARROT_INTERP, const INTVAL rows, const INTVAL cols,
     const INTVAL key, INTVAL * row, INTVAL * col);
 
 PMC * get_external_pmc(PARROT_INTERP, const INTVAL type);
+PMC * get_external_pmc_init(PARROT_INTERP, const INTVAL type, PMC * const value);
 
 #endif /* _PLA_MATRIX_LIBRARY_H */

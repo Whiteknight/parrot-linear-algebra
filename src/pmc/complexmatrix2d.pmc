@@ -182,11 +182,16 @@ init_from_pmc_array(PARROT_INTERP, PMC * self, INTVAL rows_size,
 {
     DECLATTRS_ComplexMatrix2D(self, attrs);
     INTVAL i, j, num = 0;
+    const INTVAL elems = VTABLE_elements(interp, values);
     resize_matrix(interp, self, rows_size - 1, cols_size - 1);
 
     for (i = 0; i < rows_size; i++) {
         for (j = 0; j < cols_size; j++) {
-            PMC * const value = VTABLE_get_pmc_keyed_int(interp, values, num);
+            PMC * value;
+            if (num < elems)
+                value = VTABLE_get_pmc_keyed_int(interp, values, num);
+            else
+                value = PMCNULL;
             set_complex_pmc_at_xy(interp, self, value, i, j);
             num++;
         }

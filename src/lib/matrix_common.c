@@ -27,3 +27,10 @@ get_external_pmc(PARROT_INTERP, const INTVAL type)
     INTVAL realtype = Parrot_get_ctx_HLL_type(interp, type);
     return Parrot_pmc_new(interp, realtype);
 }
+
+PMC *
+get_external_pmc_init(PARROT_INTERP, const INTVAL type, PMC * const val)
+{
+    INTVAL realtype = Parrot_get_ctx_HLL_type(interp, type);
+    return Parrot_pmc_new_init(interp, realtype, val);
+}
