@@ -17,6 +17,9 @@ sub MAIN () {
     my $total_failed := 0;
     my $total_files  := 0;
     my $failed_files := 0;
+    my @total_aborted := [];
+    my $num_aborted  := 0;
+    my $any_errors := 0;
     our $max_length;
     $max_length := 30;
     my @files := get_all_tests(
@@ -42,12 +45,13 @@ sub MAIN () {
         my $curr_test   := 0;
         my $passed      := 0;
         my $failed      := 0;
+        my $aborted     := 0;
 
         $test_output.shift;  # we don't need the plan anymore
 
         for $test_output {
             my $line := $_;
-            if ( $line ) {
+            if ($line && $line ne 'TEST ABORTED') {
                 my $line_parts := $line.split("ok ");
                 my $right_side := $line_parts[1];
                 my $right_side_parts := $right_side.split(' ');
@@ -67,14 +71,27 @@ sub MAIN () {
                     $curr_test++;
                 }
             }
+            elsif ($line eq 'TEST ABORTED') {
+                $failed := $failed + ($num_tests - $curr_test);
+                @total_aborted.push($filename);
+                $aborted := 1;
+                $num_aborted++;
+                break;
+            }
         }
-        if $failed {
+        if $aborted {
+            pir::say('not ok (test aborted prematurely)');
+            $any_errors := 1;
+        }
+        elsif $failed {
             pir::say('not ok (' ~ $failed ~ '/' ~ $num_tests ~ ' failed)');
+            $any_errors := 1;
         }
         else {
             if @plan_parts[0] != 1 || $num_tests < 0 {
                 pir::say('INVALID PLAN: ' ~ @plan_parts.join());
                 $failed_files++;
+                $any_errors := 1;
             }
             else {
                 pir::say('ok');
@@ -85,27 +102,40 @@ sub MAIN () {
         if $num_tests != $curr_test {
             pir::say("Planned to run " ~ $num_tests ~ " tests but ran " ~ $curr_test ~ " tests");
             pir::say("FAILED");
+            $any_errors := 1;
         }
         reset_test_environment();
     }
-    if $total_failed {
-        pir::say("FAILED " ~ $total_failed ~ '/' ~ ($total_passed+$total_failed));
-        pir::say("");
-        pir::say("========================== FAILURES ==========================");
-        for %failures {
-            my $testfile := $_;
-            my $failures_in_here := pir::elements(%failures{$testfile});
-            if $failures_in_here > 0 {
-                pir::say($testfile);
-                for %failures{$testfile} {
-                    pir::say("\t" ~ $_);
+    if $any_errors {
+        pir::say("Test result: FAILED");
+        if $total_failed {
+            pir::say("FAILED " ~ $total_failed ~ '/' ~ ($total_passed+$total_failed));
+            pir::say("");
+            pir::say("========================== FAILURES ==========================");
+            for %failures {
+                my $testfile := $_;
+                my $failures_in_here := pir::elements(%failures{$testfile});
+                if $failures_in_here > 0 {
+                    pir::say($testfile);
+                    for %failures{$testfile} {
+                        pir::say("\t" ~ $_);
+                    }
+                    pir::say("");
                 }
-                pir::say("");
             }
         }
-        pir::exit(1);
-    } elsif $failed_files {
-        pir::say("FAILED " ~ $failed_files ~ " files, PASSED " ~ $total_passed ~ ' tests');
+        if $failed_files {
+            pir::say("FAILED $failed_files files due to bad plans");
+        }
+        if $num_aborted {
+            pir::say("FAILED. $num_aborted test files aborted prematurely");
+            pir::say("");
+            pir::say("======================== ABORTED FILES =======================");
+            for @total_aborted {
+                my $deadfile := $_;
+                pir::say("\t$deadfile");
+            }
+        }
     } else {
         pir::say("PASSED " ~ $total_passed ~ ' tests in ' ~ $total_files ~ ' files');
     }
@@ -166,9 +196,18 @@ sub run_test($filename) {
     my $stdout := Parrot::new("StringHandle");
     $stdout.open("blah", "rw");
     my %save_handles := Program::swap_handles(:stdout($stdout), :stderr($stdout));
-    $sub();
+    my $result;
+    try {
+        $sub();
+        $result := $stdout.readall();
+        CATCH {
+            pir::say("TEST ABORTED");
+            pir::say($!);
+            $result := $stdout.readall();
+            $result := $result ~ 'TEST ABORTED\n';
+        }
+    }
     Program::swap_handles(|%save_handles);
-    my $result := $stdout.readall();
     return ($result.split("\n"));
 }
 

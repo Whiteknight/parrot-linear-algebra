@@ -1,6 +1,5 @@
 #!parrot
 
-
 .HLL 'ComplexMatrix2D_SUBCLASS_TEST'
 
 .sub test
@@ -18,7 +17,7 @@
 
     say "1..5"
     test_get_pmc_keyed()
-    #test_get_pmc_keyed_int()
+    test_get_pmc_keyed_int()
     test_get_attr_str()
 .end
 
@@ -63,7 +62,7 @@
 .end
 
 .sub test_get_attr_str
-    $P0 = new ['NumMatrix2D']
+    $P0 = new ['ComplexMatrix2D']
     $P0.'initialize_from_args'(2, 2, 1, 2, 3, 4)
 
     $P1 = getattribute $P0, 'rows'
