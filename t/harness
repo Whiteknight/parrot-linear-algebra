@@ -25,7 +25,7 @@ sub MAIN () {
         't/methods/nummatrix2d',
         't/methods/complexmatrix2d',
         't/methods/pmcmatrix2d',
-        #'t/pir-subclass'
+        't/pir-subclass'
         );
     my %failures := {};
 

@@ -112,22 +112,6 @@ resize_matrix(PARROT_INTERP, PMC * self, INTVAL row, INTVAL col)
         mem_sys_free(old_s);
 }
 
-static void
-init_from_pmc_array(PARROT_INTERP, PMC * self, INTVAL rows_size,
-    INTVAL cols_size, PMC * values)
-{
-    DECLATTRS_ComplexMatrix2D(self, attrs);
-    INTVAL num = 0;
-    const INTVAL init_elems = VTABLE_elements(interp, values);
-    const INTVAL total_elems = rows_size * cols_size;
-    resize_matrix(interp, self, rows_size - 1, cols_size - 1);
-
-    for (; num < init_elems && num < total_elems ; num++) {
-        PMC * const value = VTABLE_get_pmc_keyed_int(interp, values, num);
-        VTABLE_set_pmc_keyed_int(interp, self, num, value);
-    }
-}
-
 static PMC *
 get_complex_pmc_at_xy(PARROT_INTERP, PMC *self, INTVAL rows, INTVAL cols)
 {
@@ -190,6 +174,23 @@ set_scalar_at_xy(PARROT_INTERP, PMC * self, FLOATVAL value, INTVAL row,
     s = attrs->storage;
     R_ITEM_XY(s, flags, rows_size, cols_size, row, col) = value;
     I_ITEM_XY(s, flags, rows_size, cols_size, row, col) = 0;
+}
+
+static void
+init_from_pmc_array(PARROT_INTERP, PMC * self, INTVAL rows_size,
+    INTVAL cols_size, PMC * values)
+{
+    DECLATTRS_ComplexMatrix2D(self, attrs);
+    INTVAL i, j, num = 0;
+    resize_matrix(interp, self, rows_size - 1, cols_size - 1);
+
+    for (i = 0; i < rows_size; i++) {
+        for (j = 0; j < cols_size; j++) {
+            PMC * const value = VTABLE_get_pmc_keyed_int(interp, values, num);
+            set_complex_pmc_at_xy(interp, self, value, i, j);
+            num++;
+        }
+    }
 }
 
 /* Add a scalar to every element of the matrix */
