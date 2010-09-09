@@ -5,183 +5,217 @@ INIT {
     pir::load_bytecode('t/testlib/pla_test.pbc');
 }
 
-MAIN();
+my $harness := PLA::Harness.new();
+$harness.setup();
+$harness.run();
+$harness.show_results();
+
+class PLA::Harness {
+    has $!total_passed;
+    has $!total_failed;
+    has @!aborted_files;
+    has %!results;
+    has @!files;
+    has $!max_length;
 
 # TAP grammar in ABNF
 # http://testanything.org/wiki/index.php/TAP_at_IETF:_Draft_Standard#Grammar
 # TODO:
 # verbose mode
 
-sub MAIN () {
-    my $total_passed := 0;
-    my $total_failed := 0;
-    my $total_files  := 0;
-    my $failed_files := 0;
-    my @total_aborted := [];
-    my $num_aborted  := 0;
-    my $any_errors := 0;
-    our $max_length;
-    $max_length := 30;
-    my @files := get_all_tests(
-        't',
-        't/pmc',
-        't/methods/nummatrix2d',
-        't/methods/complexmatrix2d',
-        't/methods/pmcmatrix2d',
-        't/pir-subclass'
+    method setup() {
+        $!total_passed := 0;
+        $!total_failed := 0;
+        @!files := [];
+        self.get_all_tests(
+            't',
+            #'t/pmc',
+            #'t/methods/nummatrix2d',
+            #'t/methods/complexmatrix2d',
+            #'t/methods/pmcmatrix2d',
+            't/pir-subclass'
         );
-    my %failures := {};
+        %!results := self.new_hash();
+        %!results{"PASSED"} := [];
+        %!results{"FAILED"} := [];
+        %!results{"ABORTED"} := [];
+    }
 
-    for @files {
-        my $filename := $_;
-        $total_files++;
-        print_filename($filename, $max_length);
-        %failures{$filename} := [];
+    method new_hash(*%hash) {
+        return %hash;
+    }
 
-        my $test_output := run_test($filename);
-        my $plan        := $test_output[0];
-        my @plan_parts  := $plan.split('..');
-        my $num_tests   := @plan_parts[1];
-        my $curr_test   := 0;
-        my $passed      := 0;
-        my $failed      := 0;
-        my $aborted     := 0;
-
-        $test_output.shift;  # we don't need the plan anymore
-
-        for $test_output {
-            my $line := $_;
-            if ($line && $line ne 'TEST ABORTED') {
-                my $line_parts := $line.split("ok ");
-                my $right_side := $line_parts[1];
-                my $right_side_parts := $right_side.split(' ');
-                my $test_number := $right_side_parts[0];
-                # strip out comments
-                unless ($test_number > 0) {
-                    my @test_num_parts := $test_number.split(' -');
-                    $test_number := @test_num_parts[0];
-                }
-                if ($line_parts[0] eq 'not ') {
-                    $failed++;
-                    $curr_test++;
-                    my $test_name := $line.split(' - ')[1];
-                    %failures{$filename}.push($test_number ~ ": " ~ $test_name);
-                } elsif ($test_number == ($curr_test+1)) {
-                    $passed++;
-                    $curr_test++;
-                }
+    method run () {
+        for @!files {
+            my $test := $_;
+            $test.setup();
+            $test.print_filename($!max_length);
+            $test.run();
+            $test.print_result();
+            my $status := $test.status();
+            %!results{$status}.push($test);
+            if $status ne "ABORTED" {
+                $!total_passed := $!total_passed + $test.passed_tests();
+                $!total_failed := $!total_failed + $test.failed_tests();
             }
-            elsif ($line eq 'TEST ABORTED') {
-                $failed := $failed + ($num_tests - $curr_test);
-                @total_aborted.push($filename);
-                $aborted := 1;
-                $num_aborted++;
-                break;
-            }
+            self.reset_test_environment();
+        }
+    }
+
+    method show_results() {
+        my $aborted := +%!results{"ABORTED"};
+        my $total_files := +@!files;
+        if $aborted || $!total_failed {
+            self.print("Result: FAILED");
+        } else {
+            self.print(
+                "Result: PASSED",
+                "\tPassed $!total_passed tests in $total_files files"
+            );
         }
         if $aborted {
-            pir::say('not ok (test aborted prematurely)');
-            $any_errors := 1;
-        }
-        elsif $failed {
-            pir::say('not ok (' ~ $failed ~ '/' ~ $num_tests ~ ' failed)');
-            $any_errors := 1;
-        }
-        else {
-            if @plan_parts[0] != 1 || $num_tests < 0 {
-                pir::say('INVALID PLAN: ' ~ @plan_parts.join());
-                $failed_files++;
-                $any_errors := 1;
-            }
-            else {
-                pir::say('ok');
+            self.print(
+                "\tFailed $aborted files due to premature exit",
+                "\tList of failed files:"
+            );
+            for %!results{"ABORTED"} {
+                my $abort := $_.get_filename();
+                self.print("\t\t$abort");
             }
         }
-        $total_passed := $total_passed + $passed;
-        $total_failed := $total_failed + $failed;
-        if $num_tests != $curr_test {
-            pir::say("Planned to run " ~ $num_tests ~ " tests but ran " ~ $curr_test ~ " tests");
-            pir::say("FAILED");
-            $any_errors := 1;
-        }
-        reset_test_environment();
-    }
-    if $any_errors {
-        pir::say("Test result: FAILED");
-        if $total_failed {
-            pir::say("FAILED " ~ $total_failed ~ '/' ~ ($total_passed+$total_failed));
-            pir::say("");
-            pir::say("========================== FAILURES ==========================");
-            for %failures {
-                my $testfile := $_;
-                my $failures_in_here := pir::elements(%failures{$testfile});
-                if $failures_in_here > 0 {
-                    pir::say($testfile);
-                    for %failures{$testfile} {
-                        pir::say("\t" ~ $_);
-                    }
-                    pir::say("");
-                }
-            }
-        }
-        if $failed_files {
-            pir::say("FAILED $failed_files files due to bad plans");
-        }
-        if $num_aborted {
-            pir::say("FAILED. $num_aborted test files aborted prematurely");
-            pir::say("");
-            pir::say("======================== ABORTED FILES =======================");
-            for @total_aborted {
-                my $deadfile := $_;
-                pir::say("\t$deadfile");
-            }
-        }
-    } else {
-        pir::say("PASSED " ~ $total_passed ~ ' tests in ' ~ $total_files ~ ' files');
-    }
-}
-
-
-sub get_all_tests(*@dirs) {
-    my $fs := FileSystem.instance;
-    my @files := Parrot::new("ResizableStringArray");
-    our $max_length;
-    for @dirs {
-        my $dir := $_;
-        my @rawfiles := $fs.get_contents($dir);
-
-        for @rawfiles {
-            my $filename := $_;
-            if pir::index__ISS($filename, ".t") != -1 {
-                if pir::index__ISS($filename, ".OLD") == -1 {
-                    @files.push($dir ~ "/" ~ $filename);
-                    my $length := pir::length__IS($dir ~ "/" ~ $filename);
-                    if $length > $max_length {
-                        $max_length := $length;
-                    }
+        if $!total_failed {
+            self.print(
+                "\tFailed $!total_failed tests in " ~ +(%!results{"FAILED"}) ~ " files",
+                "",
+                "\tList of failed tests:"
+            );
+            for %!results{"FAILED"} {
+                my $test := $_;
+                pir::say("\t\t" ~ $test.get_filename());
+                for $test.list_of_failures() {
+                    my $failure := $_;
+                    pir::say("\t\t\t$failure");
                 }
             }
         }
     }
-    return (@files);
-}
 
+    method print(*@lines) {
+        for @lines {
+            pir::say($_);
+        }
+    }
 
-sub print_filename($filename, $max_length) {
-    my $length := pir::length__IS($filename);
-    my $diff := ($max_length - $length) + 3;
-    my $elipses := pir::repeat__SSI('.', $diff);
-    print($filename ~ " " ~ $elipses ~ " ");
-}
+    method get_all_tests(*@dirs) {
+        my $fs := FileSystem.instance;
+        my $max_length := 0;
+        for @dirs {
+            my $dir := $_;
+            my @rawfiles := $fs.get_contents($dir);
+            for @rawfiles {
+                my $filename := $_;
+                if pir::index__ISS($filename, ".t") == -1 {
+                    next;
+                }
+                if pir::index__ISS($filename, ".OLD") != -1 {
+                    next;
+                }
 
-sub run_test($filename) {
-    my $sub;
-    my $pirfile := is_pir_test($filename);
-    if $pirfile == 0 {
-        $sub := Nqp::compile_file($filename);
-        $sub := $sub[0];
-    } else {
+                $filename := "$dir/$filename";
+                my $testobj := PLA::Harness::Test.new();
+                $testobj.set_filename($filename);
+                @!files.push($testobj);
+                my $length := pir::length__IS($filename);
+                if $length > $!max_length {
+                    $!max_length := $length;
+                }
+            }
+        }
+    }
+
+    method reset_test_environment() {
+        # TODO: This is an evil hack. Test::Builder doesn't clean up it's environment
+        #       so when I try to run multiple tests in a single program instance
+        #       it breaks. When Test::Builder gets fixed, remove this nonsense
         Q:PIR {
+            $P0 = new "Undef"
+            set_hll_global [ 'Test'; 'Builder'; '_singleton' ], 'singleton', $P0
+        };
+    }
+}
+
+class PLA::Harness::Test {
+    has $!filename;
+    has $!result;
+    has $!errdetails;
+    has $!status;
+    has @!failures;
+    has @!lines;
+    has $!num_tests;
+    has $!failed_tests;
+    has $!passed_tests;
+
+    method setup() {
+        $!failed_tests := 0;
+        $!passed_tests := 0;
+        @!failures := [];
+    }
+
+    method total_tests() {
+        return $!num_tests;
+    }
+
+    method failed_tests() {
+        return $!failed_tests;
+    }
+
+    method passed_tests() {
+        return $!passed_tests;
+    }
+
+    method list_of_failures() {
+        return @!failures;
+    }
+
+    method set_filename($filename) {
+        $!filename := $filename;
+    }
+
+    method get_filename() {
+        return $!filename;
+    }
+
+    method print_result() {
+        if $!result {
+            pir::say("not ok ($!result)");
+        } else {
+            pir::say("ok");
+        }
+    }
+
+    method status() {
+        return $!status;
+    }
+
+    method is_pir_test() {
+        my $idx := pir::index__ISS($!filename, 't/pir');
+        if $idx == 0 {
+            return 1;
+        }
+        return 0;
+    }
+
+    method print_filename($max_length) {
+        my $length := pir::length__IS($!filename);
+        my $diff := ($max_length - $length) + 3;
+        my $elipses := pir::repeat__SSI('.', $diff);
+        print($!filename ~ " " ~ $elipses ~ " ");
+    }
+
+    method compile_pir_test() {
+        my $sub;
+        my $filename := $!filename;
+         Q:PIR {
             $P1 = find_lex "$filename"
             $P0 = new ['FileHandle']
             $P0.'open'($P1)
@@ -192,39 +226,112 @@ sub run_test($filename) {
             $P4 = $P4[0]
             store_lex '$sub', $P4
         };
+        return $sub;
     }
-    my $stdout := Parrot::new("StringHandle");
-    $stdout.open("blah", "rw");
-    my %save_handles := Program::swap_handles(:stdout($stdout), :stderr($stdout));
-    my $result;
-    try {
-        $sub();
-        $result := $stdout.readall();
-        CATCH {
-            pir::say("TEST ABORTED");
-            pir::say($!);
-            $result := $stdout.readall();
-            $result := $result ~ 'TEST ABORTED\n';
+
+    method compile_nqp_test() {
+        my $sub := Nqp::compile_file($!filename);
+        return $sub[0];
+    }
+
+    method compile_and_execute() {
+        my $sub;
+        my $pirfile := self.is_pir_test();
+        if $pirfile == 0 {
+            $sub := self.compile_nqp_test();
+        } else {
+            $sub := self.compile_pir_test();
+        }
+        my $stdout := Parrot::new("StringHandle");
+        $stdout.open("blah", "rw");
+        my %save_handles := Program::swap_handles(:stdout($stdout), :stderr($stdout));
+        try {
+            $sub();
+            CATCH {
+                $!result := "aborted prematurely";
+                $!errdetails := $!;
+                $!status := "ABORTED";
+            }
+        }
+        my $output := $stdout.readall();
+        Program::swap_handles(|%save_handles);
+        @!lines := $output.split("\n");
+    }
+
+    method run() {
+        self.compile_and_execute();
+        if $!status ne "ABORTED" {
+            self.get_plan();
+            self.parse();
         }
     }
-    Program::swap_handles(|%save_handles);
-    return ($result.split("\n"));
-}
 
-sub reset_test_environment() {
-    # TODO: This is an evil hack. Test::Builder doesn't clean up it's environment
-    #       so when I try to run multiple tests in a single program instance
-    #       it breaks. When Test::Builder gets fixed, remove this nonsense
-    Q:PIR {
-        $P0 = new "Undef"
-        set_hll_global [ 'Test'; 'Builder'; '_singleton' ], 'singleton', $P0
-    };
-}
-
-sub is_pir_test($filename) {
-    my $idx := pir::index__ISS($filename, 't/pir');
-    if $idx == 0 {
-        return 1;
+    method get_plan() {
+        # TODO: Detect bad plan
+        my $plan        := @!lines[0];
+        my @plan_parts  := $plan.split('..');
+        my $!num_tests  := @plan_parts[1];
+        @!lines.shift;
     }
-    return 0;
+
+    method parse() {
+        for @!lines {
+            my $line := $_;
+            if $line {
+                my $lineobj := PLA::Harness::Line.new();
+                $lineobj.set_line($line);
+
+                if $lineobj.success() {
+                    $!passed_tests := $!passed_tests + 1;
+                }
+                else {
+                    $!failed_tests := $!failed_tests + 1;
+                    my $msg := "test " ~ $lineobj.number();
+                    my $name := $lineobj.name();
+                    if $name {
+                        $msg := $msg ~ " : $name";
+                    }
+                    @!failures.push($msg);
+                }
+            }
+        }
+        if $!failed_tests {
+            $!result := "Failed $!failed_tests / $!num_tests";
+            $!status := "FAILED";
+        }
+        else {
+            $!status := "PASSED";
+        }
+    }
+}
+
+class PLA::Harness::Line {
+    has $!result;
+    has $!number;
+    has $!name;
+    has $!comment;
+
+    method set_line($line) {
+        my @line_parts := $line.split("ok ");
+        if @line_parts[0] eq 'not ' {
+            $!result := 0;
+            $!name := $line.split(' - ')[1];
+        }
+        else {
+            $!result := 1;
+        }
+        $!number := @line_parts[1].split(' ')[0];
+    }
+
+    method success() {
+        return $!result;
+    }
+
+    method number() {
+        return $!number;
+    }
+
+    method name() {
+        return $!name;
+    }
 }
