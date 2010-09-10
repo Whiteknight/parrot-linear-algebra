@@ -3,19 +3,44 @@ body {
     color: #AAAAAA;
 }
 
-td.main_column {
+table#master_table {
+    margin-left: 5em;
+    margin-right: 5em;
+}
+
+td#main_column {
     background-color: #222222;
     border: 1px solid #444444;
     padding: 5px;
 }
 
-td.nav_column {
+td#nav_column {
     background-color: #222222;
     border: 1px solid #444444;
     padding: 5px;
+}
+
+h3 {
+    margin-left: 2em;
+    border-bottom: 1px solid #444444;
+}
+
+h4 {
+    margin-left: 3em;
+}
+
+p {
+    margin-left: 4em;
 }
 
 a {
     color: #DDD000;
+}
+
+code {
+    background-color: #333333;
+    border: #555555;
+    color: #BBBBBB;
+    padding: 3px;
 }
 
