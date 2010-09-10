@@ -1,6 +1,6 @@
 ---
 layout: poddocs
-title: ComplexMatrix2D
+title: ComplexMatrix2D Arithmetic
 ---
 
 h3. Addition VTABLEs</h2>

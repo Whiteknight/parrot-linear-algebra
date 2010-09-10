@@ -1,9 +1,7 @@
 ---
 layout: poddocs
-title: ComplexMatrix2D
+title: ComplexMatrix2D Standard VTABLEs
 ---
-
-h2. ComplexMatrix2D VTABLEs
 
 h3. System VTABLEs
 

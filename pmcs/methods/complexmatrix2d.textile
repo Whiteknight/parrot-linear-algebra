@@ -3,8 +3,6 @@ layout: poddocs
 title: ComplexMatrix2D Methods
 ---
 
-h2. ComplexMatrix2D Methods
-
 h3. Sizing and Access Methods
 
 h4. @resize(rows, cols)@

@@ -28,16 +28,19 @@ td#right_margin {
 }
 
 h3 {
-    margin-left: 2em;
     border-bottom: 1px solid #444444;
 }
 
-h4 {
+ul {
     margin-left: 3em;
 }
 
+h4 {
+    margin-left: 2em;
+}
+
 p {
-    margin-left: 4em;
+    margin-left: 3em;
 }
 
 a {
