@@ -1,0 +1,148 @@
+---
+layout: poddocs
+title: ComplexMatrix2D
+---
+
+h3. Addition VTABLEs</h2>
+
+h4. add(ComplexMatrix2D)
+
+Add two matrices together, element-by-element.
+
+h4. add(Complex)
+
+Add a complex value to each element of the matrix
+
+h4. add(DEFAULT)
+
+Take the number representation of the argument PMC and add it to every element
+in the matrix.
+
+h4. add_float
+
+Add the float value to every element in the matrix.
+
+h4. add_int
+
+Add the integer value to every element in the matrix.
+
+h3. In-Place Addition VTABLEs</h2>
+
+h4. i_add(ComplexMatrix2D)
+
+Add a matrix into SELF
+
+h4. i_add(Complex)
+
+Add a Complex value to every element of SELF
+
+h4. i_add(DEFAULT)
+
+Add the numeric value of the given PMC to every element of SELF
+
+h4. i_add_int
+
+Add the integer value to every element of SELF
+
+h4. i_add_float
+
+Add the floating-point value to every element of SELF
+
+h3. Subtraction VTABLEs</h2>
+
+h4. subtract(ComplexMatrix2D)
+
+Perform the matrix operation
+
+@C = SELF - A@
+
+h4. subtract(Complex)
+
+Subtract a complex value from each element of the matrix
+
+h4. subtract(DEFAULT)
+
+Take the number representation of the argument PMC and subtract it from every
+element in the matrix.
+
+h4. subtract_float
+
+Subtract the float value from every element in the matrix.
+
+h4. subtract_int
+
+Subtract the integer value from every element in the matrix.
+
+h3. In-Place Subtraction VTABLEs</h2>
+
+h4. i_subtract(ComplexMatrix2D)
+
+Perform the matrix operation
+
+@SELF = SELF - A@
+
+h4. i_subtract(Complex)
+
+Substract a complex value from each element of the matrix
+
+h4. i_subtract(DEFAULT)
+
+Subtract the numeric value of the PMC from the real part of each element in the
+matrix
+
+h4. i_subtract_int
+
+Subtract the integer value from the real part of each element in the matrix
+
+h4. i_subtract_float
+
+Subtract the floating point value from the real part of each element in the
+matrix
+
+h3. Multiplication VTABLEs</h2>
+
+h4. multiply(ComplexMatrix2D)
+
+Perform the matrix operation
+
+@C = SELF × A@
+
+h4. multiply(Complex)
+
+Multiply each element in the matrix by the complex value
+
+h4. multiply(DEFAULT)
+
+Multiply each element in the matrix by the numeric value of the PMC
+
+h4. multiply_int
+
+Multiply each element in the matrix by the integer
+
+h4. multiply_float
+
+Multiply each element in the matrix by the floating point number
+
+h3. In-Place Multiplication VTABLEs</h2>
+
+h4. i_multiply(ComplexMatrix2D)
+
+Perform the matrix operation
+
+@SELF = SELF × A@
+
+h4. i_multiply(Complex)
+
+Multiply every element in SELF by the complex value
+
+h4. i_multiply(DEFAULT)
+
+Multiply every element in SELF by the numeric value of the PMC
+
+h4. i_multiply_int
+
+Multiply every element in SELF by the integer
+
+h4. i_multiply_float
+
+Multiply every element in SELF by the floating point number

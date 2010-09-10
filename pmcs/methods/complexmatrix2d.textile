@@ -1,0 +1,125 @@
+---
+layout: poddocs
+title: ComplexMatrix2D Methods
+---
+
+h2. ComplexMatrix2D Methods
+
+h3. Sizing and Access Methods
+
+h4. @resize(rows, cols)@
+
+Resize the matrix to include at least the specified number of rows and columns.
+Resizing the matrix never causes the matrix to shrink. If you need a subset of
+the matrix, use get_block instead.
+
+h4. @fill(rows, cols, value)@
+
+Fill the matrix with a single value. if sizes are provided, fill to those
+sizes, growing the matrix if needed. Elements outside the specified area are
+unaffected. Calling @fill@ never causes the matrix to shrink.
+
+h4. @item = item_at(row, col)@
+
+Return a single Complex PMC from the item at the specified coordinates
+
+h3. Transposition Methods
+
+h4. @transpose()@
+
+Transposes the matrix lazily. This operation is _O(1)_. Some operations, such as
+mathematical operations do not work on a matrix which has been lazily
+transposed, so those operations will force the matrix memory to be eagerly
+transposed.
+
+h4. @mem_transpose()@
+
+Transposes the actual data storage of the matrix. More expensive _O(n)_ up-front
+than the @transpose()@ method, but the resulting memory structure is more suitable
+for use in certain mathematical operations.
+
+h3. Iteration Methods()
+
+h4. @iterate_function_inplace(func, args...)@
+
+Calls a function for every element in the matrix, replacing the current
+value with the return value of the called function.
+
+h4. @matrix = iterate_function_external(func, args...)@
+
+Calls a function for every element in the matrix, creating a new matrix with
+the returned values of the called function.
+
+h3. Initialization Methods
+
+h4. @initialize_from_array(rows, cols, ary)@
+
+Initialize the matrix using a list of values from an array.
+
+h4. @initialize_from_args(rows, cols, args...)@
+
+Initialize the matrix using values from a variadic (slurpy) argument list.
+
+h3. Block Access Methods
+
+h4. @matrix = get_block(rows, cols, rows_size, cols_size)@
+
+Get a specified sub-block of the matrix. If the bounds of the sub-block are
+outside the bounds of the matrix, an OUT_OF_BOUNDS exception is thrown.
+
+h4. @set_block(rows, cols, matrix)@
+
+Set a block in the matrix, growing it if needed.
+
+h3. Elementary Row Operation Methods
+
+h4. @row_combine(srcidx, destidx, gain)@
+
+Add a multiple of the source row to the destination row. If either of the row
+indices are outside the bounds of the matrix, an OUT_OF_BOUNDS exception is
+thrown.
+
+h4. @row_scale(idx, gain)@
+
+Multiply all elements in the row by a gain factor. If the row index is outside
+the bounds of the matrix and OUT_OF_BOUNDS exception is thrown.
+
+h4. @row_swap(idx_a, idx_b)@
+
+Swap two rows. If either of the row indices are outside the bounds of the
+matrix, an OUT_OF_BOUNDS exception is thrown.
+
+h3. Converstion Methods
+
+h4. @matrix = convert_to_number_matrix()@
+
+Get a NumMatrix2D from the current matrix. If the matrix is already a
+NumMatrix2D, return a clone.
+
+h4. @matrix = convert_to_complex_matrix()@
+
+Get a ComplexMatrix2D from the current matrix. If the matrix is already a
+ComplexMatrix2D, return a clone.
+
+h4. @matrix = convert_to_pmc_matrix()@
+
+Get a PMCMatrix2D from the current matrix. If the matrix is already a
+PMCMatrix2D, return a clone.
+
+h3. Mathematical Methods
+
+h4. @conjugate()@
+
+Convert the matrix to the complex conjugate of itself.
+
+h4. @Z = gemm(a, A, B, b, C)@
+
+Calculates the matrix equation:
+
+@Z = aAB + bC@
+
+The matrices must all be ComplexMatrix2D, or must be convertable to it. The
+matrix SELF is not used in the calculation, but the result matrix will have the
+same type as SELF.
+
+

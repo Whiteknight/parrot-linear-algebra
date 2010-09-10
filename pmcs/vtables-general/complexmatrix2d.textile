@@ -1,0 +1,155 @@
+---
+layout: poddocs
+title: ComplexMatrix2D
+---
+
+h2. ComplexMatrix2D VTABLEs
+
+h3. System VTABLEs
+
+h4. init
+
+Initialize the new PMC
+
+h4. destroy
+
+Destroy the PMC and free all associated memory
+
+h3. Keyed lookup VTABLEs
+
+In each of these cases, the specified Key PMC must have exactly two elements
+to specify a location in the matrix. Attempting to retrieve a value outside the
+boundaries of the matrix will throw an OUT_OF_BOUNDS exception.
+
+h4. get_number_keyed
+
+Get a floating point value at the location specified by the key. The floating
+point value is calculated as the magnitude of the complex value at the point in
+the matrix.
+
+h4. get_integer_keyed
+
+Get an integer value at the location specified by the key.
+The integer value is the magnitude of the complex value at the specified
+location, cast from a floating point to an integer value.
+
+h4. get_string_keyed
+
+Get the string representation of the complex value at the point specified by
+the key. The returned string has the same format as is used by the current
+HLL-mapped Complex PMC type.
+
+h4. get_pmc_keyed
+
+Get a Complex PMC from the point specified by the key.
+
+h3. Integer-Keyed Lookup VTABLEs
+
+These VTABLEs treat the matrix, which is a contiguous region in memory, as a
+linear array of values. The matrix data is stored by rows. These routines are
+used for low-level access. Attempting to access a value
+outside the bounds of the matrix will throw an OUT_OF_BOUNDS exception.
+
+h4. get_number_keyed_int
+
+Get a floating point number, the magnitude of the complex value, at the
+specified location in the array
+
+h4. get_integer_keyed_int
+
+Get an integer, cast from the magnitude of the complex value, at the specified
+location in the array
+
+h4. get_string_keyed_int
+
+Get a string representation of the value at the specified point. Stringification
+is done the same as Parrot's Complex PMC type.
+
+h4. get_pmc_keyed_int
+
+Get a Complex PMC from the value at the specified point.
+
+h3. Keyed Setter VTABLES
+These VTABLEs insert new values into the matrix at a point specified by the
+Key PMC. The Key PMC must have exactly two elements. If the matrix is not large
+enough to accomodate the specified location, it will be grown with zero-padding
+so that it is at least large enough to hold the specified point and all existing
+data.
+
+h4. set_pmc_keyed
+
+Set the value at the specified location to the complex value represented by the
+given PMC. Different PMC types have different behaviors in this operation.
+
+h4. set_number_keyed
+
+Set the value at the specified location to have a real value given by the
+number, and 0 for the complex value.
+
+h4. set_string_keyed
+
+Set the value at the specified location to the value represented by the string.
+The string is parsed by creating a temporary Complex PMC type, so all the same
+rules for that type apply to the input string format.
+
+h4. set_integer_keyed
+
+Set the value at the specified location to have a real value given by the
+integer, and 0 for the complex value.
+
+h3. Integer-Keyed Setter VTABLEs\
+
+These VTABLEs treat the matrix as a linear array in memory and allow fast
+lookup based on the integer offset of values in the array. These are low-level
+routines and are not intended for general use.
+Unlike the PMC-keyed VTABLEs, these routines will not automatically grow the
+matrix if an index is provided which is outside the boundaries of the matrix.
+In that case, an OUT_OF_BOUNDS exception will be thrown.
+
+h4. set_pmc_keyed_int
+
+Set a PMC at the specified location. The rules for extracting a complex value
+out of the input PMC are the same as used for @set_pmc_keyed()@
+
+h4. set_number_keyed_int
+
+Set the complex value at the specified location to the given real value. The
+complex part of the value will be 0.
+
+h4. set_integer_keyed_int
+
+Set the complex value at the specified location to the given real value. The
+complex part of the value will be 0
+
+h4. set_string_keyed_int
+
+Convert the string to a Complex PMC, and set that at the specified location.
+
+h3. Miscellaneous VTABLEs
+
+h4. get_string
+
+Get a string representation of the matrix, suitable for printing to the console
+
+h4. get_attr_string
+
+Get a named attribute. The name can be one of "rows", "cols", or "size".
+
+h4. clone
+
+Clone the matrix
+
+h4. is_equal
+
+Determine if two matrices are equal in size and composition.
+
+h3. Serialization/Deserialization VTABLEs
+
+h4. freeze
+
+Freeze the PMC for serialization to a string suitable for long-term storage in
+a file.
+
+h4. thaw
+
+Thaw a serialized PMC
