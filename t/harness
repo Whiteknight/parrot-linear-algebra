@@ -29,10 +29,10 @@ class PLA::Harness {
         @!files := [];
         self.get_all_tests(
             't',
-            #'t/pmc',
-            #'t/methods/nummatrix2d',
-            #'t/methods/complexmatrix2d',
-            #'t/methods/pmcmatrix2d',
+            't/pmc',
+            't/methods/nummatrix2d',
+            't/methods/complexmatrix2d',
+            't/methods/pmcmatrix2d',
             't/pir-subclass'
         );
         %!results := self.new_hash();
