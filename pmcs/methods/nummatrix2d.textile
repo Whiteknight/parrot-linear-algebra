@@ -1,6 +1,6 @@
 ---
 layout: poddocs
-title: ComplexMatrix2D Methods
+title: NumMatrix2D Methods
 ---
 
 h3. Sizing and Access Methods
@@ -19,7 +19,7 @@ unaffected. Calling @fill@ never causes the matrix to shrink.
 
 h4. @item = item_at(row, col)@
 
-Return a single Complex PMC from the item at the specified coordinates
+Return a single Float PMC from the item at the specified coordinates
 
 h3. Transposition Methods
 
@@ -106,17 +106,13 @@ PMCMatrix2D, return a clone.
 
 h3. Mathematical Methods
 
-h4. @conjugate()@
-
-Convert the matrix to the complex conjugate of itself.
-
 h4. @Z = gemm(a, A, B, b, C)@
 
 Calculates the matrix equation:
 
 @Z = aAB + bC@
 
-The matrices must all be ComplexMatrix2D, or must be convertable to it. The
+The matrices must all be NumMatrix2D, or must be convertable to it. The
 matrix SELF is not used in the calculation, but the result matrix will have the
 same type as SELF. The scalar parameters @a@ and @b@ should both be convertable
 to a complex value.

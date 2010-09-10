@@ -1,0 +1,142 @@
+---
+layout: poddocs
+title: NumMatrix2D Standard VTABLEs
+---
+
+h3. System VTABLEs
+
+h4. init
+
+Initialize the new PMC
+
+h4. destroy
+
+Destroy the PMC and free all associated memory
+
+h3. Keyed lookup VTABLEs
+
+In each of these cases, the specified Key PMC must have exactly two elements
+to specify a location in the matrix. Attempting to retrieve a value outside the
+boundaries of the matrix will throw an OUT_OF_BOUNDS exception.
+
+h4. get_number_keyed
+
+Get a floating point value at the location specified by the key.
+
+h4. get_integer_keyed
+
+Get an integer value at the location specified by the key. This value is the
+truncated integer representation of the floating point value at that location.
+
+h4. get_string_keyed
+
+Get the string representation of the value at the specified location.
+
+h4. get_pmc_keyed
+
+Get a Float PMC for the value at the specified location.
+
+h3. Integer-Keyed Lookup VTABLEs
+
+These VTABLEs treat the matrix, which is a contiguous region in memory, as a
+linear array of values. The matrix data is stored by rows. These routines are
+used for low-level access. Attempting to access a value
+outside the bounds of the matrix will throw an OUT_OF_BOUNDS exception.
+
+h4. get_number_keyed_int
+
+Get the number at the specified location.
+
+h4. get_integer_keyed_int
+
+Get an integer from the value at the specified location.
+
+h4. get_string_keyed_int
+
+Get the string representation of the floating point value at the specified
+location.
+
+h4. get_pmc_keyed_int
+
+Get a Float PMC from the value at the specified location.
+
+h3. Keyed Setter VTABLES
+
+These VTABLEs insert new values into the matrix at a point specified by the
+Key PMC. The Key PMC must have exactly two elements. If the matrix is not large
+enough to accomodate the specified location, it will be grown with zero-padding
+so that it is at least large enough to hold the specified point and all existing
+data.
+
+h4. set_pmc_keyed
+
+Set the value at the specified location to be the floating point value of the
+PMC.
+
+h4. set_number_keyed
+
+Set the value at the specified location.
+
+h4. set_string_keyed
+
+Set the value at the specified location to the value represented by the string.
+The string is converted to a floating point value using normal parsing rules.
+
+h4. set_integer_keyed
+
+Set the value at the specified location to the given integer.
+
+h3. Integer-Keyed Setter VTABLEs
+
+These VTABLEs treat the matrix as a linear array in memory and allow fast
+lookup based on the integer offset of values in the array. These are low-level
+routines and are not intended for general use.
+Unlike the PMC-keyed VTABLEs, these routines will not automatically grow the
+matrix if an index is provided which is outside the boundaries of the matrix.
+In that case, an OUT_OF_BOUNDS exception will be thrown.
+
+h4. set_pmc_keyed_int
+
+Set the value at the specifed location as the floating-point value of the PMC.
+
+h4. set_number_keyed_int
+
+Set the value at the specified location.
+
+h4. set_integer_keyed_int
+
+Set the value at the specified location.
+
+h4. set_string_keyed_int
+
+Parse the string to obtain a floating point value, and set that at the specified
+location.
+
+h3. Miscellaneous VTABLEs
+
+h4. get_string
+
+Get a string representation of the matrix, suitable for printing to the console
+
+h4. get_attr_string
+
+Get a named attribute. The name can be one of "rows", "cols", or "size".
+
+h4. clone
+
+Clone the matrix
+
+h4. is_equal
+
+Determine if two matrices are equal in size and composition.
+
+h3. Serialization/Deserialization VTABLEs
+
+h4. freeze
+
+Freeze the PMC for serialization to a string suitable for long-term storage in
+a file.
+
+h4. thaw
+
+Thaw a serialized PMC
