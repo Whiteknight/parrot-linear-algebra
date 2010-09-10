@@ -21,6 +21,7 @@ td#nav_column {
     background-color: #222222;
     border: 1px solid #444444;
     padding: 5px;
+    width: 250px;
 }
 
 td#right_margin {
