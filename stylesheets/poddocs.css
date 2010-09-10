@@ -32,7 +32,7 @@ h3 {
 }
 
 ul {
-    margin-left: 3em;
+    margin-left: 1em;
 }
 
 h4 {
@@ -48,8 +48,8 @@ a {
 }
 
 code {
-    background-color: #333333;
-    border: #AAA555;
+    background-color: #000000;
+    border: 1px solid #AAA555;
     color: #BBBBBB;
     padding: 2px;
 }
