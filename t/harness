@@ -6,13 +6,29 @@ INIT {
 }
 
 my $harness := PLA::Harness.new();
-$harness.setup();
+$harness.initialize();
+
+# First run the sanity tests. The sanity tests load the dynamic library, which
+# is required for everything else. Don't attempt to run any other tests if the
+# sanity test fails
+$harness.setup('t');
 $harness.run();
+if ($harness.success()) {
+    $harness.setup(
+        't/pmc',
+        't/methods/nummatrix2d',
+        't/methods/complexmatrix2d',
+        't/methods/pmcmatrix2d',
+        't/pir-subclass'
+    );
+    $harness.run();
+}
 $harness.show_results();
 
 class PLA::Harness {
     has $!total_passed;
     has $!total_failed;
+    has $!total_files;
     has @!aborted_files;
     has %!results;
     has @!files;
@@ -22,23 +38,21 @@ class PLA::Harness {
 # http://testanything.org/wiki/index.php/TAP_at_IETF:_Draft_Standard#Grammar
 # TODO:
 # verbose mode
-
-    method setup() {
+    method initialize() {
         $!total_passed := 0;
         $!total_failed := 0;
-        @!files := [];
-        self.get_all_tests(
-            't',
-            't/pmc',
-            't/methods/nummatrix2d',
-            't/methods/complexmatrix2d',
-            't/methods/pmcmatrix2d',
-            't/pir-subclass'
-        );
+        @!aborted_files := [];
+        $!total_files := 0;
         %!results := self.new_hash();
         %!results{"PASSED"} := [];
         %!results{"FAILED"} := [];
         %!results{"ABORTED"} := [];
+    }
+
+    method setup(*@dirs) {
+        @!files := [];
+        self.get_all_tests(@dirs);
+        $!total_files := $!total_files + +@!files;
     }
 
     method new_hash(*%hash) {
@@ -62,15 +76,24 @@ class PLA::Harness {
         }
     }
 
+    method success() {
+        my $aborted := +%!results{"ABORTED"};
+        if $aborted || $!total_failed {
+            return 0;
+        }
+        else {
+            return 1;
+        }
+    }
+
     method show_results() {
         my $aborted := +%!results{"ABORTED"};
-        my $total_files := +@!files;
         if $aborted || $!total_failed {
             self.print("Result: FAILED");
         } else {
             self.print(
                 "Result: PASSED",
-                "\tPassed $!total_passed tests in $total_files files"
+                "\tPassed $!total_passed tests in $!total_files files"
             );
         }
         if $aborted {
@@ -86,6 +109,7 @@ class PLA::Harness {
         if $!total_failed {
             self.print(
                 "\tFailed $!total_failed tests in " ~ +(%!results{"FAILED"}) ~ " files",
+                "\tPassed $!total_passed tests in $!total_files files",
                 "",
                 "\tList of failed tests:"
             );
@@ -106,7 +130,7 @@ class PLA::Harness {
         }
     }
 
-    method get_all_tests(*@dirs) {
+    method get_all_tests(@dirs) {
         my $fs := FileSystem.instance;
         my $max_length := 0;
         for @dirs {
@@ -280,8 +304,10 @@ class PLA::Harness::Test {
             if $line {
                 my $lineobj := PLA::Harness::Line.new();
                 $lineobj.set_line($line);
-
-                if $lineobj.success() {
+                if $lineobj.ignore() {
+                    continue;
+                }
+                elsif $lineobj.success() {
                     $!passed_tests := $!passed_tests + 1;
                 }
                 else {
@@ -310,17 +336,29 @@ class PLA::Harness::Line {
     has $!number;
     has $!name;
     has $!comment;
+    has $!ignore;
 
     method set_line($line) {
-        my @line_parts := $line.split("ok ");
-        if @line_parts[0] eq 'not ' {
-            $!result := 0;
-            $!name := $line.split(' - ')[1];
+        my $idx := pir::index__ISS($line, "ok");
+        if $idx != 0 && $idx != 4 {
+            $!ignore := 1;
+            return;
+        } else {
+            $!ignore := 0;
+            my @line_parts := $line.split("ok ");
+            if @line_parts[0] eq 'not ' {
+                $!result := 0;
+                $!name := $line.split(' - ')[1];
+            }
+            else {
+                $!result := 1;
+            }
+            $!number := @line_parts[1].split(' ')[0];
         }
-        else {
-            $!result := 1;
-        }
-        $!number := @line_parts[1].split(' ')[0];
+    }
+
+    method ignore() {
+        return $!ignore;
     }
 
     method success() {
