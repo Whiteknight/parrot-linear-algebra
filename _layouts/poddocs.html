@@ -8,13 +8,15 @@
 </head>
 
 <body>
-    <table style="width: 100%" cellpadding="5" cellspacing="5" id="master_table">
+    <h1>{{ page.title }}</h2>
+    <table cellpadding="5" cellspacing="5" id="master_table">
         <tr>
+            <td id="left_margin"></td>
             <td id="main_column" valign="top">
                 {{ content }}
             </td>
             <td id="nav_column" valign="top">
-                <h3>Links></h3>
+                <h3>Project</h3>
                 <ul>
                     <li><a href="/parrot-linear-algebra/index.html" class="nav_link">
                         Home
@@ -25,6 +27,15 @@
                     <li><a href="http://github.com/Whiteknight/parrot-linear-algebra/issues">
                         Issues
                     </a></li>
+                </ul>
+                <h3>Building</h3>
+                <ul>
+                    <li>
+                        <a href="/parrot-linear-algebra/general/install.html">Installation</a>
+                    </li>
+                    <li>
+                        <a href="/parrot-linear-algebra/general/testing.html">Testing</a>
+                    </li>
                 </ul>
                 <h3>PMC Documentation</h3>
                 <ul>
@@ -39,7 +50,7 @@
                                     VTABLEs
                                 </a>
                                 &nbsp;&mdash;&nbsp;
-                                <a href="/parrot-linear-algebra/pmcs/vtables-general/nummatrix2d.html">
+                                <a href="/parrot-linear-algebra/pmcs/vtables-arithmetic/nummatrix2d.html">
                                     Arithmetic
                                 </a>
                             </li>
@@ -66,7 +77,7 @@
                                     VTABLEs
                                 </a>
                                 &nbsp;&mdash;&nbsp;
-                                <a href="/parrot-linear-algebra/pmcs/vtables-general/complexmatrix2d.html">
+                                <a href="/parrot-linear-algebra/pmcs/vtables-arithmetic/complexmatrix2d.html">
                                     Arithmetic
                                 </a>
                             </li>
@@ -93,7 +104,7 @@
                                     VTABLEs
                                 </a>
                                 &nbsp;&mdash;&nbsp;
-                                <a href="/parrot-linear-algebra/pmcs/vtables-general/pmcmatrix2d.html">
+                                <a href="/parrot-linear-algebra/pmcs/vtables-arithmetic/pmcmatrix2d.html">
                                     Arithmetic
                                 </a>
                             </li>
@@ -110,7 +121,21 @@
                         </ul>
                     </li>
                 </ul>
+                <h3>Roles</h3>
+                <ul>
+                    <li>
+                        <a href=/parrot-linear-algebra/pmcs/roles/matrix.html">
+                            'matrix' Role
+                        </a>
+                    </li>
+                    <li>
+                        <a href=/parrot-linear-algebra/pmcs/roles/numericmatrix.html">
+                            'numericmatrix' Role
+                        </a>
+                    </li>
+                </ul>
             </td>
+            <td id="right_margin"></td>
         </tr>
     </table>
 </body>
