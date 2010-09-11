@@ -72,6 +72,23 @@ h4. Kakapo
 
 The "Kakapo":http://gitorious.com/kakapo/kakapo library is a package of helper and extension routines and types for NQP. Kakapo is used by PLA to implement the unit test suite. You only need Kakapo to run the PLA unit tests. You do not need Kakapo to build or use PLA, though testing is always recommended.
 
+Kakapo is under active development and not all versions might work properly with all releases of Parrot and all versions of PLA. For release 1 of PLA, you can get a special version of kakapo like this:
+
+<pre>
+git clone git://github.com/Whiteknight/kakapo.git kakapo
+cd kakapo
+git checkout PLA_version_1
+</pre>
+
+Or, if you don't have git, you can download this particular version of Kakapo in "ZIP":http://github.com/Whiteknight/kakapo/zipball/PLA_version_1 or "TAR":http://github.com/Whiteknight/kakapo/tarball/PLA_version_1 archive formats. Once you have the archive, you can unpack it to see the source.
+
+Once you have the Kakapo source, you can build and install it like this:
+
+<pre>
+parrot-nqp setup.nqp build
+parrot-nqp setup.nqp install
+</pre>
+
 h4. C Compiler
 
 PLA's setup program draws build information from the Parrot binary, and attempts to built itself in the same way that Parrot was built. PLA has been tested to build with both GCC and Clang compilers. Other compilers may work as well. Anything that can be used to build the Parrot executable can in theory be used to build PLA. PLA not building with any standard C compiler is a bug and should be reported.
