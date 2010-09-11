@@ -1,0 +1,133 @@
+---
+layout: poddocs
+title: Parrot-LinearAlgebra
+---
+
+h3. About
+
+Parrot-Linear-Algebra (PLA) is a linear algebra toolkit for the
+"Parrot Virtual Machine":http://www.parrot.org . PLA provides a number of
+matrix object types and bindings to the powerful
+"BLAS":http://www.netlib.org/blas and "LAPACK":http://www.netlib.org/lapack
+libraries.
+
+h3. Installation Quick-Start
+
+If you have all the prerequisites (see below) and a local checkout of the PLA
+source, you can build and install the library with the following commands:
+
+<pre>
+parrot-nqp setup.nqp build
+parrot-nqp setup.nqp test
+parrot-nqp setup.nqp install
+</pre>
+
+If you have the Parrot package manager
+"Plumage":http://gitorious.com/parrot-plumage/parrot-plumage installed, you
+can quickly and easily install PLA with this command:
+
+<pre>
+parrot plumage install parrot-linear-algebra
+</pre>
+
+h3. Download
+
+You can download this project in either
+"ZIP":http://github.com/Whiteknight/parrot-linear-algebra/zipball/master
+or
+"TAR":http://github.com/Whiteknight/parrot-linear-algebra/tarball/master
+
+If you have "Git":httpL//git-scm.com you can clone the current version of the
+development sources with this command:
+
+<pre>
+git clone git://github.com/Whiteknight/parrot-linear-algebra
+</pre>
+
+h3. Prerequisites
+
+PLA requires several prerequisites to build and run. Without the prerequistes
+PLA might not build, or some features might not be available.
+
+h4. Parrot Virtual Machine
+
+PLA is an add-on for Parrot, so you must have a working, modern version of
+Parrot installed. Here is a table of compatibility between releases of PLA and
+releases of Parrot:
+
+|.Parrot Version|.PLA Version|
+| 2.8 | 1.0 |
+
+PLA expects a standard installation of Parrot to run and operate.
+
+h4. BLAS
+
+BLAS is more of a library standard than an actual library implementation.
+The standard "reference implementation":http://www.netlib.org/blas of BLAS is
+written in FORTRAN, and is not particularly optimized. Some other
+implementations are:
+
+* "CBLAS":http://www.netlib.org/cblas -- A version of BLAS translated to C
+using an automated translator program. The API for CBLAS is slightly different
+from that of BLAS, to account for semantic differences between C and FORTRAN.
+
+* "ATLAS":http://math-atlas.sourceforge.net -- A portable, generally-optimized
+implementation of BLAS. The ATLAS API is mostly similar to that of CBLAS.
+
+PLA has been tested to work on Linux using BLAS, CBLAS, and ATLAS. There are
+other implementations of BLAS that may work as well, but are not tested.
+
+bq. *Note*: PLA should work with all BLAS implementations. If you find an
+implementation of BLAS that does not readily work with PLA, please let us
+know.
+
+The PLA setup program automatically detects and links to BLAS using a series
+of search heuristics. It is not currently possible to manually specify a
+custom implementation of BLAS or a custom search path.
+
+h4. LAPACK
+
+BLAS provides several low-level and highly-optimized routines for basic matrix
+operations such as matrix multiplication. LAPACK uses BLAS to implement
+many additional operations and algorithms. There are two primary
+implementations of LAPACK: The LAPACK reference library (written in FORTRAN),
+and CLAPACK, a computer-generated translation of the LAPACK source code to C.
+
+Currently, PLA only links to the LAPACK library, and has no bindings to
+CLAPACK. The PLA setup program will automatically detect LAPACK. It is not
+possible to manually specify an install path for LAPACK yet.
+
+h4. Kakapo
+
+The "Kakapo":http://gitorious.com/kakapo/kakapo library is a package of helper
+and extension routines and types for NQP. Kakapo is used by PLA to implement
+the unit test suite. You only need Kakapo to run the PLA unit tests. You do
+not need Kakapo to build or use PLA, though testing is always recommended.
+
+h4. C Compiler
+
+PLA's setup program draws build information from the Parrot binary, and
+attempts to built itself in the same way that Parrot was built. PLA has been
+tested to build with both GCC and Clang compilers. Other compilers may work
+as well. Anything that can be used to build the Parrot executable can in
+theory be used to build PLA. PLA not building with any standard C compiler is
+a bug and should be reported.
+
+h4. Linux
+
+Currently PLA is only tested and configured to run on modern desktop Linux
+distributions such as Ubuntu and Fedora. It may run on other distributions as
+well, but this is not tested. Test reports of PLA running on other systems
+would be much appreciated.
+
+h3. Licensing
+
+PLA is released under the terms of the
+"Artistic 2.0 license":http://www.opensource.org/licenses/artistic-license-2.0.php
+
+h3. Credits
+
+Original versions were developed as part of the Matrixy project by Blairuk.
+Some parts of the test suite were provided by Austin Hastings.
+See the file CREDITS in the repository for updated information about
+contributors.
