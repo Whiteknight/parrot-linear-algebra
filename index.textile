@@ -1,6 +1,6 @@
 ---
 layout: poddocs
-title: Parrot-LinearAlgebra
+title: Parrot-Linear-Algebra
 ---
 
 h3. About

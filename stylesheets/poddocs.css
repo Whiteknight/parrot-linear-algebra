@@ -37,6 +37,7 @@ div.data_table {
 
 div.download {
     float: right;
+    margin-right: 10em;
 }
 
 h3 {
