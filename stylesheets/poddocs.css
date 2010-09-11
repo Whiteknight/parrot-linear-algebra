@@ -40,6 +40,11 @@ div.download {
     margin-right: 10em;
 }
 
+div.subtitle {
+    margin-left: 7em;
+    font-size: smaller;
+}
+
 h3 {
     border-bottom: 1px solid #444444;
 }

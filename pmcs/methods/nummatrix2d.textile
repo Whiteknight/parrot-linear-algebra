@@ -110,7 +110,7 @@ h4. @Z = gemm(a, A, B, b, C)@
 
 Calculates the matrix equation:
 
-@Z = aAB + bC@
+Z = &alpha;AB + &beta;C
 
 The matrices must all be NumMatrix2D, or must be convertable to it. The
 matrix SELF is not used in the calculation, but the result matrix will have the
