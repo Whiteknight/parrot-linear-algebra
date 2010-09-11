@@ -28,14 +28,14 @@ td#right_margin {
     width: 5em;
 }
 
-div#data_table {
+div.data_table {
     margin-left: 4em;
     border: 1px solid #AAAAAA;
     background-color: #000000;
     padding: 3px;
 }
 
-div#download {
+div.download {
     float: right;
 }
 
