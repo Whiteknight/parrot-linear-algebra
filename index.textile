@@ -55,8 +55,10 @@ PLA is an add-on for Parrot, so you must have a working, modern version of
 Parrot installed. Here is a table of compatibility between releases of PLA and
 releases of Parrot:
 
-|.Parrot Version|.PLA Version|
+<div class="data_table">
+|_. Parrot Version|_. PLA Version|
 | 2.8 | 1.0 |
+</div>
 
 PLA expects a standard installation of Parrot to run and operate.
 
