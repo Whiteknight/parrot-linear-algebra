@@ -16,11 +16,11 @@ sub MAIN(@argv) {
         :keywords(<matrix linear algebra gsl atlas blas cblas>),
         :license_type('Artistic License 2.0'),
         :license_uri('http://www.perlfoundation.org/artistic_license_2_0'),
-        :copyright_holder('PLA Contributors'),
+        :copyright_holder('Andrew Whitworth'),
         :checkout_uri('git://github.com/Whiteknight/parrot-linear-algebra.git'),
         :browser_uri('http://github.com/Whiteknight/parrot-linear-algebra'),
         :project_uri('http://github.com/Whiteknight/parrot-linear-algebra'),
-        :version('0.1'),
+        :version('1.0'),
         :setup('setup.nqp')
     );
     setup_PLA_keys(%PLA);
@@ -40,6 +40,7 @@ sub MAIN(@argv) {
         run_test_harness(%PLA);
         pir::exit__vI(0);
     }
+    setup_test_manifest(%PLA);
     setup_c_library_files(%PLA);
     setup_dynpmc(%PLA);
     setup_testlib(%PLA);
@@ -57,6 +58,11 @@ sub get_args() {
     $interp[2];
 }
 
+sub setup_test_manifest(%PLA) {
+    %PLA{'prove_files'} :=
+        "t/*.t t/pmc/*.t t/methods/nummatrix2d/*.t t/methods/pmcmatrix2d/*.t " ~
+        "t/methods/complexmatrix2d/*.t t/pir-subclass/*.t";
+}
 
 # final step, coerce the list of dynpmc ldflags into a string
 sub setup_dynpmc_flags(%PLA) {
@@ -72,6 +78,7 @@ sub setup_PLA_keys(%PLA) {
     %PLA{'pir_pir'} := new_hash();
     %PLA{'pir_pir'}{'t/testlib/pla_test.pir'} := new_array();
     %PLA{'need_cblas_h'} := 0;
+    %PLA{'manifest_includes'} := new_array();
 }
 
 #
@@ -163,7 +170,13 @@ sub setup_c_library_files(%PLA) {
     my $obj := get_obj();
     for @cfiles {
         %PLA{'dynpmc_ldflags_list'}.push($_ ~ $obj);
+        %PLA{'manifest_includes'}.push($_ ~ '.c');
     }
+    %PLA{'manifest_includes'}.push('src/include/pla.h');
+    %PLA{'manifest_includes'}.push('src/include/pla_blas.h');
+    %PLA{'manifest_includes'}.push('src/include/pla_lapack.h');
+    %PLA{'manifest_includes'}.push('src/include/pla_matrix_library.h');
+    %PLA{'manifest_includes'}.push('src/include/pla_matrix_types.h');
 
     %PLA{'cc_dynpmc'}{'linalg_group'} := @cfiles;
 }
