@@ -1,4 +1,4 @@
-my $tests := Test::NumMatrix2D::RowCombine.new();
+my $tests := Test::ComplexMatrix2D::RowCombine.new();
 $tests.suite.run;
 
 class Test::ComplexMatrix2D::RowCombine is Pla::Methods::RowCombine {
