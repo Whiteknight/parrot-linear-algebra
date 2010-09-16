@@ -41,13 +41,13 @@ h4. Parrot Virtual Machine
 
 PLA is an add-on for Parrot, so you must have a working, modern version of Parrot installed. Compatibility between versions of PLA and Parrot may be complicated, and many more combinations may exist than have ever been tested. For each supported release of Parrot[1] there will usually be one recommended version of PLA to use. There may not be a recommended version of PLA for every development release of Parrot[2].
 
+* Parrot 2.8 &rarr; *PLA* 1.0
+
+PLA expects a standard installation of Parrot to run and operate.
+
 fn1. Parrot supported releases are X.0, X.3, X.6, and X.9 version numbers. Supported releases come out every three months (January, April, July, October). Supported Parrot releases might not always be packaged and distributed through your favorite binary package channel.
 
 fn2. Parrot development releases come out monthly, except in months when supported releases are produced. If there are no major API changes in Parrot, the version of PLA recommended for the previous supported release may still work well with the current development release of Parrot. If you absolutely need the bleeding edge for some reason, you're probably going to have to build the software yourself.
-
-*_Parrot_ 2.8 &rarr; _PLA_ 1.0
-
-PLA expects a standard installation of Parrot to run and operate.
 
 h4. BLAS
 
