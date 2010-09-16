@@ -62,6 +62,10 @@ sub setup_test_manifest(%PLA) {
     %PLA{'prove_files'} :=
         "t/*.t t/pmc/*.t t/methods/nummatrix2d/*.t t/methods/pmcmatrix2d/*.t " ~
         "t/methods/complexmatrix2d/*.t t/pir-subclass/*.t";
+    %PLA{'prove_exec'} := 'parrot-nqp t/run_test.nqp';
+    %PLA{'smolder_url'} :=
+        'http://smolder.parrot.org/app/projects/process_add_report/2';
+    %PLA{'smolder_credentials'} := 'parrot-autobot:qa_rocks';
 }
 
 # final step, coerce the list of dynpmc ldflags into a string
