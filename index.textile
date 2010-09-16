@@ -39,12 +39,13 @@ PLA requires several prerequisites to build and run. Without the prerequistes PL
 
 h4. Parrot Virtual Machine
 
-PLA is an add-on for Parrot, so you must have a working, modern version of Parrot installed. Here is a table of compatibility between releases of PLA and releases of Parrot:
+PLA is an add-on for Parrot, so you must have a working, modern version of Parrot installed. Compatibility between versions of PLA and Parrot may be complicated, and many more combinations may exist than have ever been tested. For each supported release of Parrot[1] there will usually be one recommended version of PLA to use. There may not be a recommended version of PLA for every development release of Parrot[2].
 
-<div class="data_table">
-|_. Parrot Version|_. PLA Version|
-| 2.8 | 1.0 |
-</div>
+fn1. Parrot supported releases are X.0, X.3, X.6, and X.9 version numbers. Supported releases come out every three months (January, April, July, October). Supported Parrot releases might not always be packaged and distributed through your favorite binary package channel.
+
+fn2. Parrot development releases come out monthly, except in months when supported releases are produced. If there are no major API changes in Parrot, the version of PLA recommended for the previous supported release may still work well with the current development release of Parrot. If you absolutely need the bleeding edge for some reason, you're probably going to have to build the software yourself.
+
+*_Parrot_ 2.8 &rarr; _PLA_ 1.0
 
 PLA expects a standard installation of Parrot to run and operate.
 
@@ -96,6 +97,23 @@ PLA's setup program draws build information from the Parrot binary, and attempts
 h4. Linux
 
 Currently PLA is only tested and configured to run on modern desktop Linux distributions such as Ubuntu and Fedora. It may run on other distributions as well, but this is not tested. Test reports of PLA running on other systems would be much appreciated.
+
+h3. Testing
+
+If you have Kakapo installed, you can run the automated test suite for PLA:
+
+<pre>
+parrot-nqp setup.nqp build
+parrot-nqp setup.nqp test
+</pre>
+
+If you have internet access and if your version of Parrot was built with zlib support, you can also submit a smoke report to the "Parrot smolder server":http://smolder.parrot.org/app/projects/smoke_reports/2 . Smoke reports are extremely valuable in tracking bugs and for determining which platforms have good support for PLA and which platforms need more work.
+
+If your Parrot has zlib support built-in, you can use the following command to generate and post a smoke report to the smolder server:
+
+<pre>
+parrot-nqp setup.nqp smoke
+</pre>
 
 h3. Licensing
 
