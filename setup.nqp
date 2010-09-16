@@ -31,14 +31,13 @@ sub MAIN(@argv) {
     else {
         $mode := @argv[0];
     }
-    if $mode eq "build" {
-        find_blas(%PLA);
-        probe_for_cblas_h(%PLA);
-        find_lapack(%PLA);
-    }
     if $mode eq "test" {
         run_test_harness(%PLA);
         pir::exit__vI(0);
+    } else {
+        find_blas(%PLA);
+        probe_for_cblas_h(%PLA);
+        find_lapack(%PLA);
     }
     setup_test_manifest(%PLA);
     setup_c_library_files(%PLA);
@@ -47,6 +46,7 @@ sub MAIN(@argv) {
     setup_nqp_bootstrapper(%PLA);
     setup_dynpmc_flags(%PLA);
     setup_docs(%PLA);
+    setup_smolder(%PLA);
 
     setup(@argv, %PLA);
 }
@@ -62,10 +62,18 @@ sub setup_test_manifest(%PLA) {
     %PLA{'prove_files'} :=
         "t/*.t t/pmc/*.t t/methods/nummatrix2d/*.t t/methods/pmcmatrix2d/*.t " ~
         "t/methods/complexmatrix2d/*.t t/pir-subclass/*.t";
+}
+
+sub setup_smolder(%PLA) {
     %PLA{'prove_exec'} := 'parrot-nqp t/run_test.nqp';
     %PLA{'smolder_url'} :=
         'http://smolder.parrot.org/app/projects/process_add_report/2';
     %PLA{'smolder_credentials'} := 'parrot-autobot:qa_rocks';
+    my $blas := %PLA{'blas_lib'};
+    my $lapack := %PLA{'lapack_lib'};
+    my $cc := get_config(){'cc'};
+    %PLA{'smolder_tags'} := ~$blas ~ "," ~ $lapack ~ "," ~ $cc;
+    pir::say(%PLA{'smolder_tags'});
 }
 
 # final step, coerce the list of dynpmc ldflags into a string
@@ -117,19 +125,19 @@ sub find_blas(%PLA) {
 sub find_blas_linux(%PLA) {
     my $found_blas := 0;
     my %searches;
-    # TODO: We should search in /usr/lib and /usr/local/lib for each
-    %searches{'/usr/lib/libblas-3.so'} := ['-lblas-3', '-D_PLA_HAVE_BLAS', 0];
-    %searches{'/usr/lib/libblas.so'} := ['-lblas', '-D_PLA_HAVE_ATLAS', 1];
-    %searches{'/usr/lib/atlas/libcblas.so'} := ['-L/usr/lib/atlas -lcblas', '-D_PLA_HAVE_ATLAS', 1];
+    %searches{'libblas-3.so'} := ['-lblas-3', '-D_PLA_HAVE_BLAS', 0];
+    %searches{'libblas.so'} := ['-lblas', '-D_PLA_HAVE_ATLAS', 1];
+    %searches{'atlas/libcblas.so'} := ['-L/usr/lib/atlas -lcblas', '-D_PLA_HAVE_ATLAS', 1];
     for %searches {
         my $searchloc := $_;
-        my $test_ldd := pir::spawnw__IS('ldd ' ~ $searchloc);
-        if $test_ldd == 0 {
+        my $hasblas := find_lib_on_paths($searchloc);
+        if $hasblas == 1 {
             $found_blas := 1;
             my @options := %searches{$searchloc};
             %PLA{'dynpmc_ldflags_list'}.push(@options[0]);
             %PLA{'dynpmc_cflags_list'}.push(@options[1]);
             %PLA{'need_cblas_h'} := @options[2];
+            %PLA{'blas_lib'} := $searchloc;
             pir::say("=== PLA: Using BLAS library $searchloc");
             return $found_blas;
         }
@@ -137,18 +145,35 @@ sub find_blas_linux(%PLA) {
     return $found_blas;
 }
 
+sub find_lib_on_paths($lib) {
+    # TODO: Allow the user to specify a location on the commandline
+    my @paths := ["/usr/lib", "/usr/local/lib"];
+    for @paths {
+        my $path := $_;
+        my $searchloc := ~$path ~ "/" ~ $lib;
+        my $test_ldd := pir::spawnw__IS('ldd ' ~ $searchloc);
+        if $test_ldd == 0 {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+
 sub find_lapack(%PLA) {
     my %config := get_config();
     my $osname := %config{'osname'};
+    %PLA{'lapack_lib'} := 'no-lapack';
     if $osname eq 'linux' {
         my %searches;
-        %searches{'/usr/lib/liblapack-3.so'} := ['-llapack-3', '-D_PLA_HAVE_LAPACK'];
+        %searches{'liblapack-3.so'} := ['-llapack-3', '-D_PLA_HAVE_LAPACK'];
         for %searches {
             my $searchloc := $_;
-            my $test_ldd := pir::spawnw__IS('ldd ' ~ $searchloc);
-            if $test_ldd == 0 {
+            my $haslapack := find_lib_on_paths($searchloc);
+            if $haslapack == 1 {
                 %PLA{'dynpmc_ldflags_list'}.push(%searches{$searchloc}[0]);
                 %PLA{'dynpmc_cflags_list'}.push(%searches{$searchloc}[1]);
+                %PLA{'lapack-lib'} := $searchloc;
                 return;
             }
         }
