@@ -34,19 +34,18 @@ PLA currently provides these PMC types:
     A 2-D matrix containing Complex values, optimized to store complex values
     directly instead of using an array of Parrot's Complex PMC type.
 
-* CharMatrix2D (Testing)
-
-    A 2-D character matrix that doubles as an array of strings with
-    fixed-row-length storage.
-
 PLA does not yet offer matrix or tensor types with more than two dimensions.
+
+== RELEASE HISTORY ==
+
+* Release 1: 21 Sept 2010 (Parrot 2.8.0)
 
 == DEPENDENCIES ==
 
 PLA has several dependencies. To help manage dependencies, you may want
 to install Plumage
 
-http://gitorious.org/parrot-plumage
+    http://gitorious.org/parrot-plumage
 
 This is not a dependency, just a convenience.
 
@@ -54,37 +53,32 @@ Each PLA release will target different versions of the various dependencies.
 See the file RELEASES for information about individual releases and their
 dependencies.
 
-Here are a list of dependencies for PLA:
+Here are a list of dependencies for PLA Release 1:
 
-* Parrot 2.7.0
+* Parrot 2.8.0
 
     PLA is an extension for Parrot and requires Parrot to build and run.
-    Releases of PLA will target supported releases of Parrot. Supported
-    releases are typically X.0, X.3, X.6, X.9. Releases for Parrot can be
-    retrieved from
+    Releases for Parrot can be retrieved from:
 
         http://www.parrot.org
 
     Development between releases will typically target the latest supported
-    release, though it may begin to target more recent development releases in
-    anticipation of the next supported release.
-
-    PLA expects a built and installed Parrot. For more information about the
-    installation process
+    release or Parrot development trunk, depending on a number of factors.
 
 * CBLAS or ATLAS
 
-    PLA depends on either CBLAS or ATLAS. The BLAS library is written in
-    Fortran, so C language bindings are all translations of the Fortran
-    interface. Unfortunately there is not a good, standard way of translating
-    the Fortran source to C API bindings, so not all libraries that provide a
-    C API for BLAS will have an interface compatible with PLA. We are working
-    to be more accepting of small differences in various interfaces, but this
-    work is moving slowly.
+    PLA depends on BLAS. The BLAS reference library is written in Fortran, and
+    there are many other implementations as well. Some are optimized in
+    particular ways, some are targetted to particular platforms, and some
+    provide bindings for other programming languages, such as C. Because of the
+    wide array of BLAS implementations, PLA may not be currently compatible with
+    all of them.
 
-    PLA may eventually support direct linkage to the BLAS library, instead of
-    requiring a C language implementation (CBLAS or ATLAS). This is not
-    supported yet but is on the roadmap.
+    At the moment, PLA supports bindings to the following libraries:
+
+        libblas-3 (the BLAS reference implementation)
+        libblas   (ATLAS, a generally-optimized implementation)
+        libcblas  (C translation of the BLAS reference implementation)
 
     We recommend the ATLAS library for current development and testing work.
     On Ubuntu or other Debian-based distros, you can type this incantation to
@@ -124,6 +118,15 @@ Here are a list of dependencies for PLA:
 
         http://gitorious.org/kakapo
         http://code.google.com/p/kakapo-parrot/
+
+    Due to problems in Kakapo development, for the first release a special
+    version of Kakapo should be used:
+
+        git clone git://github.com/Whiteknight/kakapo.git kakapo
+        cd kakapo
+        git checkout PLA-version-1
+
+    Future releases of PLA and Kakapo should not require this special case.
 
 * Other
 
@@ -172,5 +175,4 @@ to build or deploy PLA on Windows.
 Original versions were developed as part of the Matrixy project by Blairuk.
 Some parts of the test suite were provided by Austin Hastings.
 See the file CREDITS for updated information about contributors.
-
 
