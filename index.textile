@@ -78,7 +78,7 @@ Kakapo is under active development and not all versions might work properly with
 <pre>
 git clone git://github.com/Whiteknight/kakapo.git kakapo
 cd kakapo
-git checkout PLA_version_1
+git checkout PLA-version-1
 </pre>
 
 Or, if you don't have git, you can download this particular version of Kakapo in "ZIP":http://github.com/Whiteknight/kakapo/zipball/PLA_version_1 or "TAR":http://github.com/Whiteknight/kakapo/tarball/PLA_version_1 archive formats. Once you have the archive, you can unpack it to see the source.
