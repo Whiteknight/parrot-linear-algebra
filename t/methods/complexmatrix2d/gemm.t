@@ -169,7 +169,7 @@ class Test::ComplexMatrix2D::Gemm is Pla::Methods::Gemm {
                                 0.0, 0.0, 0.0);
         my $alpha := "this is most definitely not convertible to a number of any form";
         my $beta := self.complex("0+0i");
-        assert_throws(Exception::OutOfBounds, "can GEMM using a badly typed alpha",
+        assert_throws(Exception::InvalidStringRepresentation, "can GEMM using a badly typed alpha",
         {
             $A.'gemm'($alpha, $A, $B, $beta, $C);
         });
@@ -253,7 +253,7 @@ class Test::ComplexMatrix2D::Gemm is Pla::Methods::Gemm {
 
         my $alpha := self.complex("0+0i");
         my $beta := "this is most definitely not convertible to a number of any form";
-        assert_throws(Exception::OutOfBounds, "can GEMM using a badly typed beta",
+        assert_throws(Exception::InvalidStringRepresentation, "can GEMM using a badly typed beta",
         {
             $A.'gemm'($alpha, $A, $B, $beta, $C);
         });
