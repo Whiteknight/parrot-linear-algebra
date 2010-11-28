@@ -11,7 +11,7 @@ Resize the matrix to include at least the specified number of rows and columns.
 Resizing the matrix never causes the matrix to shrink. If you need a subset of
 the matrix, use get_block instead.
 
-h4. @fill(rows, cols, value)@
+h4. @fill(value, rows, cols)@
 
 Fill the matrix with a single value. if sizes are provided, fill to those
 sizes, growing the matrix if needed. Elements outside the specified area are
