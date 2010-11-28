@@ -14,7 +14,7 @@ class Test::ComplexMatrix2D::RowCombine is Pla::Methods::RowCombine {
         }
         return $!factory;
     }
-    
+
     method test_row_combine_complex() {
         my $A := self.factory.fancymatrix2x2();
         my $val1;

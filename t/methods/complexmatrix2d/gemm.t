@@ -95,7 +95,7 @@ class Test::ComplexMatrix2D::Gemm is Pla::Methods::Gemm {
         my $Y := self.factory.matrix3x3("1+15i", "2+18i", "3+21i",
                                 "4+33i", "5+40.5i", "6+48i",
                                 "7+51i", "8+63i", "9+75i");
-        my $Z := $A.'gemm'(self.complex("0.25"), $A, $B, self.complex("0.0"), $C);
+        my $Z := $A.'gemm'(self.complex("0.25"), $A, $B, self.complex("1.0"), $C);
         assert_equal($Y, $Z, "gemm aABbC does not work");
     }
 
@@ -118,7 +118,7 @@ class Test::ComplexMatrix2D::Gemm is Pla::Methods::Gemm {
         my $Z := $A.'gemm'($alpha, $A, $B, $beta, $C);
         assert_equal($Y, $Z, "cannot GEMM using a complex-typed alpha");
     }
-    
+
     method test_METHOD_gemm_ALPHA_num() {
         my $A := self.factory.matrix3x3("1+1i", "2+2i", "3+3i",
                                 "4+4i", "5+5i", "6+6i",
@@ -156,7 +156,7 @@ class Test::ComplexMatrix2D::Gemm is Pla::Methods::Gemm {
         my $Z := $A.'gemm'($alpha, $A, $B, $beta, $C);
         assert_equal($Y, $Z, "cannot GEMM using a int-typed alpha");
     }
-    
+
     method test_METHOD_gemm_ALPHA_bad() {
         my $A := self.factory.matrix3x3("1+1i", "2+2i", "3+3i",
                                 "4+4i", "5+5i", "6+6i",
@@ -183,20 +183,20 @@ class Test::ComplexMatrix2D::Gemm is Pla::Methods::Gemm {
         my $B := self.factory.matrix3x3(0.0, 0.0, 0.0,
                                 0.0, 0.0, 0.0,
                                 0.0, 0.0, 0.0);
-                                
+
         my $C := self.factory.matrix3x3("1+1i", "2+2i", "3+3i",
                                 "4+4i", "5+5i", "6+6i",
                                 "7+7i", "8+8i", "9+9i");
         my $Y := self.factory.matrix3x3("2+2i", "4+4i", "6+6i",
                                 "8+8i", "10+10i", "12+12i",
                                 "14+14i", "16+16i", "18+18i");
-                                
+
         my $alpha := self.complex("0+0i");
         my $beta := self.complex("2+0i");
         my $Z := $A.'gemm'($alpha, $A, $B, $beta, $C);
         assert_equal($Y, $Z, "cannot GEMM using a complex-typed beta");
     }
-    
+
     method test_METHOD_gemm_BETA_num() {
         my $A := self.factory.matrix3x3(0.0, 0.0, 0.0,
                                 0.0, 0.0, 0.0,

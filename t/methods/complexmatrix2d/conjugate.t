@@ -34,7 +34,7 @@ class Test::ComplexMatrix2D::Conjugate is Pla::MatrixTestBase {
         $n{Key.new(0,1)} := "2-2i";
         $n{Key.new(0,2)} := "3-3i";
         $n{Key.new(0,3)} := "4-4i";
-        
+
         $m.conjugate();
         assert_equal($m, $n, "non-square conjugate does not work");
     }
