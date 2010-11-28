@@ -17,15 +17,15 @@ class Test::NumMatrix2D::Resize is Pla::Methods::Resize {
 
     # resize method should never shrink a matrix
     method test_resize_to_smaller_numerical() {
-          my $m := self.factory.matrix3x3(11, 12, 13,
-                                          21, 22, 23,
-                                          31, 32, 33);
+        my $m := self.factory.matrix3x3(11, 12, 13,
+                                      21, 22, 23,
+                                      31, 32, 33);
 
-          my $n := pir::clone($m);
+        my $n := pir::clone($m);
 
-          $m.resize(1,1);
+        $m.resize(1,1);
 
-          assert_equal($m, $n, "resize should not shrink the matrix");
+        assert_equal($m, $n, "resize should not shrink the matrix");
     }
 
     method test_resize_to_bigger_numerical() {
