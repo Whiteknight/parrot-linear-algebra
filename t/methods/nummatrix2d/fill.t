@@ -15,23 +15,23 @@ class Test::NumMatrix2D::Fill is Pla::Methods::Fill {
         return $!factory;
     }
 
-	  method test_fill_numerical() {
-		    my $m := self.factory.defaultmatrix2x2();
-		    my $n := self.factory.matrix2x2(4, 4, 4, 4);
+    method test_fill_numerical() {
+        my $m := self.factory.defaultmatrix2x2();
+        my $n := self.factory.matrix2x2(4, 4, 4, 4);
 
-		    $m.fill(4);
+        $m.fill(4);
 
-		    assert_equal($m, $n, "cannot fill numerical");
-	  }
+        assert_equal($m, $n, "cannot fill numerical");
+    }
 
-	  method test_fill_with_resizing_numerical() {
-	      my $m := self.factory.matrix();
-	      my $n := self.factory.matrix3x3(2, 2, 2, 
-									                      2, 2, 2, 
-									                      2, 2, 2);
+    method test_fill_with_resizing_numerical() {
+        my $m := self.factory.matrix();
+        my $n := self.factory.matrix3x3(2, 2, 2, 
+                                        2, 2, 2, 
+                                        2, 2, 2);
 
-	      $m.fill(3, 3, 2);
+        $m.fill(3, 3, 2);
 
-	      assert_equal($m, $n, "cannot fill (with resize) numerical");
-	  }
+        assert_equal($m, $n, "cannot fill (with resize) numerical");
+    }
 }
