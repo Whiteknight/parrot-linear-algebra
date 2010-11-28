@@ -18,8 +18,8 @@ class Test::NumMatrix2D::Resize is Pla::Methods::Resize {
     # resize method should never shrink a matrix
     method test_resize_to_smaller_numerical() {
           my $m := self.factory.matrix3x3(11, 12, 13,
-	                                      21, 22, 23,
-	                                      31, 32, 33);
+                                            21, 22, 23,
+                                            31, 32, 33);
 
           my $n := pir::clone($m);
 
@@ -33,8 +33,8 @@ class Test::NumMatrix2D::Resize is Pla::Methods::Resize {
 				                        21, 22);
 
         my $n := self.factory.matrix3x3(11, 12,  0,
-				                        21, 22,  0,
-				                         0,  0,  0);
+                                        21, 22,  0,
+                                         0,  0,  0);
 
         $m.resize(3,3);
 
@@ -43,7 +43,7 @@ class Test::NumMatrix2D::Resize is Pla::Methods::Resize {
 
     method test_resize_to_same_size_numerical() {
         my $m := self.factory.matrix2x2(11, 12,
-								        21, 22);
+                                        21, 22);
 
         my $n := pir::clone($m);
 
