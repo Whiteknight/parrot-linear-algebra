@@ -1,81 +1,163 @@
 body {
-    background-color: #000000;
-    color: #AAAAAA;
-}
-
-table#master_table {
-    width: 100%;
-}
-
-td#left_margin {
-    width: 5em;
-}
-
-td#main_column {
-    background-color: #222222;
-    border: 1px solid #444444;
-    padding: 5px;
-}
-
-td#nav_column {
-    background-color: #222222;
-    border: 1px solid #444444;
-    padding: 5px;
-    width: 250px;
-}
-
-td#right_margin {
-    width: 5em;
-}
-
-div.data_table {
-    margin-left: 4em;
-    border: 1px solid #AAAAAA;
-    background-color: #000000;
-    padding: 3px;
-}
-
-div.download {
-    float: right;
-    margin-right: 10em;
-}
-
-div.subtitle {
-    margin-left: 7em;
-    font-size: smaller;
-}
-
-h3 {
-    border-bottom: 1px solid #444444;
-}
-
-ul {
-    margin-left: 1em;
-}
-
-h4 {
-    margin-left: 2em;
-}
-
-p {
-    margin-left: 3em;
-}
-
-a {
-    color: #DDD000;
-}
-
-code {
-    background-color: #000000;
-    border: 1px solid #AAA555;
-    color: #BBBBBB;
-    padding: 2px;
+margin-top: 0px;
+color: #84878E;
+background-color: #565656;
+background-image: url(/parrot-linear-algebra/images/bg.png);
+background-repeat: repeat-x;
+font-family: 'Lucida Grande', arial, sans-serif;
+font-size: 11px;
+line-height: 18px;
 }
 
 pre {
-    background-color: #000000;
-    border: 1px solid #AAA555;
-    color: #BBBBBB;
-    padding: 2px;
-    margin-left: 3em;
+color: #fff;
+background: #444;
+padding: 10px;
+}
+
+#wrapper {
+width: 950px;
+margin-left: auto;
+margin-right: auto;
+background-color: #FFF;
+}
+
+#left-div a:link {
+text-decoration: underline;
+}
+
+#left-div a:hover {
+text-decoration: none;
+}
+
+a:link { 
+text-decoration: none; 
+color: #84878E; 
+}
+
+a:visited { 
+text-decoration: none; 
+color: #84878E; 
+}
+
+a:hover, a:active { 
+color: #84878E; 
+text-decoration: none;
+}
+
+h3 {
+line-height: 20px;
+font-weight: normal; 
+margin: 0px 0 10px; 
+font-size: 20px;
+}
+
+h1 {
+margin: 25px 0 0 0;
+color: #fff;
+}
+
+h2 {
+margin: 0;
+color: #fff;
+}
+
+
+#header {
+width: 950px;
+height: 100px;
+float: left;
+background-color: #3f3f3f;
+}
+
+#title {
+float: left;
+}
+
+#download {
+float: right;
+margin-top: 25px;
+margin-right: 10px;
+}
+
+#meniu {
+width: 950px;
+min-height: 36px;
+background-image: url(/parrot-linear-algebra/images/categories-bg.gif);
+background-repeat: repeat-x;
+float: left;
+background-color: #3f3f3f;
+border-bottom: 1px solid #3f3f3f;
+}
+
+#meniu ul {
+margin: 0px 0px 0px 10px;
+list-style-type: none; 
+list-style-image: none; 
+float: left;
+padding-left: 0px;
+}
+
+#meniu ul li {
+float: left; 
+line-height: 2.0em;
+}
+
+#meniu ul li a:link, #meniu ul li a:visited, #meniu ul li a:active {
+height: 29px;
+color: #FFFFFF;
+font-size: 11px;
+font-weight: bold;
+padding: 7px 9px 0px 9px;
+float: left;
+border-left: 1px solid transparent;
+border-right: 1px solid transparent;
+}
+
+#meniu ul li a:hover {
+background-image: url(/parrot-linear-algebra/images/categories-bg-2.gif);
+background-repeat: repeat-x;
+border-left: 1px solid #176FB3;
+border-right: 1px solid #12a8d1;
+background-position: bottom;
+background-color: #000;
+}
+
+#left-div {
+width: 660px;
+float: left;
+margin-top: 15px;
+padding-left: 15px;
+}
+
+#sidebar {
+float: left;
+margin-top: 15px;
+margin-left: 45px;
+width: 230px;
+}
+
+.linkstitle {
+margin-left: 24px;
+font-weight: bold;
+font-size: 15px;
+}
+
+#footer {
+clear: both;
+width: 930px;
+padding-left: 20px;
+text-align: left;
+color: #84878E;
+padding-top: 14px;
+margin-left: auto;
+margin-right: auto;
+font-size: 11px;
+background-color: #FFF;
+}
+
+.logo {
+float: left; 
+border: 0px;
+margin-top: 10px;
 }

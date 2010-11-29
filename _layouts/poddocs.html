@@ -1,137 +1,147 @@
-<?xml version="1.0" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>{{ page.title }}</title>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <link rel="stylesheet" href="/parrot-linear-algebra/stylesheets/poddocs.css" type="text/css">
-</head>
-
-<body>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>{{ page.title }}</title>
+<link href="/parrot-linear-algebra/stylesheets/poddocs.css" rel="stylesheet" type="text/css"/>
+</head><body>
     <a href="http://github.com/Whiteknight/parrot-linear-algebra">
         <img style="position: absolute; top: 0; right: 0; border: 0;"
              src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"
              alt="Fork me on GitHub" />
     </a>
-    <div class="download">
-      <a href="http://github.com/Whiteknight/parrot-linear-algebra/zipball/master">
-        <img border="0" width="90" src="http://github.com/images/modules/download/zip.png"></a>
-      <a href="http://github.com/Whiteknight/parrot-linear-algebra/tarball/master">
-        <img border="0" width="90" src="http://github.com/images/modules/download/tar.png"></a>
-    </div>
-    <h1>{{ page.title }}</h1>
-    <div id="subtitle">Linear Algebra for the Parrot Virtual Machine</div>
-    <table cellpadding="5" cellspacing="5" id="master_table">
-        <tr>
-            <td id="left_margin"></td>
-            <td id="main_column" valign="top">
-                {{ content }}
-            </td>
-            <td id="nav_column" valign="top">
-                <h3>Project</h3>
-                <ul>
-                    <li><a href="/parrot-linear-algebra/index.html" class="nav_link">
-                        Home
-                    </a></li>
-                    <li><a href="http://github.com/Whiteknight/parrot-linear-algebra">
-                        Source
-                    </a></li>
-                    <li><a href="http://github.com/Whiteknight/parrot-linear-algebra/issues">
-                        Issues
-                    </a></li>
-                    <li>
-                        <a href="/parrot-linear-algebra/contributors.html">
-                            Contributors
-                        </a>
-                    </li>
-                    <li>
-                        <a href="http://github.com/Whiteknight/parrot-linear-algebra/downloads">
-                            Releases
-                        </a>
-                    </li>
-                </ul>
-                <h3>PMC Documentation</h3>
-                <ul>
-                    <li>
-                        <a href="/parrot-linear-algebra/pmcs/nummatrix2d.html" class="nav_link">
-                            NumMatrix2D
-                        </a>
-                        <ul>
-                            <li>
-                                <a href="/parrot-linear-algebra/pmcs/vtables-general/nummatrix2d.html">
-                                    VTABLEs
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/parrot-linear-algebra/pmcs/vtables-arithmetic/nummatrix2d.html">
-                                    Arithmetic
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/parrot-linear-algebra/pmcs/methods/nummatrix2d.html">
-                                    Methods
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/parrot-linear-algebra/pmcs/examples/nummatrix2d.html">
-                                    Examples
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="/parrot-linear-algebra/pmcs/complexmatrix2d.html" class="nav_link">
-                            ComplexMatrix2D
-                        </a>
-                        <ul>
-                            <li>
-                                <a href="/parrot-linear-algebra/pmcs/vtables-general/complexmatrix2d.html">
-                                    VTABLEs
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/parrot-linear-algebra/pmcs/vtables-arithmetic/complexmatrix2d.html">
-                                    Arithmetic
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/parrot-linear-algebra/pmcs/methods/complexmatrix2d.html">
-                                    Methods
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/parrot-linear-algebra/pmcs/examples/complexmatrix2d.html">
-                                    Examples
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="/parrot-linear-algebra/pmcs/pmcmatrix2d.html" class="nav_link">
-                            PMCMatrix2D
-                        </a>
-                        <ul>
-                            <li>
-                                <a href="/parrot-linear-algebra/pmcs/vtables-general/pmcmatrix2d.html">
-                                    VTABLEs
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/parrot-linear-algebra/pmcs/methods/pmcmatrix2d.html">
-                                    Methods
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/parrot-linear-algebra/pmcs/examples/pmcmatrix2d.html">
-                                    Examples
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </td>
-            <td id="right_margin"></td>
-        </tr>
-    </table>
-</body>
-</html>
+
+<div id="wrapper">
+
+<div id="header">
+<div id="title">
+<h1>{{ page.title }}</h1><br />
+<h2>Linear Algebra for the Parrot Virtual Machine</h2>
+</div>
+<div id="download">
+<a href="http://github.com/Whiteknight/parrot-linear-algebra/zipball/master"><img src="/parrot-linear-algebra/images/zip.png"></a>
+<a href="http://github.com/Whiteknight/parrot-linear-algebra/tarball/master"><img src="/parrot-linear-algebra/images/tar.png"></a>
+</div>
+</div>
+
+<!--Start navigation Menu-->
+<div id="meniu">	
+<ul>
+	<li><a href="/parrot-linear-algebra/index.html" title="Home">Home</a>
+	</li>
+	<li><a href="http://github.com/Whiteknight/parrot-linear-algebra" title="Source">Source</a>
+    </li>
+	<li><a href="http://github.com/Whiteknight/parrot-linear-algebra/issues" title="Issues">Issues</a>
+    </li>
+	<li><a href="/parrot-linear-algebra/contributors.html" title="Contributors">Contributors</a>
+    </li>
+	<li><a href="http://github.com/Whiteknight/parrot-linear-algebra/downloads" title="Releases">Releases</a>
+    </li>
+</ul>
+</div>
+<!--End Navigation Menu-->	
+
+<!--Start content-->	
+<div id="left-div">
+
+{{ content }}
+
+</div>
+
+<!--End content-->
+		
+<!--start Sidebar-->
+<div id="sidebar">
+
+<div class="links"><h3>PMC Documentation</h3>
+<ul>
+	<li>
+		<a href="/parrot-linear-algebra/pmcs/nummatrix2d.html" class="nav_link">
+			NumMatrix2D
+		</a>
+		<ul>
+			<li>
+				<a href="/parrot-linear-algebra/pmcs/vtables-general/nummatrix2d.html">
+					VTABLEs
+				</a>
+			</li>
+			<li>
+				<a href="/parrot-linear-algebra/pmcs/vtables-arithmetic/nummatrix2d.html">
+					Arithmetic
+				</a>
+			</li>
+			<li>
+				<a href="/parrot-linear-algebra/pmcs/methods/nummatrix2d.html">
+					Methods
+				</a>
+			</li>
+			<li>
+				<a href="/parrot-linear-algebra/pmcs/examples/nummatrix2d.html">
+					Examples
+				</a>
+			</li>
+		</ul>
+	</li>
+	<li>
+		<a href="/parrot-linear-algebra/pmcs/complexmatrix2d.html" class="nav_link">
+			ComplexMatrix2D
+		</a>
+		<ul>
+			<li>
+				<a href="/parrot-linear-algebra/pmcs/vtables-general/complexmatrix2d.html">
+					VTABLEs
+				</a>
+			</li>
+			<li>
+				<a href="/parrot-linear-algebra/pmcs/vtables-arithmetic/complexmatrix2d.html">
+					Arithmetic
+				</a>
+			</li>
+			<li>
+				<a href="/parrot-linear-algebra/pmcs/methods/complexmatrix2d.html">
+					Methods
+				</a>
+			</li>
+			<li>
+				<a href="/parrot-linear-algebra/pmcs/examples/complexmatrix2d.html">
+					Examples
+				</a>
+			</li>
+		</ul>
+	</li>
+	<li>
+		<a href="/parrot-linear-algebra/pmcs/pmcmatrix2d.html" class="nav_link">
+			PMCMatrix2D
+		</a>
+		<ul>
+			<li>
+				<a href="/parrot-linear-algebra/pmcs/vtables-general/pmcmatrix2d.html">
+					VTABLEs
+				</a>
+			</li>
+			<li>
+				<a href="/parrot-linear-algebra/pmcs/methods/pmcmatrix2d.html">
+					Methods
+				</a>
+			</li>
+			<li>
+				<a href="/parrot-linear-algebra/pmcs/examples/pmcmatrix2d.html">
+					Examples
+				</a>
+			</li>
+		</ul>
+	</li>
+</ul>
+</div>                
+       
+</div>
+<!--end Sidebar-->
+
+<!--start Footer-->
+<div id="footer">
+
+</div>
+<!--end Footer-->
+
+</div>
+</body></html>
