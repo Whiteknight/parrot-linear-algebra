@@ -38,6 +38,16 @@ method test_VTABLE_set_pmc_keyed_STRING() {
     assert_equal($b, $c, "did not get the correct value back");
 }
 
+method test_VTABLE_set_pmc_keyed_ARRAY() {
+    my $m := Parrot::new("ComplexMatrix2D");
+    my $a := (1,1);
+    $m{Key.new(0,0)} := $a;
+    my $b := $m{Key.new(0,0)};
+    assert_instance_of($b, "Complex", "Cannot set_pmc_keyed<Array>");
+    my $c := pir::new__PSP("Complex", "1+1i");
+    assert_equal($b, $c, "did not get the correct value back");
+}
+
 method test_VTABLE_set_pmc_keyed_INTEGER() {
     my $m := Parrot::new("ComplexMatrix2D");
     my $a := pir::box__PI(1);

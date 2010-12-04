@@ -29,6 +29,20 @@ class Test::ComplexMatrix2D::Gemm is Pla::Methods::Gemm {
         }
     }
 
+    method array($a, $b) {
+        my $c;
+        Q:PIR {
+            $P0 = find_lex "$a"
+            $P1 = find_lex "$b"
+            $P2 = new "Array"
+            $P2 = 2
+            $P2[0] = $P0
+            $P2[1] = $P1
+            store_lex "$c", $P2
+        };
+        return $c;
+    }
+
     method test_METHOD_gemm_aA() {
         my $A := self.factory.matrix3x3("1+1i", "2+2i", "3+3i",
                                 "4+4i", "5+5i", "6+6i",
@@ -195,6 +209,48 @@ class Test::ComplexMatrix2D::Gemm is Pla::Methods::Gemm {
         my $beta := self.complex("2+0i");
         my $Z := $A.'gemm'($alpha, $A, $B, $beta, $C);
         assert_equal($Y, $Z, "cannot GEMM using a complex-typed beta");
+    }
+
+	method test_METHOD_gemm_BETA_array_num() {
+        my $A := self.factory.matrix3x3(0.0, 0.0, 0.0,
+                                0.0, 0.0, 0.0,
+                                0.0, 0.0, 0.0);
+        my $B := self.factory.matrix3x3(0.0, 0.0, 0.0,
+                                0.0, 0.0, 0.0,
+                                0.0, 0.0, 0.0);
+
+        my $C := self.factory.matrix3x3("1+1i", "2+2i", "3+3i",
+                                "4+4i", "5+5i", "6+6i",
+                                "7+7i", "8+8i", "9+9i");
+        my $Y := self.factory.matrix3x3("2+2i", "4+4i", "6+6i",
+                                "8+8i", "10+10i", "12+12i",
+                                "14+14i", "16+16i", "18+18i");
+
+        my $alpha := self.complex("0+0i");
+        my $beta := (2.0, 0.0);
+        my $Z := $A.'gemm'($alpha, $A, $B, $beta, $C);
+        assert_equal($Y, $Z, "cannot GEMM using a numerically array typed beta");
+    }
+
+	method test_METHOD_gemm_BETA_array_int() {
+        my $A := self.factory.matrix3x3(0.0, 0.0, 0.0,
+                                0.0, 0.0, 0.0,
+                                0.0, 0.0, 0.0);
+        my $B := self.factory.matrix3x3(0.0, 0.0, 0.0,
+                                0.0, 0.0, 0.0,
+                                0.0, 0.0, 0.0);
+
+        my $C := self.factory.matrix3x3("1+1i", "2+2i", "3+3i",
+                                "4+4i", "5+5i", "6+6i",
+                                "7+7i", "8+8i", "9+9i");
+        my $Y := self.factory.matrix3x3("2+2i", "4+4i", "6+6i",
+                                "8+8i", "10+10i", "12+12i",
+                                "14+14i", "16+16i", "18+18i");
+
+        my $alpha := self.complex("0+0i");
+        my $beta := (2, 0);
+        my $Z := $A.'gemm'($alpha, $A, $B, $beta, $C);
+        assert_equal($Y, $Z, "cannot GEMM using a int array typed beta");
     }
 
     method test_METHOD_gemm_BETA_num() {

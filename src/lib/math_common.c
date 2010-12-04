@@ -44,6 +44,17 @@ get_complex_value_from_pmc(PARROT_INTERP, PMC * value, FLOATVAL * real,
         *real = VTABLE_get_number_keyed_int(interp, value, 0);
         *imag = VTABLE_get_number_keyed_int(interp, value, 1);
     }
+    else if (VTABLE_does(interp, value, Parrot_str_new(interp, "array", 5))) {
+        INTVAL size = VTABLE_elements(interp, value);
+        if(size <= 2) {
+            *real = (size == 0) ? 0.0 : VTABLE_get_number_keyed_int(interp, value, 0);
+            *imag = (size < 2) ? 0.0 : VTABLE_get_number_keyed_int(interp, value, 1);
+        }
+		else {
+			Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
+            "PLA: array too long to be converted into complex number");
+		}
+    }
     else if (VTABLE_does(interp, value, Parrot_str_new(interp, "float", 5))) {
         *real = VTABLE_get_number(interp, value);
         *imag = 0.0;

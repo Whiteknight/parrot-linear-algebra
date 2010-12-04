@@ -23,6 +23,14 @@ class Test::ComplexMatrix2D::ItemAt is Pla::Methods::ItemAt {
         assert_equal($m, $n, "item_at(VALUE) does not work like keyed access");
     }
 
+    method test_set_optional_third_parameter_array() {
+        my $m := self.factory.defaultmatrix2x2();
+        my $n := self.factory.defaultmatrix2x2();
+        $n{Key.new(1, 1)} := (1,1);
+        $m.item_at(1, 1, (1,1));
+        assert_equal($m, $n, "item_at(VALUE) does not work like keyed access when VALUE is an array");
+    }
+
     method test_set_out_of_bounds_index_complex_A() {
         my $m := self.factory.defaultmatrix2x2();
         assert_throws(Exception::OutOfBounds, "can item_at out of bounds",
