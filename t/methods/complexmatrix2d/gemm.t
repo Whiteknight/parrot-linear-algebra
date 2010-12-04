@@ -29,20 +29,6 @@ class Test::ComplexMatrix2D::Gemm is Pla::Methods::Gemm {
         }
     }
 
-    method array($a, $b) {
-        my $c;
-        Q:PIR {
-            $P0 = find_lex "$a"
-            $P1 = find_lex "$b"
-            $P2 = new "Array"
-            $P2 = 2
-            $P2[0] = $P0
-            $P2[1] = $P1
-            store_lex "$c", $P2
-        };
-        return $c;
-    }
-
     method test_METHOD_gemm_aA() {
         my $A := self.factory.matrix3x3("1+1i", "2+2i", "3+3i",
                                 "4+4i", "5+5i", "6+6i",
