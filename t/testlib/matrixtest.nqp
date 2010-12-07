@@ -296,7 +296,102 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
         self.AssertHasMethod($m, "convert_to_complex_matrix");
         self.AssertHasMethod($m, "convert_to_pmc_matrix");
     }
+
+
+    method test_negative_array() {
+        my $m := self.factory.defaultmatrix2x2();
+
+        assert_throws(Exception::OutOfBounds, "negative PCM array should throw exception", {
+            my $e := $m{[-1]};
+        });
+    }
+
+    method test_empty_array() {
+        my $m := self.factory.defaultmatrix2x2();
+
+        assert_throws(Exception::OutOfBounds, "empty PCM array should throw exception", {
+            my $e := $m{[]};
+        });
+    }
+
+    method test_1_element_array() {
+        my $m := self.factory.fancymatrix2x2();
+        $m.'item_at'(0,1,3);
+        my $e := $m{[1]};
+
+        assert_equal($e, 3, "1 element PCM array should work");
+    }
+
+    method test_1_element_array_not_in_first_row() {
+        my $m := self.factory.defaultmatrix3x3();
+        $m.'item_at'(2,2,3);
+        my $e := $m{[8]};
+
+        assert_equal($e, 3, "1 element PCM array should work");
+    }
+
+    method test_2_elements_array() {
+        my $m := self.factory.fancymatrix2x2();
+        $m.'item_at'(1,1,3);
+        my $e := $m{[1,1]};
+
+        assert_equal($e, 3, "2 elements PCM array should work");
+    }
+
+    method test_more_than_2_elements_array() {
+        my $m := self.factory.fancymatrix2x2();
+
+        assert_throws(Exception::OutOfBounds, "more than 2 elements PCM array should throw exception", {
+          my $e := $m{[1,2,3]};
+        });
+    }
+
+
+    method test_negative_key() {
+        my $m := self.factory.defaultmatrix2x2();
+
+        assert_throws(Exception::OutOfBounds, "negative PCM key should throw exception", {
+            my $e := $m{Key.new(-1)};
+        });
+    }
+
+    method test_empty_key() {
+        my $m := self.factory.fancymatrix2x2();
+
+        assert_throws(Exception::OutOfBounds, "empty PCM key should throw exception", {
+            my $e := $m{Key.new()};
+        });
+    }
+
+    method test_1_element_key() {
+        my $m := self.factory.fancymatrix2x2();
+        $m.'item_at'(0,1,3);
+        my $e := $m{Key.new(1)};
+
+        assert_equal($e, 3, "1 element PCM key should work");
+    }
+
+    method test_1_element_key_not_in_first_row() {
+        my $m := self.factory.defaultmatrix3x3();
+        $m.'item_at'(2,2,3);
+        my $e := $m{Key.new(8)};
+
+        assert_equal($e, 3, "1 element PCM key should work");
+    }
+
+    method test_2_elements_key() {
+        my $m := self.factory.fancymatrix2x2();
+        $m.'item_at'(1,1,3);
+        my $e := $m{Key.new(1,1)};
+
+        assert_equal($e, 3, "2 elements PCM key should work");
+    }
+
+    method test_more_than_2_elements_key() {
+        my $m := self.factory.fancymatrix2x2();
+
+        assert_throws(Exception::OutOfBounds, "more than 2 elements PCM key should throw exception", {
+          my $e := $m{Key.new(0,1,3)};
+        });
+    }
 }
-
-
-
