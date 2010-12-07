@@ -20,14 +20,15 @@ intkey_to_coords(PARROT_INTERP, const INTVAL rows, const INTVAL cols,
 }
 
 void
-pmckey_to_coords(PARROT_INTERP, PMC * key, INTVAL * row, INTVAL * col)
+pmckey_to_coords(PARROT_INTERP, const INTVAL rows, const INTVAL cols,
+    PMC * key, INTVAL * row, INTVAL * col)
 {
     if (VTABLE_does(interp, key, Parrot_str_new(interp, "array", 5))) {
         INTVAL size = VTABLE_elements(interp, key);
 
         if (size == 1) {
-            Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
-                "PLA: 1 element array to get matrix element. NOT IMPLEMENTED"); 
+            INTVAL int_key = VTABLE_shift_integer(interp, key);
+            intkey_to_coords(interp, rows, cols, int_key, row, col);
         }
         else if (size == 2) {
             *row = VTABLE_shift_integer(interp, key);
@@ -44,8 +45,7 @@ pmckey_to_coords(PARROT_INTERP, PMC * key, INTVAL * row, INTVAL * col)
         key = VTABLE_shift_pmc(interp, key);
 
         if (!key) {
-            Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
-                "PLA: 1 element PMC key to get matrix element. NOT IMPLEMENTED");
+            intkey_to_coords(interp, rows, cols, element1, row, col);
         }
         else {
             element2 = VTABLE_get_integer(interp, key);
