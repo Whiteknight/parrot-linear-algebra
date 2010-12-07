@@ -142,6 +142,14 @@ method test_1_element_array() {
     assert_equal($e, 7, "1 element PCM array should work");
 }
 
+method test_1_element_array2() {
+    my $m := self.factory.defaultmatrix3x3();
+    $m.'item_at'(2,2,7);
+    my $e := $m{[8]};
+
+    assert_equal($e, 7, "1 element PCM array should work");
+}
+
 method test_2_elements_array() {
     my $m := self.factory.fancymatrix2x2();
     $m.'item_at'(1,1,7);
@@ -180,6 +188,14 @@ method test_1_element_key() {
     my $m := self.factory.fancymatrix2x2();
     $m.'item_at'(0,1,7);
     my $e := $m{Key.new(1)};
+
+    assert_equal($e, 7, "1 element PCM key should work");
+}
+
+method test_1_element_key2() {
+    my $m := self.factory.defaultmatrix3x3();
+    $m.'item_at'(2,2,7);
+    my $e := $m{Key.new(8)};
 
     assert_equal($e, 7, "1 element PCM key should work");
 }
