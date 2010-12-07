@@ -307,7 +307,7 @@ elements.
         const INTVAL rows_size = attrs->rows;
         const INTVAL cols_size = attrs->cols;
         INTVAL rows, cols;
-        GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
+        GET_KEY_INDICES_ROWMAJOR(INTERP, rows_size, cols_size, key, rows, cols);
         if (rows >= rows_size || cols >= cols_size)
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
                 PLATYPENAME ": indices out of bounds");
@@ -433,7 +433,7 @@ must have two elements.
     VTABLE void set_number_keyed(PMC * key, FLOATVAL value) {
         DECLATTRS_NumMatrix2D(SELF, attrs);
         INTVAL rows, cols, rows_size = attrs->rows, cols_size = attrs->cols;
-        GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
+        GET_KEY_INDICES_ROWMAJOR(INTERP, rows_size, cols_size, key, rows, cols);
         if (rows >= rows_size || cols >= cols_size) {
             resize_matrix(INTERP, SELF, rows, cols);
             rows_size = attrs->rows;

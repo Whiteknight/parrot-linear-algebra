@@ -443,7 +443,7 @@ Get a Complex PMC from the point specified by the key.
         const INTVAL cols_size = attrs->cols;
         INTVAL rows, cols;
         FLOATVAL real, imag;
-        GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
+        GET_KEY_INDICES_ROWMAJOR(INTERP, rows_size, cols_size, key, rows, cols);
         if (rows < 0 || rows >= rows_size || cols >= cols_size || cols < 0)
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
                 PLATYPENAME ": indices out of bounds");
@@ -465,7 +465,7 @@ Get a Complex PMC from the point specified by the key.
         const INTVAL flags = attrs->flags;
         FLOATVAL real, imag;
         FLOATVAL * const s = attrs->storage;
-        GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
+        GET_KEY_INDICES_ROWMAJOR(INTERP, rows_size, cols_size, key, rows, cols);
         if (rows < 0 || rows >= rows_size || cols >= cols_size || cols < 0)
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
                 PLATYPENAME ": indices out of bounds");
@@ -475,8 +475,11 @@ Get a Complex PMC from the point specified by the key.
     }
 
     VTABLE PMC * get_pmc_keyed(PMC * key) {
+        DECLATTRS_ComplexMatrix2D(SELF, attrs);
+        const INTVAL rows_size = attrs->rows;
+        const INTVAL cols_size = attrs->cols;
         INTVAL rows, cols;
-        GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
+        GET_KEY_INDICES_ROWMAJOR(INTERP, rows_size, cols_size, key, rows, cols);
         return get_complex_pmc_at_xy(INTERP, SELF, rows, cols);
     }
 
@@ -595,14 +598,20 @@ integer, and 0 for the complex value.
 */
 
     VTABLE void set_pmc_keyed(PMC * key, PMC * value) {
+        DECLATTRS_ComplexMatrix2D(SELF, attrs);
+        const INTVAL rows_size = attrs->rows;
+        const INTVAL cols_size = attrs->cols;
         INTVAL rows, cols;
-        GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
+        GET_KEY_INDICES_ROWMAJOR(INTERP, rows_size, cols_size, key, rows, cols);
         set_complex_pmc_at_xy(INTERP, SELF, value, rows, cols);
     }
 
     VTABLE void set_number_keyed(PMC * key, FLOATVAL value) {
+        DECLATTRS_ComplexMatrix2D(SELF, attrs);
+        const INTVAL rows_size = attrs->rows;
+        const INTVAL cols_size = attrs->cols;
         INTVAL rows, cols;
-        GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
+        GET_KEY_INDICES_ROWMAJOR(INTERP, rows_size, cols_size, key, rows, cols);
         set_scalar_at_xy(INTERP, SELF, value, rows, cols);
     }
 
