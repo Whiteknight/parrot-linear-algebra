@@ -118,4 +118,86 @@ method test_VTABLE_get_string() {
     assert_equal(~($m), '{' ~ "\n\t[0,0] = Hello World\n" ~ '}' ~ "\n", "get_string does not work");
 }
 
+method test_negative_array() {
+    my $m := self.factory.defaultmatrix2x2();
+
+    assert_throws(Exception::OutOfBounds, "negative PCM array should throw exception", {
+        my $e := $m{[-1]};
+    });
+}
+
+method test_empty_array() {
+    my $m := self.factory.defaultmatrix2x2();
+
+    assert_throws(Exception::OutOfBounds, "empty PCM array should throw exception", {
+        my $e := $m{[]};
+    });
+}
+
+method test_1_element_array() {
+    my $m := self.factory.fancymatrix2x2();
+    $m.'item_at'(0,1,7);
+    my $e := $m{[1]};
+
+    assert_equal($e, 7, "1 element PCM array should work");
+}
+
+method test_2_elements_array() {
+    my $m := self.factory.fancymatrix2x2();
+    $m.'item_at'(1,1,7);
+    my $e := $m{[1,1]};
+
+    assert_equal($e, 7, "PCM array with 2 elements should work");
+}
+
+method test_more_than_2_elements_array() {
+    my $m := self.factory.fancymatrix2x2();
+
+    assert_throws(Exception::OutOfBounds, "PCM array with more than 2 elements should throw exception", {
+      my $e := $m{[1,2,3]};
+    });
+}
+
+
+
+method test_negative_key() {
+    my $m := self.factory.defaultmatrix2x2();
+
+    assert_throws(Exception::OutOfBounds, "negative PCM key should throw exception", {
+        my $e := $m{Key.new(-1)};
+    });
+}
+
+method test_empty_key() {
+    my $m := self.factory.fancymatrix2x2();
+
+    assert_throws(Exception::OutOfBounds, "empty PCM key should throw exception", {
+        my $e := $m{Key.new()};
+    });
+}
+
+method test_1_element_key() {
+    my $m := self.factory.fancymatrix2x2();
+    $m.'item_at'(0,1,7);
+    my $e := $m{Key.new(1)};
+
+    assert_equal($e, 7, "1 element PCM key should work");
+}
+
+method test_2_elements_key() {
+    my $m := self.factory.fancymatrix2x2();
+    $m.'item_at'(1,1,7);
+    my $e := $m{Key.new(1,1)};
+
+    assert_equal($e, 7, "PCM key with 2 elements should work");
+}
+
+method test_more_than_2_elements_key() {
+    my $m := self.factory.fancymatrix2x2();
+
+    assert_throws(Exception::OutOfBounds, "PCM keys with more than 2 elements should throw exception", {
+      my $e := $m{Key.new(0,1,3)};
+    });
+}
+
 }
