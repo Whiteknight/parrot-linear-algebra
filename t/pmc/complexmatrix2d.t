@@ -94,4 +94,54 @@ method test_METHOD_conjugate() {
     assert_equal($m, $n, "conjugate does not work");
 }
 
+method test_add_nummatrix() {
+    Q:PIR {
+      $P1 = new 'ComplexMatrix2D'
+      $P1.'resize'(5,5)
+      $P1[1;1] = 4.
+      $P1[1;2] = 8.
+      
+      $P2 = new 'NumMatrix2D'
+      $P2.'resize'(5,5)
+      $P2[1;1] = 3.
+      $P2[1;2] = 4.
 
+      $P3 = $P1 + $P2
+      $I0 = $P3[1;1]
+      assert_equal($I0, 7, "ComplexMatrix+NumMatrix Adding Failed.")
+      $I0 = $P3[1;2]
+      assert_equal($I0, 12, "ComplexMatrix+NumMatrix Adding Failed.")
+      
+      $P3 = $P1 - $P2
+      $I0 = $P3[1;1]
+      assert_equal($I0, 1, "ComplexMatrix-NumMatrix Subtraction Failed.")
+      $I0 = $P3[1;2]
+      assert_equal($I0, 4, "ComplexMatrix-NumMatrix Subtraction Failed.")
+    }
+}
+
+method test_add_pmcmatrix() {
+    Q:PIR {
+      $P1 = new 'ComplexMatrix2D'
+      $P1.'resize'(5,5)
+      $P1[1;1] = 4.
+      $P1[1;2] = 8.
+      
+      $P2 = new 'PMCMatrix2D'
+      $P2.'resize'(5,5)
+      $P2[1;1] = 3.
+      $P2[1;2] = 4.
+
+      $P3 = $P1 + $P2
+      $I0 = $P3[1;1]
+      assert_equal($I0, 7, "ComplexMatrix+PMCMatrix Adding Failed.")
+      $I0 = $P3[1;2]
+      assert_equal($I0, 12, "ComplexMatrix+PMCMatrix Adding Failed.")
+      
+      $P3 = $P1 - $P2
+      $I0 = $P3[1;1]
+      assert_equal($I0, 1, "ComplexMatrix-PMCMatrix Subtraction Failed.")
+      $I0 = $P3[1;2]
+      assert_equal($I0, 4, "ComplexMatrix-PMCMatrix Subtraction Failed.")
+    }
+}
