@@ -18,6 +18,22 @@ method factory() {
     return $!factory;
 }
 
+has $!factory_complex;
+method factory_complex() {
+    unless pir::defined__IP($!factory_complex) {
+        $!factory_complex := Pla::MatrixFactory::ComplexMatrix2D.new();
+    }
+    return $!factory_complex;
+}
+
+has $!factory_pmc;
+method factory_pmc() {
+    unless pir::defined__IP($!factory_pmc) {
+        $!factory_pmc := Pla::MatrixFactory::PMCMatrix2D.new();
+    }
+    return $!factory_pmc;
+}
+
 # Test class methods to help generalize some tests.
 
 method test_VTABLE_get_string() {
@@ -39,15 +55,49 @@ method test_VTABLE_add_NUMMATRIX2D() {
     my $n := self.factory.matrix2x2(5.0, 7.0, 6.0, 8.0);
     my $o := self.factory.matrix2x2(6.0, 10.0, 8.0, 12.0);
     my $p := pir::add__PPP($m, $n);
-    assert_equal($p, $o, "can add two matrices together of the same size");
+    assert_equal($p, $o, "can not add two matrices together of the same size");
 }
 
 method test_VTABLE_add_NUMMATRIX2D_SIZEFAIL() {
     assert_throws(Exception::OutOfBounds, "error on sizes not equal", {
-        my $m := self.factory.matrix2x2(1.0, 3.0, 2.0, 4.0);
-        my $n := self.factory.matrix();
-        my $o := pir::add__PPP($m, $n);
-        fail("addition worked, apparently");
+        my $m := self.factory.defaultmatrix2x2();
+        my $n := self.factory.defaultmatrix3x3();
+        pir::add__PPP($m, $n);
+        fail("addition on different sizes worked, apparently");
+    });
+}
+
+method test_VTABLE_add_COMPLEXMATRIX2D() {
+    my $m := self.factory.matrix2x2(1.0, 3.0, 2.0, 4.0);
+    my $n := self.factory_complex.matrix2x2("1+1i", "2+1i", "3+1i", "4+1i");
+    my $o := self.factory.matrix2x2(2.0, 5.0, 5.0, 8.0);
+    my $p := pir::add__PPP($m, $n);
+    assert_equal($p, $o, "can not add numerical and complex matrix together of the same size");
+}
+
+method test_VTABLE_add_COMPLEXMATRIX2D_SIZEFAIL() {
+    assert_throws(Exception::OutOfBounds, "error on sizes not equal", {
+        my $m := self.factory.defaultmatrix2x2();
+        my $n := self.factory_complex.defaultmatrix3x3();
+        pir::add__PPP($m, $n);
+        fail("addition on different sizes worked, apparently");
+    });
+}
+
+method test_VTABLE_add_PMCMATRIX2D() {
+    my $m := self.factory.matrix2x2(1.0, 3.0, 2.0, 4.0);
+    my $n := self.factory_pmc.matrix2x2(5.0, "7.0", 6.0, "8.0");
+    my $o := self.factory.matrix2x2(6.0, 10.0, 8.0, 12.0);
+    my $p := pir::add__PPP($m, $n);
+    assert_equal($p, $o, "can add numerical and pmc matrix together of the same size");
+}
+
+method test_VTABLE_add_PMCMATRIX2D_SIZEFAIL() {
+    assert_throws(Exception::OutOfBounds, "error on sizes not equal", {
+        my $m := self.factory.defaultmatrix2x2();
+        my $n := self.factory_pmc.defaultmatrix3x3();
+        pir::add__PPP($m, $n);
+        fail("addition on different sizes worked, apparently");
     });
 }
 
@@ -71,15 +121,49 @@ method test_VTABLE_subtract_NUMMATRIX2D() {
     my $n := self.factory.matrix2x2(5.0, 7.0, 6.0, 8.0);
     my $o := self.factory.matrix2x2(-4.0, -4.0, -4.0, -4.0);
     my $p := pir::sub__PPP($m, $n);
-    assert_equal($p, $o, "can add subtract matrices together of the same size");
+    assert_equal($p, $o, "can subtract matrices together of the same size");
 }
 
 method test_VTABLE_subtract_NUMMATRIX2D_SIZEFAIL() {
     assert_throws(Exception::OutOfBounds, "error on sizes not equal", {
-        my $m := self.factory.matrix2x2(1.0, 3.0, 2.0, 4.0);
-        my $n := self.factory.matrix();
-        my $o := pir::sub__PPP($m, $n);
-        fail("subtraction worked, apparently");
+        my $m := self.factory.defaultmatrix2x2();
+        my $n := self.factory.defaultmatrix3x3();
+        pir::sub__PPP($m, $n);
+        fail("subtraction on different sizes worked, apparently");
+    });
+}
+
+method test_VTABLE_subtract_COMPLEXMATRIX2D() {
+    my $m := self.factory.matrix2x2(1.0, 3.0, 2.0, 4.0);
+    my $n := self.factory_complex.matrix2x2("3+1i", "4+1i", "5+1i", "6+1i");
+    my $o := self.factory.matrix2x2(-2.0, -1.0, -3.0, -2.0);
+    my $p := pir::sub__PPP($m, $n);
+    assert_equal($p, $o, "can subtract numerical and complex matrices together of the same size");
+}
+
+method test_VTABLE_subtract_COMPLEXMATRIX2D_SIZEFAIL() {
+    assert_throws(Exception::OutOfBounds, "error on sizes not equal", {
+        my $m := self.factory.defaultmatrix2x2();
+        my $n := self.factory_complex.defaultmatrix3x3();
+        pir::sub__PPP($m, $n);
+        fail("subtraction on different sizes worked, apparently");
+    });
+}
+
+method test_VTABLE_subtract_PMCMATRIX2D() {
+    my $m := self.factory.matrix2x2(1.0, 3.0, 2.0, 4.0);
+    my $n := self.factory_pmc.matrix2x2("5.0", 7.0, "6.0", 8.0);
+    my $o := self.factory.matrix2x2(-4.0, -4.0, -4.0, -4.0);
+    my $p := pir::sub__PPP($m, $n);
+    assert_equal($p, $o, "can subtract numerical and complex matrices together of the same size");
+}
+
+method test_VTABLE_subtract_PMCMATRIX2D_SIZEFAIL() {
+    assert_throws(Exception::OutOfBounds, "error on sizes not equal", {
+        my $m := self.factory.defaultmatrix2x2();
+        my $n := self.factory_pmc.defaultmatrix3x3();
+        pir::sub__PPP($m, $n);
+        fail("subtraction on different sizes worked, apparently");
     });
 }
 
@@ -146,5 +230,4 @@ method test_VTABLE_i_multiply_NUMMATRIX2D() {
         assert_equal($P0, $P2, "matrix i_multiply does not do the right thing")
     }
 }
-
 
