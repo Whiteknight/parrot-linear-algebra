@@ -1509,8 +1509,8 @@ Convert the matrix to the complex conjugate of itself.
         INTVAL i, j;
         for (i = 0; i < rows_size; i++) {
             for (j = 0; j < cols_size; j++) {
-                I_ITEM_XY_ROWMAJOR(s, cols_size, rows_size, j, i) =
-                    -I_ITEM_XY_ROWMAJOR(s, rows_size, cols_size, j, i);
+                I_ITEM_XY_ROWMAJOR(s, rows_size, rows_size, i, j) =
+                    -I_ITEM_XY_ROWMAJOR(s, rows_size, cols_size, i, j);
             }
         }
     }
