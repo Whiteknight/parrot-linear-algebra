@@ -231,3 +231,33 @@ method test_VTABLE_i_multiply_NUMMATRIX2D() {
     }
 }
 
+method test_VTABLE_set_string_keyed() {
+    my $m := self.factory.matrix3x3(1.0, 2.0, 3.0,
+                            4.0, 5.0, 6.0,
+                            7.0, 8.0, 9.0);
+    my $a;
+    Q:PIR {
+        $P0 = find_lex "$m"
+        $P0[0;0] = "15.2"
+        $N1 = $P0[0;0]
+        $P1 = box $N1
+        store_lex "$a", $P1
+    };
+    assert_equal($a, 15.2, "set_string_key failed");
+}
+
+method test_VTABLE_set_string_keyed_int() {
+    my $m := self.factory.matrix3x3(1.0, 2.0, 3.0,
+                            4.0, 5.0, 6.0,
+                            7.0, 8.0, 9.0);
+    my $a;
+    Q:PIR {
+        $P0 = find_lex "$m"
+        $P0[0] = "15.2"
+        $N1 = $P0[0]
+        $P1 = box $N1
+        store_lex "$a", $P1
+    };
+    assert_equal($a, 15.2, "set_string_key_int failed");
+}
+

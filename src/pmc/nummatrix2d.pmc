@@ -441,7 +441,10 @@ must have two elements.
         VTABLE_set_number_keyed(INTERP, SELF, key, (FLOATVAL)value);
     }
 
-    /* TODO: set_string_keyed */
+    VTABLE void set_string_keyed(PMC * key, STRING * value) {
+        const FLOATVAL v = Parrot_str_to_num(INTERP, value);
+        VTABLE_set_number_keyed(INTERP, SELF, key, v);
+    }
 
     VTABLE void set_pmc_keyed(PMC * key, PMC * value) {
         const FLOATVAL v = VTABLE_get_number(INTERP, value);
@@ -506,7 +509,10 @@ Convert the string to a Complex PMC, and set that at the specified location.
         VTABLE_set_number_keyed_int(INTERP, SELF, key, f);
     }
 
-    /* TODO: set_string_keyed_int */
+    VTABLE void set_string_keyed_int(INTVAL key, STRING * value) {
+        const FLOATVAL v = Parrot_str_to_num(INTERP, value);
+        VTABLE_set_number_keyed_int(INTERP, SELF, key, v);
+    }
 
 
 /*
