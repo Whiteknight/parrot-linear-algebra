@@ -19,6 +19,53 @@ intkey_to_coords(PARROT_INTERP, const INTVAL rows, const INTVAL cols,
     }
 }
 
+void
+pmckey_to_coords(PARROT_INTERP, const INTVAL rows, const INTVAL cols,
+    PMC * key, INTVAL * row, INTVAL * col)
+{
+    if (VTABLE_does(interp, key, Parrot_str_new(interp, "array", 5))) {
+        INTVAL size = VTABLE_elements(interp, key);
+
+        if (size == 1) {
+            INTVAL int_key = VTABLE_shift_integer(interp, key);
+            intkey_to_coords(interp, rows, cols, int_key, row, col);
+        }
+        else if (size == 2) {
+            *row = VTABLE_shift_integer(interp, key);
+            *col = VTABLE_shift_integer(interp, key);
+        }
+        else
+            Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                "PLA: array to get matrix element must have 1 or 2 elements");
+    }
+    else if (key->vtable->base_type == enum_class_Key) {
+        INTVAL element1, element2;
+
+        element1 = VTABLE_get_integer(interp, key);
+        key = VTABLE_shift_pmc(interp, key);
+
+        if (!key) {
+            intkey_to_coords(interp, rows, cols, element1, row, col);
+        }
+        else {
+            element2 = VTABLE_get_integer(interp, key);
+
+            *row = element1;
+            *col = element2;
+
+            key = VTABLE_shift_pmc(interp, key);
+
+            if (key)
+                Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
+                    "PLA: PMC key to get matrix element must have only 1 or 2 elements");
+        }
+    }
+    else {
+        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
+            "PLA: you should provide a PMC Key or array with 1 or 2 elements");
+    }
+}
+
 /* Get an instance of an externally-defined (non-PLA) PMC type. Account for
    subtypes */
 PMC *

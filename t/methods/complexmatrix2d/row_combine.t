@@ -45,12 +45,11 @@ class Test::ComplexMatrix2D::RowCombine is Pla::Methods::RowCombine {
     }
 
     method test_non_unity_gain_complex() {
-        my $A := self.factory.defaultmatrix2x2();
+        my $A := self.factory.fancymatrix2x2();
         my $B := self.factory.matrix2x2(self.factory.fancyvalue(0) + self.factory.fancyvalue(2) * self.factory.fancyvalue(0),
                                 self.factory.fancyvalue(1) + self.factory.fancyvalue(3)  * self.factory.fancyvalue(0),
                                 self.factory.fancyvalue(2), self.factory.fancyvalue(3));
         $A.row_combine(1, 0, self.factory.fancyvalue(0));
-        todo("Test needs work");
         assert_equal($A, $B, "cannot row_combine");
     }
 }

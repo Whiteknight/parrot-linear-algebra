@@ -223,7 +223,7 @@ Get a PMC at the location X, Y.
         INTVAL cols, rows, cols_size, rows_size;
         cols_size = attrs->cols;
         rows_size = attrs->rows;
-        GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
+        GET_KEY_INDICES_ROWMAJOR(INTERP, rows_size, cols_size, key, rows, cols);
         if (cols >= cols_size || rows >= rows_size)
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
                                         PLATYPENAME ": indices out of bounds");
@@ -346,7 +346,7 @@ location
         INTVAL cols, rows, cols_size, rows_size;
         cols_size = attrs->cols;
         rows_size = attrs->rows;
-        GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
+        GET_KEY_INDICES_ROWMAJOR(INTERP, rows_size, cols_size, key, rows, cols);
         if (cols >= cols_size || rows >= rows_size) {
             resize_matrix(INTERP, SELF, rows, cols);
             cols_size = attrs->cols;

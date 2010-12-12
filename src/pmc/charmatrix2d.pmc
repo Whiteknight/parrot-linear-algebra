@@ -137,7 +137,7 @@ Sets the character value at coordinates rows,cols
     VTABLE void set_integer_keyed(PMC * key, INTVAL value) {
         Parrot_CharMatrix2D_attributes * const attrs = PARROT_CHARMATRIX2D(SELF);
         INTVAL rows, cols, x_size = attrs->rows, y_size = attrs->cols;
-        GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
+        GET_KEY_INDICES_ROWMAJOR(INTERP, x_size, y_size, key, rows, cols);
         if (rows >= x_size || cols >= y_size) {
             resize_matrix(INTERP, SELF, rows, cols);
             x_size = attrs->rows;
@@ -163,8 +163,11 @@ Sets the character value at coordinates rows,cols
     }
 
     VTABLE void set_string_keyed(PMC * key, STRING * value) {
+        Parrot_CharMatrix2D_attributes * const attrs = PARROT_CHARMATRIX2D(SELF);
+        const INTVAL x_size = attrs->rows;
+        const INTVAL y_size = attrs->cols;
         INTVAL rows, cols;
-        GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
+        GET_KEY_INDICES_ROWMAJOR(INTERP, x_size, y_size, key, rows, cols);
         insert_string_at_row_offset(INTERP, SELF, cols, rows, value);
     }
 

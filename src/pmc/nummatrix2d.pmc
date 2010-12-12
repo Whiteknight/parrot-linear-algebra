@@ -188,33 +188,28 @@ multiply_scalar_float(PARROT_INTERP, PMC * self, FLOATVAL v)
 /* item-by-item addition or subtraction
    A = A + B */
 static void
-add_matrices(PARROT_INTERP, PMC * A, PMC * B, INTVAL sub)
+add_matrices_generic(PARROT_INTERP, PMC * A, PMC * B, INTVAL sub)
 {
     DECLATTRS_NumMatrix2D(A, attrs_a);
     DECLATTRS_NumMatrix2D(B, attrs_b);
-    const INTVAL rows = attrs_a->rows;
-    const INTVAL cols = attrs_a->cols;
-    FLOATVAL * const s_a = attrs_a->storage;
-    FLOATVAL * const s_b = attrs_b->storage;
-    INTVAL i, j;
-    if (attrs_b->rows != rows || attrs_b->cols != cols)
+
+    INTVAL i, result;
+    INTVAL elements = attrs_a->rows * attrs_a->cols;
+
+    if (attrs_b->rows * attrs_b->cols != elements)
         Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
             PLATYPENAME ": sizes do not match");
-    if (sub) {
-        for (i = 0; i < rows; i++) {
-            for (j = 0; j < cols; j++) {
-                ITEM_XY_ROWMAJOR(s_a, rows, cols, i, j) -=
-                    ITEM_XY_ROWMAJOR(s_b, rows, cols, i, j);
-            }
+    for (i = 0; i < elements; i++) {
+        if (sub) {
+            result = VTABLE_get_number_keyed_int(interp, A, i) -
+                VTABLE_get_number_keyed_int(interp, B, i);
         }
-    }
-    else {
-        for (i = 0; i < rows; i++) {
-            for (j = 0; j < cols; j++) {
-                ITEM_XY_ROWMAJOR(s_a, rows, cols, i, j) +=
-                    ITEM_XY_ROWMAJOR(s_b, rows, cols, i, j);
-            }
+        else {
+            result = VTABLE_get_number_keyed_int(interp, A, i) +
+                VTABLE_get_number_keyed_int(interp, B, i);
         }
+
+        VTABLE_set_number_keyed_int(interp, A, i, result);
     }
 }
 
@@ -307,7 +302,7 @@ elements.
         const INTVAL rows_size = attrs->rows;
         const INTVAL cols_size = attrs->cols;
         INTVAL rows, cols;
-        GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
+        GET_KEY_INDICES_ROWMAJOR(INTERP, rows_size, cols_size, key, rows, cols);
         if (rows >= rows_size || cols >= cols_size)
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
                 PLATYPENAME ": indices out of bounds");
@@ -433,7 +428,7 @@ must have two elements.
     VTABLE void set_number_keyed(PMC * key, FLOATVAL value) {
         DECLATTRS_NumMatrix2D(SELF, attrs);
         INTVAL rows, cols, rows_size = attrs->rows, cols_size = attrs->cols;
-        GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
+        GET_KEY_INDICES_ROWMAJOR(INTERP, rows_size, cols_size, key, rows, cols);
         if (rows >= rows_size || cols >= cols_size) {
             resize_matrix(INTERP, SELF, rows, cols);
             rows_size = attrs->rows;
@@ -723,7 +718,19 @@ Add the integer value to every element in the matrix.
 
     MULTI PMC *add(NumMatrix2D *value, PMC *dest) {
         dest = VTABLE_clone(INTERP, SELF);
-        add_matrices(INTERP, dest, value, 0);
+        add_matrices_generic(INTERP, dest, value, 0);
+        return dest;
+    }
+
+    MULTI PMC *add(ComplexMatrix2D *value, PMC *dest) {
+        dest = VTABLE_clone(INTERP, SELF);
+        add_matrices_generic(INTERP, dest, value, 0);
+        return dest;
+    }
+
+    MULTI PMC *add(PMCMatrix2D *value, PMC *dest) {
+        dest = VTABLE_clone(INTERP, SELF);
+        add_matrices_generic(INTERP, dest, value, 0);
         return dest;
     }
 
@@ -767,7 +774,7 @@ Add the integer value to every element in the matrix.
 */
 
     MULTI void i_add(NumMatrix2D* value) {
-        add_matrices(INTERP, SELF, value, 0);
+        add_matrices_generic(INTERP, SELF, value, 0);
     }
 
     MULTI void i_add(DEFAULT* value) {
@@ -814,7 +821,19 @@ Add the integer value to every element in the matrix.
 
     MULTI PMC *subtract(NumMatrix2D *value, PMC *dest) {
         dest = VTABLE_clone(INTERP, SELF);
-        add_matrices(INTERP, dest, value, 1);
+        add_matrices_generic(INTERP, dest, value, 1);
+        return dest;
+    }
+
+    MULTI PMC *subtract(ComplexMatrix2D *value, PMC *dest) {
+        dest = VTABLE_clone(INTERP, SELF);
+        add_matrices_generic(INTERP, dest, value, 1);
+        return dest;
+    }
+
+    MULTI PMC *subtract(PMCMatrix2D *value, PMC *dest) {
+        dest = VTABLE_clone(INTERP, SELF);
+        add_matrices_generic(INTERP, dest, value, 1);
         return dest;
     }
 
@@ -858,7 +877,7 @@ Add the integer value to every element in the matrix.
 */
 
     MULTI void i_subtract(NumMatrix2D* value) {
-        add_matrices(INTERP, SELF, value, 1);
+        add_matrices_generic(INTERP, SELF, value, 1);
     }
 
     MULTI void i_subtract(DEFAULT* value) {

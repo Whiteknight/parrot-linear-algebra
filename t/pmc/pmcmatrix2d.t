@@ -119,3 +119,4 @@ method test_VTABLE_get_string() {
 }
 
 }
+

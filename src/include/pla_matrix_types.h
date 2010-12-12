@@ -25,18 +25,14 @@ extern INTVAL __PLA_Type_PMCMatrix2D;
         a->cols = __temp_val; \
     } while(0);
 
-#define GET_KEY_INDICES_ROWMAJOR(i, k, row, col) \
+#define GET_KEY_INDICES_ROWMAJOR(i, rows_size, cols_size, k, row, col) \
 do { \
-    (row) = VTABLE_get_integer((i), (k)); \
-    (k) = VTABLE_shift_pmc((i), (k)); \
-    (col) = VTABLE_get_integer((i), (k)); \
+    pmckey_to_coords((i), (rows_size), (cols_size), (k), (&row), (&col)); \
 } while(0);
 
-#define GET_KEY_INDICES_COLMAJOR(i, k, row, col) \
+#define GET_KEY_INDICES_COLMAJOR(i, rows_size, cols_size, k, row, col) \
 do { \
-    (col) = VTABLE_get_integer((i), (k)); \
-    (k) = VTABLE_shift_pmc((i), (k)); \
-    (row) = VTABLE_get_integer((i), (k)); \
+    pmckey_to_coords((i), (rows_size), (cols_size), (k), (&row), (&col)); \
 } while(0);
 
 #define INDEX_MIN(a, b) (((a) <= (b))?(a):(b))

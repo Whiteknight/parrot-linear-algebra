@@ -345,6 +345,45 @@ add_matrices(PARROT_INTERP, PMC * A, PMC * B, INTVAL sub)
     }
 }
 
+static void
+add_matrices_pmc(PARROT_INTERP, PMC * A, PMC * B, INTVAL sub)
+{
+    DECLATTRS_ComplexMatrix2D(A, attrs_a);
+    DECLATTRS_ComplexMatrix2D(B, attrs_b);
+    const INTVAL rows = attrs_a->rows;
+    const INTVAL cols = attrs_a->cols;
+    FLOATVAL * const s_a = attrs_a->storage;
+    FLOATVAL * const s_b = attrs_b->storage;
+    PMC * item;
+    INTVAL i, j;
+    
+    if (attrs_b->rows != rows || attrs_b->cols != cols)
+        Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
+            PLATYPENAME ": sizes do not match");
+    if (sub) {
+        for (i = 0; i < rows; i++) {
+            for (j = 0; j < cols; j++) {
+                item = VTABLE_get_pmc_keyed_int(interp, B, (cols*i)+j );
+                if (!PMC_IS_NULL(item)) {
+                    R_ITEM_XY_ROWMAJOR(s_a, rows, cols, i, j) -=
+                        VTABLE_get_number(interp, item); 
+                }
+            }
+        }
+    }
+    else {
+        for (i = 0; i < rows; i++) {
+            for (j = 0; j < cols; j++) {
+                item = VTABLE_get_pmc_keyed_int(interp, B, (cols*i)+j );
+                if (!PMC_IS_NULL(item)) {
+                    R_ITEM_XY_ROWMAJOR(s_a, rows, cols, i, j) +=
+                        VTABLE_get_number(interp, item); 
+                }
+            }
+        }
+    }
+}
+
 pmclass ComplexMatrix2D dynpmc auto_attrs provides matrix provides numericmatrix {
     ATTR FLOATVAL * storage;
     ATTR INTVAL rows;
@@ -443,7 +482,7 @@ Get a Complex PMC from the point specified by the key.
         const INTVAL cols_size = attrs->cols;
         INTVAL rows, cols;
         FLOATVAL real, imag;
-        GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
+        GET_KEY_INDICES_ROWMAJOR(INTERP, rows_size, cols_size, key, rows, cols);
         if (rows < 0 || rows >= rows_size || cols >= cols_size || cols < 0)
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
                 PLATYPENAME ": indices out of bounds");
@@ -465,7 +504,7 @@ Get a Complex PMC from the point specified by the key.
         const INTVAL flags = attrs->flags;
         FLOATVAL real, imag;
         FLOATVAL * const s = attrs->storage;
-        GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
+        GET_KEY_INDICES_ROWMAJOR(INTERP, rows_size, cols_size, key, rows, cols);
         if (rows < 0 || rows >= rows_size || cols >= cols_size || cols < 0)
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
                 PLATYPENAME ": indices out of bounds");
@@ -475,8 +514,11 @@ Get a Complex PMC from the point specified by the key.
     }
 
     VTABLE PMC * get_pmc_keyed(PMC * key) {
+        DECLATTRS_ComplexMatrix2D(SELF, attrs);
+        const INTVAL rows_size = attrs->rows;
+        const INTVAL cols_size = attrs->cols;
         INTVAL rows, cols;
-        GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
+        GET_KEY_INDICES_ROWMAJOR(INTERP, rows_size, cols_size, key, rows, cols);
         return get_complex_pmc_at_xy(INTERP, SELF, rows, cols);
     }
 
@@ -595,14 +637,20 @@ integer, and 0 for the complex value.
 */
 
     VTABLE void set_pmc_keyed(PMC * key, PMC * value) {
+        DECLATTRS_ComplexMatrix2D(SELF, attrs);
+        const INTVAL rows_size = attrs->rows;
+        const INTVAL cols_size = attrs->cols;
         INTVAL rows, cols;
-        GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
+        GET_KEY_INDICES_ROWMAJOR(INTERP, rows_size, cols_size, key, rows, cols);
         set_complex_pmc_at_xy(INTERP, SELF, value, rows, cols);
     }
 
     VTABLE void set_number_keyed(PMC * key, FLOATVAL value) {
+        DECLATTRS_ComplexMatrix2D(SELF, attrs);
+        const INTVAL rows_size = attrs->rows;
+        const INTVAL cols_size = attrs->cols;
         INTVAL rows, cols;
-        GET_KEY_INDICES_ROWMAJOR(INTERP, key, rows, cols);
+        GET_KEY_INDICES_ROWMAJOR(INTERP, rows_size, cols_size, key, rows, cols);
         set_scalar_at_xy(INTERP, SELF, value, rows, cols);
     }
 
@@ -927,7 +975,19 @@ Add the integer value to every element in the matrix.
         add_matrices(INTERP, dest, value, 0);
         return dest;
     }
-
+    
+    MULTI PMC *add(NumMatrix2D *value, PMC *dest) {
+        dest = VTABLE_clone(INTERP, SELF);
+        add_matrices_pmc(INTERP, dest, value, 0);
+        return dest;
+    }
+    
+    MULTI PMC *add(PMCMatrix2D *value, PMC *dest) {
+        dest = VTABLE_clone(INTERP, SELF);
+        add_matrices_pmc(INTERP, dest, value, 0);
+        return dest;
+    }
+    
     MULTI PMC *add(Complex *value, PMC *dest) {
         dest = VTABLE_clone(INTERP, SELF);
         add_scalar_complex(INTERP, dest, value, 0);
@@ -1046,7 +1106,19 @@ Subtract the integer value from every element in the matrix.
         add_matrices(INTERP, dest, value, 1);
         return dest;
     }
+    
+    MULTI PMC *subtract(NumMatrix2D *value, PMC *dest) {
+        dest = VTABLE_clone(INTERP, SELF);
+        add_matrices_pmc(INTERP, dest, value, 1);
+        return dest;
+    }
 
+    MULTI PMC *subtract(PMCMatrix2D *value, PMC *dest) {
+        dest = VTABLE_clone(INTERP, SELF);
+        add_matrices_pmc(INTERP, dest, value, 1);
+        return dest;
+    }
+    
     MULTI PMC *subtract(Complex* value, PMC *dest) {
         dest = VTABLE_clone(INTERP, SELF);
         add_scalar_complex(INTERP, SELF, value, 1);
@@ -1436,8 +1508,8 @@ Convert the matrix to the complex conjugate of itself.
         INTVAL i, j;
         for (i = 0; i < rows_size; i++) {
             for (j = 0; j < cols_size; j++) {
-                I_ITEM_XY_ROWMAJOR(s, cols_size, rows_size, j, i) =
-                    -I_ITEM_XY_ROWMAJOR(s, rows_size, cols_size, j, i);
+                I_ITEM_XY_ROWMAJOR(s, rows_size, rows_size, i, j) =
+                    -I_ITEM_XY_ROWMAJOR(s, rows_size, cols_size, i, j);
             }
         }
     }
