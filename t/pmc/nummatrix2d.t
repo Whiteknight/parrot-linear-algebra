@@ -238,13 +238,12 @@ method test_VTABLE_set_string_keyed() {
     my $a;
     Q:PIR {
         $P0 = find_lex "$m"
-        $S0 = "15.0"
-        $P0[0;0] = $S0
+        $P0[0;0] = "15.2"
         $N1 = $P0[0;0]
         $P1 = box $N1
         store_lex "$a", $P1
     };
-    assert_equal($a, 15.0, "set_string_key failed");
+    assert_equal($a, 15.2, "set_string_key failed");
 }
 
 method test_VTABLE_set_string_keyed_int() {
@@ -254,12 +253,11 @@ method test_VTABLE_set_string_keyed_int() {
     my $a;
     Q:PIR {
         $P0 = find_lex "$m"
-        $S0 = "15.0"
-        $P0[0] = $S0
+        $P0[0] = "15.2"
         $N1 = $P0[0]
         $P1 = box $N1
         store_lex "$a", $P1
     };
-    assert_equal($a, 15.0, "set_string_key_int failed");
+    assert_equal($a, 15.2, "set_string_key_int failed");
 }
 

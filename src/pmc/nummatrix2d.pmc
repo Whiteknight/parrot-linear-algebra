@@ -442,9 +442,8 @@ must have two elements.
     }
 
     VTABLE void set_string_keyed(PMC * key, STRING * value) {
-        PMC * const item = get_external_pmc(INTERP, enum_class_Float);
-        VTABLE_set_string_native(INTERP, item, value);
-        VTABLE_set_pmc_keyed(INTERP, SELF, key, item);
+        const FLOATVAL v = Parrot_str_to_num(INTERP, value);
+        VTABLE_set_number_keyed(INTERP, SELF, key, v);
     }
 
     VTABLE void set_pmc_keyed(PMC * key, PMC * value) {
@@ -511,9 +510,8 @@ Convert the string to a Complex PMC, and set that at the specified location.
     }
 
     VTABLE void set_string_keyed_int(INTVAL key, STRING * value) {
-        PMC * const item = get_external_pmc(INTERP, enum_class_String);
-        VTABLE_set_string_native(INTERP, item, value);
-        VTABLE_set_pmc_keyed_int(INTERP, SELF, key, item);
+        const FLOATVAL v = Parrot_str_to_num(INTERP, value);
+        VTABLE_set_number_keyed_int(INTERP, SELF, key, v);
     }
 
 
