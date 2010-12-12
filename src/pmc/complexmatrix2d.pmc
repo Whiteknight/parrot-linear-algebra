@@ -1300,7 +1300,6 @@ unaffected. Calling fill() never causes the matrix to shrink.
                 INTVAL rows_size :optional, INTVAL has_rows_size :opt_flag,
                 INTVAL cols_size :optional, INTVAL has_cols_size :opt_flag
                ) {
-        /* TODO: Value here is going to be a Complex PMC. Handle that */
         DECLATTRS_ComplexMatrix2D(SELF, attrs);
         FLOATVAL * s  = attrs->storage;
         INTVAL const curr_rows_size = attrs->rows;
@@ -1586,8 +1585,6 @@ Set a block in the matrix, growing it if needed.
                 PLATYPENAME ": Can not set_block with negative indices");
 
         if (!VTABLE_does(INTERP, blck, CONST_STRING(interp, "matrix")))
-            /* TODO: In this case, we should be able to do a .fill over the block
-                     dimensions with VTABLE_get_number on the scalar value */
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
                 PLATYPENAME ": Can not set_block on a non-matrix value");
 

@@ -304,9 +304,6 @@ Get the PMC at the specified location
         return VTABLE_get_string(INTERP, item);
     }
 
-/* Set VTABLEs
-TODO: Update all these to follow HLL mappings
-*/
 /*
 
 =head2 Keyed Setter VTABLES
@@ -496,7 +493,6 @@ Determine if two matrices are equal in size and composition.
         return VTABLE_get_string(INTERP, builder);
     }
 
-    /* TODO: Update this to account for transpositions */
     VTABLE PMC * get_attr_str(STRING * idx) {
         DECLATTRS_PMCMatrix2D(SELF, attrs);
         if (Parrot_str_equal(INTERP, idx, CONST_STRING(INTERP, "rows"))) {
@@ -948,8 +944,6 @@ Set a block in the matrix, growing it if needed.
                 PLATYPENAME ": Can not set_block with negative indices");
 
         if (!VTABLE_does(INTERP, blck, CONST_STRING(interp, "matrix")))
-            /* TODO: In this case, we should be able to do a .fill over the block
-                     dimensions with VTABLE_get_number on the scalar value */
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
                 PLATYPENAME ": Can not set_block on a non-matrix value");
 
