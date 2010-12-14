@@ -227,17 +227,13 @@ add_scalar_complex(PARROT_INTERP, PMC * self, PMC *v, INTVAL sub)
     const FLOATVAL v_r = VTABLE_get_number_keyed_int(interp, v, 0);
     const FLOATVAL v_i = VTABLE_get_number_keyed_int(interp, v, 1);
 
-    if (sub) {
-        for (i = 0; i < rows_size; i++) {
-            for (j = 0; j < cols_size; j++) {
+    for (i = 0; i < rows_size; i++) {
+        for (j = 0; j < cols_size; j++) {
+            if (sub) {
                 R_ITEM_XY_ROWMAJOR(s, rows_size, cols_size, i, j) -= v_r;
                 I_ITEM_XY_ROWMAJOR(s, rows_size, cols_size, i, j) -= v_i;
             }
-        }
-    }
-    else {
-        for (i = 0; i < rows_size; i++) {
-            for (j = 0; j < cols_size; j++) {
+            else {
                 R_ITEM_XY_ROWMAJOR(s, rows_size, cols_size, i, j) += v_r;
                 I_ITEM_XY_ROWMAJOR(s, rows_size, cols_size, i, j) += v_i;
             }
@@ -323,19 +319,15 @@ add_matrices(PARROT_INTERP, PMC * A, PMC * B, INTVAL sub)
     if (attrs_b->rows != rows || attrs_b->cols != cols)
         Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
             PLATYPENAME ": sizes do not match");
-    if (sub) {
-        for (i = 0; i < rows; i++) {
-            for (j = 0; j < cols; j++) {
+    for (i = 0; i < rows; i++) {
+        for (j = 0; j < cols; j++) {
+            if (sub) {
                 R_ITEM_XY_ROWMAJOR(s_a, rows, cols, i, j) -=
                     R_ITEM_XY_ROWMAJOR(s_b, rows, cols, i, j);
                 I_ITEM_XY_ROWMAJOR(s_a, rows, cols, i, j) -=
                     R_ITEM_XY_ROWMAJOR(s_b, rows, cols, i, j);
             }
-        }
-    }
-    else {
-        for (i = 0; i < rows; i++) {
-            for (j = 0; j < cols; j++) {
+            else {
                 R_ITEM_XY_ROWMAJOR(s_a, rows, cols, i, j) +=
                     R_ITEM_XY_ROWMAJOR(s_b, rows, cols, i, j);
                 I_ITEM_XY_ROWMAJOR(s_a, rows, cols, i, j) +=
@@ -356,28 +348,21 @@ add_matrices_pmc(PARROT_INTERP, PMC * A, PMC * B, INTVAL sub)
     FLOATVAL * const s_b = attrs_b->storage;
     PMC * item;
     INTVAL i, j;
-    
+
     if (attrs_b->rows != rows || attrs_b->cols != cols)
         Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
             PLATYPENAME ": sizes do not match");
-    if (sub) {
-        for (i = 0; i < rows; i++) {
-            for (j = 0; j < cols; j++) {
-                item = VTABLE_get_pmc_keyed_int(interp, B, (cols*i)+j );
-                if (!PMC_IS_NULL(item)) {
+    for (i = 0; i < rows; i++) {
+        for (j = 0; j < cols; j++) {
+            item = VTABLE_get_pmc_keyed_int(interp, B, (cols*i)+j );
+            if (!PMC_IS_NULL(item)) {
+                if (sub) {
                     R_ITEM_XY_ROWMAJOR(s_a, rows, cols, i, j) -=
-                        VTABLE_get_number(interp, item); 
+                        VTABLE_get_number(interp, item);
                 }
-            }
-        }
-    }
-    else {
-        for (i = 0; i < rows; i++) {
-            for (j = 0; j < cols; j++) {
-                item = VTABLE_get_pmc_keyed_int(interp, B, (cols*i)+j );
-                if (!PMC_IS_NULL(item)) {
+                else {
                     R_ITEM_XY_ROWMAJOR(s_a, rows, cols, i, j) +=
-                        VTABLE_get_number(interp, item); 
+                        VTABLE_get_number(interp, item);
                 }
             }
         }
@@ -975,19 +960,19 @@ Add the integer value to every element in the matrix.
         add_matrices(INTERP, dest, value, 0);
         return dest;
     }
-    
+
     MULTI PMC *add(NumMatrix2D *value, PMC *dest) {
         dest = VTABLE_clone(INTERP, SELF);
         add_matrices_pmc(INTERP, dest, value, 0);
         return dest;
     }
-    
+
     MULTI PMC *add(PMCMatrix2D *value, PMC *dest) {
         dest = VTABLE_clone(INTERP, SELF);
         add_matrices_pmc(INTERP, dest, value, 0);
         return dest;
     }
-    
+
     MULTI PMC *add(Complex *value, PMC *dest) {
         dest = VTABLE_clone(INTERP, SELF);
         add_scalar_complex(INTERP, dest, value, 0);
@@ -1106,7 +1091,7 @@ Subtract the integer value from every element in the matrix.
         add_matrices(INTERP, dest, value, 1);
         return dest;
     }
-    
+
     MULTI PMC *subtract(NumMatrix2D *value, PMC *dest) {
         dest = VTABLE_clone(INTERP, SELF);
         add_matrices_pmc(INTERP, dest, value, 1);
@@ -1118,7 +1103,7 @@ Subtract the integer value from every element in the matrix.
         add_matrices_pmc(INTERP, dest, value, 1);
         return dest;
     }
-    
+
     MULTI PMC *subtract(Complex* value, PMC *dest) {
         dest = VTABLE_clone(INTERP, SELF);
         add_scalar_complex(INTERP, SELF, value, 1);
