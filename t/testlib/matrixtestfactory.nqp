@@ -133,10 +133,10 @@ class Pla::MatrixFactory::ComplexMatrix2D is Pla::MatrixFactory {
         if (pir::typeof__SP($ab) eq "String") { $ab := pir::new__PSP("Complex", $ab); }
         if (pir::typeof__SP($ba) eq "String") { $ba := pir::new__PSP("Complex", $ba); }
         if (pir::typeof__SP($bb) eq "String") { $bb := pir::new__PSP("Complex", $bb); }
-        $m{key(0,0)} := $aa;
-        $m{key(0,1)} := $ab;
-        $m{key(1,0)} := $ba;
-        $m{key(1,1)} := $bb;
+        $m{Pla::MatrixFactory::key(0,0)} := $aa;
+        $m{Pla::MatrixFactory::key(0,1)} := $ab;
+        $m{Pla::MatrixFactory::key(1,0)} := $ba;
+        $m{Pla::MatrixFactory::key(1,1)} := $bb;
         return ($m);
     }
 

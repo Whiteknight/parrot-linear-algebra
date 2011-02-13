@@ -37,7 +37,6 @@ class Pla::NumericMatrixTest is Pla::MatrixTest {
     method test_VTABLE_get_number_keyed() {
         my $m := self.factory.matrix();
         Q:PIR {
-            .local pmc equal
             $P0 = find_lex "$m"
             $P0[2;2] = 3.0
             $P0[0;0] = 1.0

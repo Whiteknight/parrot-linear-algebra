@@ -26,41 +26,41 @@ method test_VTABLE_get_string_keyed() {
 method test_VTABLE_set_pmc_keyed_STRING() {
     my $m := Parrot::new("ComplexMatrix2D");
     my $a := "1+1i";  # a String PMC, not a Complex
-    $m{Key.new(0,0)} := $a;
-    my $b := $m{Key.new(0,0)};
-    assert_instance_of($b, "Complex", "Cannot set_pmc_keyed<String>");
+    $m{self.factory.key(0,0)} := $a;
+    my $b := $m{self.factory.key(0,0)};
+    Assert::instance_of($b, "Complex", "Cannot set_pmc_keyed<String>");
     my $c := pir::new__PSP("Complex", "1+1i");
-    assert_equal($b, $c, "did not get the correct value back");
+    Assert::equal($b, $c, "did not get the correct value back");
 }
 
 method test_VTABLE_set_pmc_keyed_ARRAY() {
     my $m := Parrot::new("ComplexMatrix2D");
     my $a := (1,1);
-    $m{Key.new(0,0)} := $a;
-    my $b := $m{Key.new(0,0)};
-    assert_instance_of($b, "Complex", "Cannot set_pmc_keyed<Array>");
+    $m{self.factory.key(0,0)} := $a;
+    my $b := $m{self.factory.key(0,0)};
+    Assert::instance_of($b, "Complex", "Cannot set_pmc_keyed<Array>");
     my $c := pir::new__PSP("Complex", "1+1i");
-    assert_equal($b, $c, "did not get the correct value back");
+    Assert::equal($b, $c, "did not get the correct value back");
 }
 
 method test_VTABLE_set_pmc_keyed_INTEGER() {
     my $m := Parrot::new("ComplexMatrix2D");
     my $a := pir::box__PI(1);
-    $m{Key.new(0,0)} := $a;
-    my $b := $m{Key.new(0,0)};
-    assert_instance_of($b, "Complex", "Cannot set_pmc_keyed<Integer>");
+    $m{self.factory.key(0,0)} := $a;
+    my $b := $m{self.factory.key(0,0)};
+    Assert::instance_of($b, "Complex", "Cannot set_pmc_keyed<Integer>");
     my $c := pir::new__PSP("Complex", "1+0i");
-    assert_equal($b, $c, "did not get the correct value back");
+    Assert::equal($b, $c, "did not get the correct value back");
 }
 
 method test_VTABLE_set_pmc_keyed_FLOAT() {
     my $m := Parrot::new("ComplexMatrix2D");
     my $a := pir::box__PN(3.5);
-    $m{Key.new(0,0)} := $a;
-    my $b := $m{Key.new(0,0)};
-    assert_instance_of($b, "Complex", "Cannot set_pmc_keyed<Float>");
+    $m{self.factory.key(0,0)} := $a;
+    my $b := $m{self.factory.key(0,0)};
+    Assert::instance_of($b, "Complex", "Cannot set_pmc_keyed<Float>");
     my $c := pir::new__PSP("Complex", "3.5+0i");
-    assert_equal($b, $c, "did not get the correct value back");
+    Assert::equal($b, $c, "did not get the correct value back");
 }
 
 method test_VTABLE_set_string_keyed() {
@@ -73,7 +73,7 @@ method test_VTABLE_set_string_keyed() {
         $P1 = $P0[0;0]
         store_lex "$a", $P1
     };
-    assert_equal($a, "1+1i", "set_string_keyed doesn't work");
+    Assert::equal($a, "1+1i", "set_string_keyed doesn't work");
 }
 
 method test_VTABLE_get_string() {
@@ -86,7 +86,7 @@ method test_METHOD_conjugate() {
     my $m := self.factory.matrix2x2("1+1i", "2+2i", "3+3i", "4+4i");
     my $n := self.factory.matrix2x2("1-1i", "2-2i", "3-3i", "4-4i");
     $m.conjugate();
-    assert_equal($m, $n, "conjugate does not work");
+    Assert::equal($m, $n, "conjugate does not work");
 }
 
 method test_add_nummatrix() {
@@ -103,15 +103,15 @@ method test_add_nummatrix() {
 
       $P3 = $P1 + $P2
       $I0 = $P3[1;1]
-      assert_equal($I0, 7, "ComplexMatrix+NumMatrix Adding Failed.")
+      Assert::equal($I0, 7, "ComplexMatrix+NumMatrix Adding Failed.")
       $I0 = $P3[1;2]
-      assert_equal($I0, 12, "ComplexMatrix+NumMatrix Adding Failed.")
+      Assert::equal($I0, 12, "ComplexMatrix+NumMatrix Adding Failed.")
 
       $P3 = $P1 - $P2
       $I0 = $P3[1;1]
-      assert_equal($I0, 1, "ComplexMatrix-NumMatrix Subtraction Failed.")
+      Assert::equal($I0, 1, "ComplexMatrix-NumMatrix Subtraction Failed.")
       $I0 = $P3[1;2]
-      assert_equal($I0, 4, "ComplexMatrix-NumMatrix Subtraction Failed.")
+      Assert::equal($I0, 4, "ComplexMatrix-NumMatrix Subtraction Failed.")
     }
 }
 
@@ -129,14 +129,14 @@ method test_add_pmcmatrix() {
 
       $P3 = $P1 + $P2
       $I0 = $P3[1;1]
-      assert_equal($I0, 7, "ComplexMatrix+PMCMatrix Adding Failed.")
+      Assert::equal($I0, 7, "ComplexMatrix+PMCMatrix Adding Failed.")
       $I0 = $P3[1;2]
-      assert_equal($I0, 12, "ComplexMatrix+PMCMatrix Adding Failed.")
+      Assert::equal($I0, 12, "ComplexMatrix+PMCMatrix Adding Failed.")
 
       $P3 = $P1 - $P2
       $I0 = $P3[1;1]
-      assert_equal($I0, 1, "ComplexMatrix-PMCMatrix Subtraction Failed.")
+      Assert::equal($I0, 1, "ComplexMatrix-PMCMatrix Subtraction Failed.")
       $I0 = $P3[1;2]
-      assert_equal($I0, 4, "ComplexMatrix-PMCMatrix Subtraction Failed.")
+      Assert::equal($I0, 4, "ComplexMatrix-PMCMatrix Subtraction Failed.")
     }
 }
