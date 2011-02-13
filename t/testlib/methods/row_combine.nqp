@@ -21,7 +21,7 @@ class Pla::Methods::RowCombine is Pla::MatrixTestBase {
         my $B := self.factory.matrix2x2($val1, $val2,
                                 self.factory.fancyvalue(2), self.factory.fancyvalue(3));
         $A.row_combine(1, 0, 1);
-        assert_equal($A, $B, "cannot row_combine");
+        Assert::equal($A, $B, "cannot row_combine");
     }
 
     method test_non_unity_gain() {
@@ -30,11 +30,11 @@ class Pla::Methods::RowCombine is Pla::MatrixTestBase {
                                 self.factory.fancyvalue(1) + self.factory.fancyvalue(3)  * self.factory.fancyvalue(0),
                                 self.factory.fancyvalue(2), self.factory.fancyvalue(3));
         $A.row_combine(1, 0, self.factory.fancyvalue(0));
-        assert_equal($A, $B, "cannot row_combine");
+        Assert::equal($A, $B, "cannot row_combine");
     }
 
     method test_negative_index_A() {
-        assert_throws(Exception::OutOfBounds, "Index A is out of bounds",
+        Assert::throws(Exception::OutOfBounds, "Index A is out of bounds",
         {
             my $A := self.factory.defaultmatrix3x3();
             $A.row_combine(-1, 1, 1);
@@ -42,7 +42,7 @@ class Pla::Methods::RowCombine is Pla::MatrixTestBase {
     }
 
     method test_index_A_out_of_bounds() {
-        assert_throws(Exception::OutOfBounds, "Index A is out of bounds",
+        Assert::throws(Exception::OutOfBounds, "Index A is out of bounds",
         {
             my $A := self.factory.defaultmatrix3x3();
             $A.row_combine(7, 1, 1);
@@ -50,7 +50,7 @@ class Pla::Methods::RowCombine is Pla::MatrixTestBase {
     }
 
     method test_negative_index_B() {
-        assert_throws(Exception::OutOfBounds, "Index B is out of bounds",
+        Assert::throws(Exception::OutOfBounds, "Index B is out of bounds",
         {
             my $A := self.factory.defaultmatrix3x3();
             $A.row_combine(1, -1, 1);
@@ -58,7 +58,7 @@ class Pla::Methods::RowCombine is Pla::MatrixTestBase {
     }
 
     method test_index_B_out_of_bounds() {
-        assert_throws(Exception::OutOfBounds, "Index B is out of bounds",
+        Assert::throws(Exception::OutOfBounds, "Index B is out of bounds",
         {
             my $A := self.factory.defaultmatrix3x3();
             $A.row_combine(1, 7, 1);

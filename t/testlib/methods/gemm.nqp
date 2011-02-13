@@ -5,7 +5,7 @@ class Pla::Methods::Gemm is Pla::MatrixTestBase {
     method test_METHOD_gemm_aABbC() { self.RequireOverride("test_METHOD_gemm_aABbC"); }
 
     method test_bad_type_A() {
-        assert_throws(Exception::OutOfBounds, "A is bad type",
+        Assert::throws(Exception::OutOfBounds, "A is bad type",
         {
             my $A := "foobar";
             my $B := self.factory.defaultmatrix3x3();
@@ -15,7 +15,7 @@ class Pla::Methods::Gemm is Pla::MatrixTestBase {
     }
 
     method test_bad_type_B() {
-        assert_throws(Exception::OutOfBounds, "B is bad type",
+        Assert::throws(Exception::OutOfBounds, "B is bad type",
         {
             my $A := self.factory.defaultmatrix3x3();
             my $B := "foobar";
@@ -25,7 +25,7 @@ class Pla::Methods::Gemm is Pla::MatrixTestBase {
     }
 
     method test_bad_type_C() {
-        assert_throws(Exception::OutOfBounds, "C is bad type",
+        Assert::throws(Exception::OutOfBounds, "C is bad type",
         {
             my $A := self.factory.defaultmatrix3x3();
             my $B := self.factory.defaultmatrix3x3();
@@ -35,7 +35,7 @@ class Pla::Methods::Gemm is Pla::MatrixTestBase {
     }
 
     method test_bad_size_A() {
-        assert_throws(Exception::OutOfBounds, "A has incorrect size",
+        Assert::throws(Exception::OutOfBounds, "A has incorrect size",
         {
             my $A := self.factory.defaultmatrix2x2();
             my $B := self.factory.defaultmatrix3x3();
@@ -45,7 +45,7 @@ class Pla::Methods::Gemm is Pla::MatrixTestBase {
     }
 
     method test_bad_size_B() {
-        assert_throws(Exception::OutOfBounds, "B has incorrect size",
+        Assert::throws(Exception::OutOfBounds, "B has incorrect size",
         {
             my $A := self.factory.defaultmatrix3x3();
             my $B := self.factory.defaultmatrix2x2();
@@ -55,7 +55,7 @@ class Pla::Methods::Gemm is Pla::MatrixTestBase {
     }
 
     method test_bad_size_C() {
-        assert_throws(Exception::OutOfBounds, "C has incorrect size",
+        Assert::throws(Exception::OutOfBounds, "C has incorrect size",
         {
             my $A := self.factory.defaultmatrix3x3();
             my $B := self.factory.defaultmatrix3x3();
@@ -76,7 +76,7 @@ class Pla::Methods::Gemm is Pla::MatrixTestBase {
         my $D := $m.gemm($alpha, $A, $B, $beta, $C);
         my $type_D := pir::typeof__SP($D);
         my $type_m := pir::typeof__SP($m);
-        assert_equal($type_D, $type_m,
+        Assert::equal($type_D, $type_m,
             "not the right type. Found " ~ $type_D ~ " expected " ~ $type_m);
     }
 

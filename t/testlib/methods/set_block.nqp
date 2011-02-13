@@ -3,7 +3,7 @@ class Pla::Methods::SetBlock is Pla::MatrixTestBase {
     method test_set_block() {
         my $m := self.factory.fancymatrix2x2();
         my $n := self.factory.matrix();
-        $n{Key.new(2,2)} := self.factory.nullvalue;
+        $n{self.factory.key(2,2)} := self.factory.nullvalue;
         $n.set_block(1, 1, $m);
 
         # First, prove that we haven't resized it
@@ -17,10 +17,10 @@ class Pla::Methods::SetBlock is Pla::MatrixTestBase {
         self.AssertNullValueAt($n, 0, 2);
 
         # Third, prove that the block was set properly
-        assert_equal($n{Key.new(1,1)}, $m{Key.new(0,0)}, "value was set in wrong place");
-        assert_equal($n{Key.new(1,2)}, $m{Key.new(0,1)}, "value was set in wrong place");
-        assert_equal($n{Key.new(2,1)}, $m{Key.new(1,0)}, "value was set in wrong place");
-        assert_equal($n{Key.new(2,2)}, $m{Key.new(1,1)}, "value was set in wrong place");
+        Assert::equal($n{self.factory.key(1,1)}, $m{Key.new(0,0)}, "value was set in wrong place");
+        Assert::equal($n{self.factory.key(1,2)}, $m{Key.new(0,1)}, "value was set in wrong place");
+        Assert::equal($n{self.factory.key(2,1)}, $m{Key.new(1,0)}, "value was set in wrong place");
+        Assert::equal($n{self.factory.key(2,2)}, $m{Key.new(1,1)}, "value was set in wrong place");
     }
 
     # Test set_block with a block of zero size
@@ -29,7 +29,7 @@ class Pla::Methods::SetBlock is Pla::MatrixTestBase {
         my $n := pir::clone__PP($m);
         my $o := self.factory.matrix();
         $m.set_block(0, 0, $o);
-        assert_equal($m, $n, "zero-size block insert changes the matrix");
+        Assert::equal($m, $n, "zero-size block insert changes the matrix");
     }
 
     # set_block with a zero-sized block resizes the matrix, but to one less
@@ -58,7 +58,7 @@ class Pla::Methods::SetBlock is Pla::MatrixTestBase {
     method test_resize_with_block_outside_bounds() {
         my $m := self.factory.defaultmatrix2x2();
         my $o := self.factory.matrix();
-        $o{Key.new(0, 0)} := self.factory.fancyvalue(2);
+        $o{self.factory.key(0, 0)} := self.factory.fancyvalue(2);
         $m.set_block(2, 2, $o);
         self.AssertSize($m, 3, 3);
 
@@ -85,12 +85,12 @@ class Pla::Methods::SetBlock is Pla::MatrixTestBase {
                                 self.factory.nullvalue,    self.factory.defaultvalue, self.factory.defaultvalue);
         $m.set_block(1, 1, $o);
         self.AssertSize($m, 3, 3);
-        assert_equal($m, $n, "set block with a large block does not resize the matrix");
+        Assert::equal($m, $n, "set block with a large block does not resize the matrix");
     }
 
     # Test that set_block with negative indices throws an exception
     method test_negative_indicies() {
-        assert_throws(Exception::OutOfBounds, "Can set_block with negative indices",
+        Assert::throws(Exception::OutOfBounds, "Can set_block with negative indices",
         {
             my $m := self.factory.defaultmatrix2x2();
             my $o := self.factory.matrix();
@@ -116,10 +116,10 @@ class Pla::Methods::SetBlock is Pla::MatrixTestBase {
         self.AssertNullValueAt($n, 0, 2);
 
         # Third, prove that the block was set properly
-        assert_equal($n{Key.new(1,1)}, $m{Key.new(0,0)}, "value was set in wrong place 6");
-        assert_equal($n{Key.new(1,2)}, $m{Key.new(0,1)}, "value was set in wrong place 7");
-        assert_equal($n{Key.new(2,1)}, $m{Key.new(1,0)}, "value was set in wrong place 8");
-        assert_equal($n{Key.new(2,2)}, $m{Key.new(1,1)}, "value was set in wrong place 9");
+        Assert::equal($n{self.factory.key(1,1)}, $m{Key.new(0,0)}, "value was set in wrong place 6");
+        Assert::equal($n{self.factory.key(1,2)}, $m{Key.new(0,1)}, "value was set in wrong place 7");
+        Assert::equal($n{self.factory.key(2,1)}, $m{Key.new(1,0)}, "value was set in wrong place 8");
+        Assert::equal($n{self.factory.key(2,2)}, $m{Key.new(1,1)}, "value was set in wrong place 9");
     }
 
     # Test that calling set_block with a scalar throws an exception
@@ -128,7 +128,7 @@ class Pla::Methods::SetBlock is Pla::MatrixTestBase {
     method test_set_scalar_as_block() {
         my $m := self.factory.defaultmatrix2x2();
         my $n := "";
-        assert_throws(Exception::OutOfBounds, "Can set_block a scalar", {
+        Assert::throws(Exception::OutOfBounds, "Can set_block a scalar", {
             $m.set_block(0, 0, $n);
         });
     }

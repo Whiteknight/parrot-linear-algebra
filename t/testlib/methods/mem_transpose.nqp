@@ -14,25 +14,25 @@ class Pla::Methods::MemTranspose is Pla::MatrixTestBase {
             self.factory.fancyvalue(3)
         );
         $m.mem_transpose();
-        assert_equal($n, $m, "cannot mem_transpose matrix");
+        Assert::equal($n, $m, "cannot mem_transpose matrix");
     }
 
     # Test mem transposing non-square matrices
     method test_non_square_matrix() {
         my $m := self.factory.matrix();
-        $m{Key.new(0,0)} := self.factory.fancyvalue(0);
-        $m{Key.new(0,1)} := self.factory.fancyvalue(1);
-        $m{Key.new(0,2)} := self.factory.fancyvalue(2);
-        $m{Key.new(0,3)} := self.factory.fancyvalue(3);
+        $m{self.factory.key(0,0)} := self.factory.fancyvalue(0);
+        $m{self.factory.key(0,1)} := self.factory.fancyvalue(1);
+        $m{self.factory.key(0,2)} := self.factory.fancyvalue(2);
+        $m{self.factory.key(0,3)} := self.factory.fancyvalue(3);
 
         my $n := self.factory.matrix();
-        $n{Key.new(0,0)} := self.factory.fancyvalue(0);
-        $n{Key.new(1,0)} := self.factory.fancyvalue(1);
-        $n{Key.new(2,0)} := self.factory.fancyvalue(2);
-        $n{Key.new(3,0)} := self.factory.fancyvalue(3);
+        $n{self.factory.key(0,0)} := self.factory.fancyvalue(0);
+        $n{self.factory.key(1,0)} := self.factory.fancyvalue(1);
+        $n{self.factory.key(2,0)} := self.factory.fancyvalue(2);
+        $n{self.factory.key(3,0)} := self.factory.fancyvalue(3);
 
         $m.mem_transpose();
-        assert_equal($m, $n, "cannot mem_transpose with non-square dimensions");
+        Assert::equal($m, $n, "cannot mem_transpose with non-square dimensions");
     }
 
 }

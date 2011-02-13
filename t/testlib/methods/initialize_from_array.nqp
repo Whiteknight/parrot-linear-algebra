@@ -7,7 +7,7 @@ class Pla::Methods::InitializeFromArray is Pla::MatrixTestBase {
                                 self.factory.fancyvalue(2), self.factory.fancyvalue(3));
         my $n := self.factory.matrix();
         $n.initialize_from_array(2, 2, $a);
-        assert_equal($n, $m, "cannot initialize_from_array");
+        Assert::equal($n, $m, "cannot initialize_from_array");
     }
 
     # Test that we can initialize from array, including zero padding
@@ -19,7 +19,7 @@ class Pla::Methods::InitializeFromArray is Pla::MatrixTestBase {
                                 self.factory.nullvalue,     self.factory.nullvalue,     self.factory.nullvalue);
         my $n := self.factory.matrix();
         $n.initialize_from_array(3, 3, $a);
-        assert_equal($n, $m, "cannot initalize from array with zero padding");
+        Assert::equal($n, $m, "cannot initalize from array with zero padding");
     }
 
     # Test that when we initialize from an array, that we only use as many
@@ -28,10 +28,10 @@ class Pla::Methods::InitializeFromArray is Pla::MatrixTestBase {
         my $a := [self.factory.fancyvalue(0), self.factory.fancyvalue(1),
                   self.factory.fancyvalue(2), self.factory.fancyvalue(3)];
         my $m := self.factory.matrix();
-        $m{Key.new(0,0)} := self.factory.fancyvalue(0);
+        $m{self.factory.key(0,0)} := self.factory.fancyvalue(0);
         my $n := self.factory.matrix();
         $n.initialize_from_array(1, 1, $a);
-        assert_equal($n, $m, "cannot initialize from array undersized");
+        Assert::equal($n, $m, "cannot initialize from array undersized");
     }
 
 }
