@@ -11,6 +11,8 @@ method factory() {
     return $!factory;
 }
 
+sub equals($a, $b, $r) { Assert::equals($a, $b, $r); }
+
 method test_VTABLE_get_number_keyed() {
     todo("Tests Needed!");
 }
@@ -103,15 +105,15 @@ method test_add_nummatrix() {
 
       $P3 = $P1 + $P2
       $I0 = $P3[1;1]
-      Assert::equal($I0, 7, "ComplexMatrix+NumMatrix Adding Failed.")
+      equal($I0, 7, "ComplexMatrix+NumMatrix Adding Failed.")
       $I0 = $P3[1;2]
-      Assert::equal($I0, 12, "ComplexMatrix+NumMatrix Adding Failed.")
+      equal($I0, 12, "ComplexMatrix+NumMatrix Adding Failed.")
 
       $P3 = $P1 - $P2
       $I0 = $P3[1;1]
-      Assert::equal($I0, 1, "ComplexMatrix-NumMatrix Subtraction Failed.")
+      equal($I0, 1, "ComplexMatrix-NumMatrix Subtraction Failed.")
       $I0 = $P3[1;2]
-      Assert::equal($I0, 4, "ComplexMatrix-NumMatrix Subtraction Failed.")
+      equal($I0, 4, "ComplexMatrix-NumMatrix Subtraction Failed.")
     }
 }
 
@@ -129,14 +131,14 @@ method test_add_pmcmatrix() {
 
       $P3 = $P1 + $P2
       $I0 = $P3[1;1]
-      Assert::equal($I0, 7, "ComplexMatrix+PMCMatrix Adding Failed.")
+      equal($I0, 7, "ComplexMatrix+PMCMatrix Adding Failed.")
       $I0 = $P3[1;2]
-      Assert::equal($I0, 12, "ComplexMatrix+PMCMatrix Adding Failed.")
+      equal($I0, 12, "ComplexMatrix+PMCMatrix Adding Failed.")
 
       $P3 = $P1 - $P2
       $I0 = $P3[1;1]
-      Assert::equal($I0, 1, "ComplexMatrix-PMCMatrix Subtraction Failed.")
+      equal($I0, 1, "ComplexMatrix-PMCMatrix Subtraction Failed.")
       $I0 = $P3[1;2]
-      Assert::equal($I0, 4, "ComplexMatrix-PMCMatrix Subtraction Failed.")
+      equal($I0, 4, "ComplexMatrix-PMCMatrix Subtraction Failed.")
     }
 }
