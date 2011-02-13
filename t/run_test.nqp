@@ -1,5 +1,6 @@
 #! parrot-nqp
 INIT {
+    pir::load_bytecode('parrot_test_common.pbc');
     pir::load_bytecode('parrot_test_xunit.pbc');
     pir::load_bytecode('t/testlib/pla_test.pbc');
 }
@@ -41,7 +42,12 @@ sub compile_pir_test($filename) {
 }
 
 sub compile_nqp_test($filename) {
-    my $sub := Nqp::compile_file($filename);
+    my $nqp := pir::compreg__PS("NQP-rx");
+    my $fh := pir::new__PS("FileHandle");
+    $fh.open($filename);
+    my $code := $fh.readall();
+    $fh.close();
+    my $sub := $nqp.compile($code);
     return $sub[0];
 }
 

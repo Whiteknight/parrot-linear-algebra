@@ -3,6 +3,8 @@
 
 class Pla::MatrixTest is Pla::MatrixTestBase {
 
+    sub equal($a, $b, $r) { Assert::equal($a, $b, $r); }
+
     # Test that we can create a matrix
     method test_OP_new() {
         Assert::throws_nothing("Cannot create new matrix", {
@@ -26,8 +28,8 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
     method test_VTABLE_get_pmc_keyed() {
         my $m := self.factory.matrix();
         my $a := self.factory.defaultvalue();
-        $m{Key.new(0,0)} := $a;
-        my $b := $m{Key.new(0,0)};
+        $m{self.factory.key(0,0)} := $a;
+        my $b := $m{self.factory.key(0,0)};
         Assert::equal($a, $b, "get_pmc_keyed doesn't work");
     }
 
@@ -36,7 +38,7 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
         Assert::throws_nothing("Cannot set_pmc_keyed", {
             my $m := self.factory.matrix();
             my $a := self.factory.defaultvalue();
-            $m{Key.new(0,0)} := $a;
+            $m{self.factory.key(0,0)} := $a;
         });
     }
 
@@ -63,7 +65,7 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
     method test_VTABLE_is_equal_SIZEFAIL() {
         my $m := self.factory.defaultmatrix2x2();
         my $n := self.factory.defaultmatrix2x2();
-        $n{Key.new(2, 2)} := self.factory.nullvalue();
+        $n{self.factory.key(2, 2)} := self.factory.nullvalue();
         Assert::not_equal($m, $n, "different sized matrices are equal");
     }
 
@@ -72,14 +74,14 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
     method test_VTABLE_is_equal_ELEMSFAIL() {
         my $m := self.factory.defaultmatrix2x2();
         my $n := self.factory.defaultmatrix2x2();
-        $n{Key.new(1,1)} := self.factory.fancyvalue(0);
+        $n{self.factory.key(1,1)} := self.factory.fancyvalue(0);
         Assert::not_equal($m, $n, "non-equal matrices are equal");
     }
 
     # Test that we can get named attributes about the matrix
     method test_VTABLE_get_attr_str() {
         my $m := self.factory.matrix();
-        $m{Key.new(5,7)} := self.factory.defaultvalue;
+        $m{self.factory.key(5,7)} := self.factory.defaultvalue;
         self.AssertSize($m, 6, 8);
     }
 
@@ -251,20 +253,20 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
         my $m := self.factory.matrix();
         self.AssertSize($m, 0, 0);
 
-        $m{Key.new(3, 4)} := self.factory.defaultvalue;
+        $m{self.factory.key(3, 4)} := self.factory.defaultvalue;
         self.AssertSize($m, 4, 5);
 
-        $m{Key.new(7, 11)} := self.factory.defaultvalue;
+        $m{self.factory.key(7, 11)} := self.factory.defaultvalue;
         self.AssertSize($m, 8, 12);
     }
 
     # Test how we access values if we use one key instead of two
     method test_MISC_linear_indexing() {
         my $m := self.factory.fancymatrix2x2();
-        Assert::equal($m[0], $m{Key.new(0,0)}, "cannot get first element linearly");
-        Assert::equal($m[1], $m{Key.new(0,1)}, "cannot get first element linearly");
-        Assert::equal($m[2], $m{Key.new(1,0)}, "cannot get first element linearly");
-        Assert::equal($m[3], $m{Key.new(1,1)}, "cannot get first element linearly");
+        Assert::equal($m[0], $m{self.factory.key(0,0)}, "cannot get first element linearly");
+        Assert::equal($m[1], $m{self.factory.key(0,1)}, "cannot get first element linearly");
+        Assert::equal($m[2], $m{self.factory.key(1,0)}, "cannot get first element linearly");
+        Assert::equal($m[3], $m{self.factory.key(1,1)}, "cannot get first element linearly");
     }
 
     # TODO: Test the case where we pass a key with order greater than 2
@@ -346,7 +348,7 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
         my $m := self.factory.defaultmatrix2x2();
 
         Assert::throws(Exception::OutOfBounds, "negative PCM key should throw exception", {
-            my $e := $m{Key.new(-1)};
+            my $e := $m{self.factory.key(-1)};
         });
     }
 
@@ -354,14 +356,14 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
         my $m := self.factory.fancymatrix2x2();
 
         Assert::throws(Exception::OutOfBounds, "empty PCM key should throw exception", {
-            my $e := $m{Key.new()};
+            my $e := $m{self.factory.key()};
         });
     }
 
     method test_1_element_key() {
         my $m := self.factory.fancymatrix2x2();
         $m.'item_at'(0,1,3);
-        my $e := $m{Key.new(1)};
+        my $e := $m{self.factory.key(1)};
 
         Assert::equal($e, 3, "1 element PCM key should work");
     }
@@ -369,7 +371,7 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
     method test_1_element_key_not_in_first_row() {
         my $m := self.factory.defaultmatrix3x3();
         $m.'item_at'(2,2,3);
-        my $e := $m{Key.new(8)};
+        my $e := $m{self.factory.key(8)};
 
         Assert::equal($e, 3, "1 element PCM key should work");
     }
@@ -377,7 +379,7 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
     method test_2_elements_key() {
         my $m := self.factory.fancymatrix2x2();
         $m.'item_at'(1,1,3);
-        my $e := $m{Key.new(1,1)};
+        my $e := $m{self.factory.key(1,1)};
 
         Assert::equal($e, 3, "2 elements PCM key should work");
     }
@@ -386,7 +388,7 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
         my $m := self.factory.fancymatrix2x2();
 
         Assert::throws(Exception::OutOfBounds, "more than 2 elements PCM key should throw exception", {
-          my $e := $m{Key.new(0,1,3)};
+          my $e := $m{self.factory.key(0,1,3)};
         });
     }
 }

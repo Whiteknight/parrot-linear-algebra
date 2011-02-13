@@ -4,6 +4,35 @@ class Pla::MatrixFactory {
         self.RequireOverride(self.defaultvalue);
     }
 
+    sub key(*@parts) {
+        my $key;
+        my $segment;
+
+        for @parts {
+            $segment := pir::new__PS('Key');
+
+            if pir::isa($_, 'Integer' )	{ pir::assign__vPI($segment, $_); }
+            elsif pir::isa($_, 'Float' )	{ pir::assign__vPN($segment, $_); }
+            elsif pir::isa($_, 'String' )	{ pir::assign__vPS($segment, $_); }
+            else {
+                pir::die('Arguments to key must be Integer, String, or Float');
+            }
+
+            if pir::defined($key) {
+                pir::push__vpp($key, $segment);
+            }
+            else {
+                $key := $segment;
+            }
+        }
+
+        $key;
+    }
+
+    method key(*@parts) {
+        key(|@parts);
+    }
+
     # The null value which is auto-inserted into the matrix on resize.
     method nullvalue() {
         self.RequireOverride(self.nullvalue);
@@ -22,10 +51,10 @@ class Pla::MatrixFactory {
     # Create a 2x2 matrix of the type with given values row-first
     method matrix2x2($aa, $ab, $ba, $bb) {
         my $m := self.matrix();
-        $m{Key.new(0,0)} := $aa;
-        $m{Key.new(0,1)} := $ab;
-        $m{Key.new(1,0)} := $ba;
-        $m{Key.new(1,1)} := $bb;
+        $m{key(0,0)} := $aa;
+        $m{key(0,1)} := $ab;
+        $m{key(1,0)} := $ba;
+        $m{key(1,1)} := $bb;
         return ($m);
     }
 
@@ -52,15 +81,15 @@ class Pla::MatrixFactory {
     # Create a 3x3 matrix of the type with given values row-first
     method matrix3x3($aa, $ab, $ac, $ba, $bb, $bc, $ca, $cb, $cc) {
         my $m := self.matrix();
-        $m{Key.new(0,0)} := $aa;
-        $m{Key.new(0,1)} := $ab;
-        $m{Key.new(0,2)} := $ac;
-        $m{Key.new(1,0)} := $ba;
-        $m{Key.new(1,1)} := $bb;
-        $m{Key.new(1,2)} := $bc;
-        $m{Key.new(2,0)} := $ca;
-        $m{Key.new(2,1)} := $cb;
-        $m{Key.new(2,2)} := $cc;
+        $m{key(0,0)} := $aa;
+        $m{key(0,1)} := $ab;
+        $m{key(0,2)} := $ac;
+        $m{key(1,0)} := $ba;
+        $m{key(1,1)} := $bb;
+        $m{key(1,2)} := $bc;
+        $m{key(2,0)} := $ca;
+        $m{key(2,1)} := $cb;
+        $m{key(2,2)} := $cc;
         return ($m);
     }
 
@@ -96,10 +125,7 @@ class Pla::MatrixFactory::ComplexMatrix2D is Pla::MatrixFactory {
         );
     }
 
-    our method matrix() {
-        my $m := Parrot::new("ComplexMatrix2D");
-        return ($m);
-    }
+    our method matrix() { pir::new__PS("ComplexMatrix2D"); }
 
     method matrix2x2($aa, $ab, $ba, $bb) {
         my $m := self.matrix();
@@ -107,10 +133,10 @@ class Pla::MatrixFactory::ComplexMatrix2D is Pla::MatrixFactory {
         if (pir::typeof__SP($ab) eq "String") { $ab := pir::new__PSP("Complex", $ab); }
         if (pir::typeof__SP($ba) eq "String") { $ba := pir::new__PSP("Complex", $ba); }
         if (pir::typeof__SP($bb) eq "String") { $bb := pir::new__PSP("Complex", $bb); }
-        $m{Key.new(0,0)} := $aa;
-        $m{Key.new(0,1)} := $ab;
-        $m{Key.new(1,0)} := $ba;
-        $m{Key.new(1,1)} := $bb;
+        $m{key(0,0)} := $aa;
+        $m{key(0,1)} := $ab;
+        $m{key(1,0)} := $ba;
+        $m{key(1,1)} := $bb;
         return ($m);
     }
 
@@ -120,10 +146,7 @@ class Pla::MatrixFactory::ComplexMatrix2D is Pla::MatrixFactory {
 }
 
 class Pla::MatrixFactory::NumMatrix2D is Pla::MatrixFactory {
-    method matrix() {
-        my $m := Parrot::new("NumMatrix2D");
-        return ($m);
-    }
+    method matrix() { pir::new__PS("NumMatrix2D"); }
 
     method defaultvalue() { 1.0; }
     method nullvalue() { 0.0; }
@@ -133,9 +156,7 @@ class Pla::MatrixFactory::NumMatrix2D is Pla::MatrixFactory {
 }
 
 class Pla::MatrixFactory::PMCMatrix2D is Pla::MatrixFactory {
-    method matrix() {
-        return (Parrot::new("PMCMatrix2D"));
-    }
+    method matrix() { pir::new__PS("PMCMatrix2D"); }
 
     method defaultvalue() { 1; }
     method nullvalue() { return (pir::null__P()); }
