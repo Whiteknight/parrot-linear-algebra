@@ -2,10 +2,6 @@ my $tests := Test::PMCMatrix2D::InitializeFromArgs.new();
 $tests.suite.run;
 
 class Test::PMCMatrix2D::InitializeFromArgs is Pla::Methods::InitializeFromArgs {
-    INIT {
-        use('UnitTest::Testcase');
-        use('UnitTest::Assertions');
-    }
 
     has $!factory;
     method factory() {

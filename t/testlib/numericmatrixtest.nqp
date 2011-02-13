@@ -1,11 +1,6 @@
 
 class Pla::NumericMatrixTest is Pla::MatrixTest {
 
-    INIT {
-        use('UnitTest::Testcase');
-        use('UnitTest::Assertions');
-    }
-
     # Test that a numeric matrix does numericmatrix
     method test_OP_does_numericmatrix() {
         my $m := self.factory.matrix();

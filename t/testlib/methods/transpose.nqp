@@ -1,10 +1,4 @@
 class Pla::Methods::Transpose is Pla::MatrixTestBase {
-
-    INIT {
-        use('UnitTest::Testcase');
-        use('UnitTest::Assertions');
-    }
-
     # Test transposing square matrices
     method test_transpose() {
         my $m := self.factory.matrix2x2(

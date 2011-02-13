@@ -2,10 +2,6 @@ my $tests := Test::NumMatrix2D::SetBlock.new();
 $tests.suite.run;
 
 class Test::NumMatrix2D::SetBlock is Pla::Methods::SetBlock {
-    INIT {
-        use('UnitTest::Testcase');
-        use('UnitTest::Assertions');
-    }
 
     has $!factory;
     method factory() {

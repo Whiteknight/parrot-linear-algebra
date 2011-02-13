@@ -3,11 +3,6 @@
 
 class Pla::MatrixTest is Pla::MatrixTestBase {
 
-    INIT {
-        use('UnitTest::Testcase');
-        use('UnitTest::Assertions');
-    }
-
     # Test that we can create a matrix
     method test_OP_new() {
         assert_throws_nothing("Cannot create new matrix", {

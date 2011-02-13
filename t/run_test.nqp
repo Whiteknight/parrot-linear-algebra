@@ -1,6 +1,6 @@
 #! parrot-nqp
 INIT {
-    pir::load_bytecode('library/kakapo_full.pbc');
+    pir::load_bytecode('parrot_test_xunit.pbc');
     pir::load_bytecode('t/testlib/pla_test.pbc');
 }
 

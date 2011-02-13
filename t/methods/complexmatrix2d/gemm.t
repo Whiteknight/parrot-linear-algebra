@@ -2,11 +2,6 @@ my $tests := Test::ComplexMatrix2D::Gemm.new();
 $tests.suite.run;
 
 class Test::ComplexMatrix2D::Gemm is Pla::Methods::Gemm {
-    INIT {
-        use('UnitTest::Testcase');
-        use('UnitTest::Assertions');
-    }
-
     has $!factory;
     method factory() {
         unless pir::defined__IP($!factory) {

@@ -1,10 +1,5 @@
 class Pla::Methods::IterateFunctionExternal is Pla::MatrixTestBase {
 
-    INIT {
-        use('UnitTest::Testcase');
-        use('UnitTest::Assertions');
-    }
-
     # Test that we can iterate_function_external, and create a new matrix
     method test_iterate_function_external() {
         my $m := self.factory.fancymatrix2x2();

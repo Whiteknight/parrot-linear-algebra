@@ -1,10 +1,5 @@
 class Pla::Methods::IterateFunctionInplace is Pla::MatrixTestBase {
 
-    INIT {
-        use('UnitTest::Testcase');
-        use('UnitTest::Assertions');
-    }
-
     # Test that we can iterate a function in-place
     method test_iterate_function_inplace() {
         my $m := self.factory.defaultmatrix2x2();

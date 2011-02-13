@@ -1,10 +1,4 @@
 class Pla::Methods::Gemm is Pla::MatrixTestBase {
-
-    INIT {
-        use('UnitTest::Testcase');
-        use('UnitTest::Assertions');
-    }
-
     method test_METHOD_gemm_aA() { self.factory.RequireOverride("test_METHOD_gemm_aA"); }
     method test_METHOD_gemm_AB() { self.RequireOverride("test_METHOD_gemm_AB"); }
     method test_METHOD_gemm_aAB() { self.RequireOverride("test_METHOD_gemm_aAB"); }

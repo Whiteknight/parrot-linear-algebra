@@ -2,11 +2,6 @@ my $tests := Test::ComplexMatrix2D::Fill.new();
 $tests.suite.run;
 
 class Test::ComplexMatrix2D::Fill is Pla::Methods::Fill {
-    INIT {
-        use('UnitTest::Testcase');
-        use('UnitTest::Assertions');
-    }
-
     has $!factory;
     method factory() {
         unless pir::defined__IP($!factory) {
@@ -14,7 +9,7 @@ class Test::ComplexMatrix2D::Fill is Pla::Methods::Fill {
         }
         return $!factory;
     }
-    
+
     # Test that we can fill a matrix
     method test_fill_complex() {
         my $m := self.factory.defaultmatrix2x2();
@@ -36,7 +31,7 @@ class Test::ComplexMatrix2D::Fill is Pla::Methods::Fill {
         );
 
         my $n := self.factory.matrix();
-        
+
         $n.fill("1+1i", 2, 2);
         assert_equal($n, $m, "Cannot fill+Resize complex");
     }
@@ -61,7 +56,7 @@ class Test::ComplexMatrix2D::Fill is Pla::Methods::Fill {
         );
 
         my $n := self.factory.matrix();
-        
+
         my $array := (1, 1);
         $n.fill($array, 2, 2);
         assert_equal($n, $m, "Cannot fill+Resize using an array");

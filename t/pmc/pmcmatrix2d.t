@@ -5,11 +5,6 @@ class Test::PmcMatrix2D is Pla::MatrixTest {
 
 has $!factory;
 
-INIT {
-    use('UnitTest::Testcase');
-    use('UnitTest::Assertions');
-}
-
 method factory() {
     unless pir::defined__IP($!factory) {
         $!factory := Pla::MatrixFactory::PMCMatrix2D.new();

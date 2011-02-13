@@ -1,10 +1,4 @@
 class Pla::Methods::MemTranspose is Pla::MatrixTestBase {
-
-    INIT {
-        use('UnitTest::Testcase');
-        use('UnitTest::Assertions');
-    }
-
     # Test mem transposing square matrices
     method test_mem_transpose() {
         my $m := self.factory.matrix2x2(

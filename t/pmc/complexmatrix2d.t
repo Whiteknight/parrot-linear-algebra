@@ -3,11 +3,6 @@ $tests.suite.run();
 
 class Test::ComplexMatrix2D is Pla::NumericMatrixTest;
 
-INIT {
-    use('UnitTest::Testcase');
-    use('UnitTest::Assertions');
-}
-
 has $!factory;
 method factory() {
     unless pir::defined__IP($!factory) {
@@ -100,7 +95,7 @@ method test_add_nummatrix() {
       $P1.'resize'(5,5)
       $P1[1;1] = 4.
       $P1[1;2] = 8.
-      
+
       $P2 = new 'NumMatrix2D'
       $P2.'resize'(5,5)
       $P2[1;1] = 3.
@@ -111,7 +106,7 @@ method test_add_nummatrix() {
       assert_equal($I0, 7, "ComplexMatrix+NumMatrix Adding Failed.")
       $I0 = $P3[1;2]
       assert_equal($I0, 12, "ComplexMatrix+NumMatrix Adding Failed.")
-      
+
       $P3 = $P1 - $P2
       $I0 = $P3[1;1]
       assert_equal($I0, 1, "ComplexMatrix-NumMatrix Subtraction Failed.")
@@ -126,7 +121,7 @@ method test_add_pmcmatrix() {
       $P1.'resize'(5,5)
       $P1[1;1] = 4.
       $P1[1;2] = 8.
-      
+
       $P2 = new 'PMCMatrix2D'
       $P2.'resize'(5,5)
       $P2[1;1] = 3.
@@ -137,7 +132,7 @@ method test_add_pmcmatrix() {
       assert_equal($I0, 7, "ComplexMatrix+PMCMatrix Adding Failed.")
       $I0 = $P3[1;2]
       assert_equal($I0, 12, "ComplexMatrix+PMCMatrix Adding Failed.")
-      
+
       $P3 = $P1 - $P2
       $I0 = $P3[1;1]
       assert_equal($I0, 1, "ComplexMatrix-PMCMatrix Subtraction Failed.")

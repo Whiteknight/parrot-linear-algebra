@@ -5,11 +5,6 @@ class Test::NumMatrix2D is Pla::NumericMatrixTest;
 
 # Test boilerplate.
 
-INIT {
-    use('UnitTest::Testcase');
-    use('UnitTest::Assertions');
-}
-
 has $!factory;
 method factory() {
     unless pir::defined__IP($!factory) {

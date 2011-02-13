@@ -2,10 +2,6 @@ my $tests := Test::NumMatrix2D::Gemm.new();
 $tests.suite.run;
 
 class Test::NumMatrix2D::Gemm is Pla::Methods::Gemm {
-    INIT {
-        use('UnitTest::Testcase');
-        use('UnitTest::Assertions');
-    }
 
     has $!factory;
     method factory() {

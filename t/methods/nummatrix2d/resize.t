@@ -2,12 +2,8 @@ my $tests := Test::NumMatrix2D::Resize.new();
 $tests.suite.run;
 
 class Test::NumMatrix2D::Resize is Pla::Methods::Resize {
-    INIT {
-        use('UnitTest::Testcase');
-        use('UnitTest::Assertions');
-    }
-
     has $!factory;
+
     method factory() {
         unless pir::defined__IP($!factory) {
             $!factory := Pla::MatrixFactory::NumMatrix2D.new();
@@ -38,7 +34,7 @@ class Test::NumMatrix2D::Resize is Pla::Methods::Resize {
 
         $m.resize(3,3);
 
-        assert_equal($m, $n, "cannot resize with numerical matrix"); 
+        assert_equal($m, $n, "cannot resize with numerical matrix");
     }
 
     method test_resize_to_same_size_numerical() {
@@ -49,6 +45,6 @@ class Test::NumMatrix2D::Resize is Pla::Methods::Resize {
 
         $n.resize(2,2);
 
-        assert_equal($m, $n, "resize to same size is changing numerical matrix"); 
+        assert_equal($m, $n, "resize to same size is changing numerical matrix");
     }
 }

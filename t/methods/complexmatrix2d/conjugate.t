@@ -2,11 +2,6 @@ my $tests := Test::ComplexMatrix2D::Conjugate.new();
 $tests.suite.run;
 
 class Test::ComplexMatrix2D::Conjugate is Pla::MatrixTestBase {
-    INIT {
-        use('UnitTest::Testcase');
-        use('UnitTest::Assertions');
-    }
-
     has $!factory;
     method factory() {
         unless pir::defined__IP($!factory) {

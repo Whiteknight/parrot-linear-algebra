@@ -7,11 +7,6 @@
 # PMC being tested
 class Pla::MatrixTestBase is UnitTest::Testcase {
 
-    INIT {
-        use('UnitTest::Testcase');
-        use('UnitTest::Assertions');
-    }
-
     method factory() {
         self.RequireOverride("factory");
     }

@@ -1,10 +1,4 @@
 class Pla::Methods::InitializeFromArgs is Pla::MatrixTestBase {
-
-    INIT {
-        use('UnitTest::Testcase');
-        use('UnitTest::Assertions');
-    }
-
     # Test that we can initialize from a list of arguments
     method test_initialize_from_args() {
         my $m := self.factory.matrix2x2(self.factory.fancyvalue(0), self.factory.fancyvalue(1),

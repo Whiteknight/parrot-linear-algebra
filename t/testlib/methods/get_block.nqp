@@ -1,10 +1,4 @@
 class Pla::Methods::GetBlock is Pla::MatrixTestBase {
-
-    INIT {
-        use('UnitTest::Testcase');
-        use('UnitTest::Assertions');
-    }
-
     # Test that we can get a block from the matrix
     method test_get_block() {
         my $m := self.factory.fancymatrix2x2();

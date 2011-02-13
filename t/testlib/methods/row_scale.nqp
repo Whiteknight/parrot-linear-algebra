@@ -1,10 +1,4 @@
 class Pla::Methods::RowScale is Pla::MatrixTestBase {
-
-    INIT {
-        use('UnitTest::Testcase');
-        use('UnitTest::Assertions');
-    }
-
     method test_row_scale() {
         my $A := self.factory.matrix();
         $A.initialize_from_args(3, 3,

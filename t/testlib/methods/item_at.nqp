@@ -1,10 +1,4 @@
 class Pla::Methods::ItemAt is Pla::MatrixTestBase {
-
-    INIT {
-        use('UnitTest::Testcase');
-        use('UnitTest::Assertions');
-    }
-
     method test_item_at() {
         my $m := self.factory.fancymatrix2x2();
         assert_equal(self.factory.fancyvalue(0), $m.item_at(0, 0), "cannot get item 0,0");

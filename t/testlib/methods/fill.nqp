@@ -1,10 +1,4 @@
 class Pla::Methods::Fill is Pla::MatrixTestBase {
-
-    INIT {
-        use('UnitTest::Testcase');
-        use('UnitTest::Assertions');
-    }
-
     # Test that we can fill a matrix
     method test_fill() {
         my $m := self.factory.defaultmatrix2x2();

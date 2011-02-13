@@ -2,10 +2,6 @@ my $tests := Test::NumMatrix2D::Transpose.new();
 $tests.suite.run;
 
 class Test::NumMatrix2D::Transpose is Pla::Methods::Transpose {
-    INIT {
-        use('UnitTest::Testcase');
-        use('UnitTest::Assertions');
-    }
 
     has $!factory;
     method factory() {
@@ -17,19 +13,19 @@ class Test::NumMatrix2D::Transpose is Pla::Methods::Transpose {
 
     method test_transpose_square_numerical() {
         my $m := self.factory.matrix2x2(
-	            11, 12,
-	            21, 22
-        );	
+            11, 12,
+            21, 22
+        );
 
         my $n := self.factory.matrix2x2(
-	            11, 21,
-	            12, 22
+            11, 21,
+            12, 22
         );
 
         $m.transpose();
         assert_equal($m, $n, "cannot tranpose numerical");
     }
-	
+
     method test_non_square_tranpose_numerical() {
         my $m := self.factory.matrix();
         $m{Key.new(0,0)} := 11;
@@ -50,4 +46,4 @@ class Test::NumMatrix2D::Transpose is Pla::Methods::Transpose {
         $m.transpose();
         assert_equal($m, $n, "cannot transpose numerical matrix with non-square dimensions");
     }
-}		
+}

@@ -1,10 +1,4 @@
 class Pla::Methods::RowCombine is Pla::MatrixTestBase {
-
-    INIT {
-        use('UnitTest::Testcase');
-        use('UnitTest::Assertions');
-    }
-
     method test_row_combine() {
         my $A := self.factory.fancymatrix2x2();
         my $val1;

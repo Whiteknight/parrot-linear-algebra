@@ -1,10 +1,4 @@
 class Pla::Methods::SetBlock is Pla::MatrixTestBase {
-
-    INIT {
-        use('UnitTest::Testcase');
-        use('UnitTest::Assertions');
-    }
-
     # Test set_block
     method test_set_block() {
         my $m := self.factory.fancymatrix2x2();

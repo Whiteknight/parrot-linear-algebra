@@ -2,11 +2,6 @@ my $tests := Test::ComplexMatrix2D::InitializeFromArray.new();
 $tests.suite.run;
 
 class Test::ComplexMatrix2D::InitializeFromArray is Pla::Methods::InitializeFromArray {
-    INIT {
-        use('UnitTest::Testcase');
-        use('UnitTest::Assertions');
-    }
-
     has $!factory;
     method factory() {
         unless pir::defined__IP($!factory) {
@@ -14,7 +9,7 @@ class Test::ComplexMatrix2D::InitializeFromArray is Pla::Methods::InitializeFrom
         }
         return $!factory;
     }
-    
+
     method test_initialize_from_array_complex() {
         my $m := self.factory.matrix2x2("1+1i", "2+2i",
                                 "3+3i", "4+4i");

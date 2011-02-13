@@ -2,11 +2,6 @@ my $tests := Test::PMCMatrix2D::InitializeFromArray.new();
 $tests.suite.run;
 
 class Test::PMCMatrix2D::InitializeFromArray is Pla::Methods::InitializeFromArray {
-    INIT {
-        use('UnitTest::Testcase');
-        use('UnitTest::Assertions');
-    }
-
     has $!factory;
     method factory() {
         unless pir::defined__IP($!factory) {

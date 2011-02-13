@@ -1,10 +1,4 @@
 class Pla::Methods::Resize is Pla::MatrixTestBase {
-
-    INIT {
-        use('UnitTest::Testcase');
-        use('UnitTest::Assertions');
-    }
-
     # Test the resize method
     method test_resize() {
         my $m := self.factory.matrix();

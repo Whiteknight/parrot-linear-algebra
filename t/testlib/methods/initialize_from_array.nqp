@@ -1,10 +1,4 @@
 class Pla::Methods::InitializeFromArray is Pla::MatrixTestBase {
-
-    INIT {
-        use('UnitTest::Testcase');
-        use('UnitTest::Assertions');
-    }
-
     # Test that we can initialize from an array
     method test_initialize_from_array() {
         my $a := [self.factory.fancyvalue(0), self.factory.fancyvalue(1),

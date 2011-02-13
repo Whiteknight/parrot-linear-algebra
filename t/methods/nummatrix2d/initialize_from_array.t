@@ -2,10 +2,6 @@ my $tests := Test::NumMatrix2D::InitializeFromArray.new();
 $tests.suite.run;
 
 class Test::NumMatrix2D::InitializeFromArray is Pla::Methods::InitializeFromArray {
-    INIT {
-        use('UnitTest::Testcase');
-        use('UnitTest::Assertions');
-    }
 
     has $!factory;
     method factory() {
