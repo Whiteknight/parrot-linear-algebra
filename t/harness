@@ -3,6 +3,7 @@
 INIT {
     pir::load_bytecode('parrot_test_xunit.pbc');
     pir::load_bytecode('t/testlib/pla_test.pbc');
+    pir::loadlib__ps('os');
 }
 
 my $harness := PLA::Harness.new();
@@ -33,6 +34,7 @@ class PLA::Harness {
     has %!results;
     has @!files;
     has $!max_length;
+    has $!os;
 
 # TAP grammar in ABNF
 # http://testanything.org/wiki/index.php/TAP_at_IETF:_Draft_Standard#Grammar
@@ -47,6 +49,7 @@ class PLA::Harness {
         %!results{"PASSED"} := [];
         %!results{"FAILED"} := [];
         %!results{"ABORTED"} := [];
+        $!os := pir::new__PS('OS');
     }
 
     method setup(*@dirs) {
@@ -130,12 +133,31 @@ class PLA::Harness {
         }
     }
 
+    method get_dir_contents($path) {
+        my $contents;
+
+        #if self.is_file: $path {
+        #    %named<mode> := 'r';
+        #    my $fh := self.open($path, |%named);
+        #    $contents := $fh.readall;
+        #    $fh.close;
+        #}
+        #elsif self.is_directory: $path {
+            $contents := $!os.readdir: ~$path;
+        #}
+        #else {
+            # What to do?
+            #pir::die("Don't know how to get contents of non-file, non-directory: $path");
+        #}
+
+        $contents;
+    }
+
     method get_all_tests(@dirs) {
-        my $fs := FileSystem.instance;
         my $max_length := 0;
         for @dirs {
             my $dir := $_;
-            my @rawfiles := $fs.get_contents($dir);
+            my @rawfiles := self.get_dir_contents($dir);
             for @rawfiles {
                 my $filename := $_;
                 if pir::index__ISS($filename, ".t") == -1 {
