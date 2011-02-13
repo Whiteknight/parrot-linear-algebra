@@ -1,15 +1,12 @@
 #! parrot-nqp
 
-class Test::Sanity is UnitTest::Testcase;
+my $test := Test::Sanity.new();
+$test.suite.run();
 
-MAIN();
-sub MAIN() {
-    my $proto := Opcode::get_root_global(pir::get_namespace__P().get_name);
-    $proto.suite.run;
+class Test::Sanity is UnitTest::Testcase {
+
+    method test_load_linalg_group() {
+        my $pla := pir::loadlib__ps("./dynext/linalg_group");
+        #Assert::not_instance_of($pla, "Undef", "Cannot load PLA library, linalg_group");
+    }
 }
-
-method test_load_linalg_group() {
-    my $pla := pir::loadlib__ps("./dynext/linalg_group");
-    UnitTest::Assertions::assert_not_instance_of($pla, "Undef", "Cannot load PLA library, linalg_group");
-}
-

@@ -1,6 +1,7 @@
 #! parrot-nqp
 
 INIT {
+    pir::load_bytecode('parrot_test_common.pbc');
     pir::load_bytecode('parrot_test_xunit.pbc');
     pir::load_bytecode('t/testlib/pla_test.pbc');
     pir::loadlib__ps('os');
@@ -276,8 +277,37 @@ class PLA::Harness::Test {
     }
 
     method compile_nqp_test() {
-        my $sub := Nqp::compile_file($!filename);
-        return $sub[0];
+        my $compiler := pir::compreg__PS('NQP-rx');
+        my $handle := pir::new__PS("FileHandle");
+        $handle.open($!filename, 'r');
+
+        my $code := $handle.readall();
+        $handle.close();
+
+        $code := $compiler.compile: $code;
+        return $code[0];
+    }
+
+    sub swap_handles(*%handles) {
+        my %save_handles;
+        my $interp := pir::getinterp();
+
+        if pir::defined( %handles<stderr> ) {
+            %save_handles<stderr> := $interp.stderr_handle();
+            $interp.stderr_handle(%handles<stderr>);
+        }
+
+        if pir::defined( %handles<stdin> ) {
+            %save_handles<stdin> := $interp.stdin_handle();
+            $interp.stdin_handle(%handles<stdin>);
+        }
+
+        if pir::defined( %handles<stdout> ) {
+            %save_handles<stdout> := $interp.stdout_handle();
+            $interp.stdout_handle(%handles<stdout>);
+        }
+
+        %save_handles;
     }
 
     method compile_and_execute() {
@@ -288,9 +318,9 @@ class PLA::Harness::Test {
         } else {
             $sub := self.compile_pir_test();
         }
-        my $stdout := Parrot::new("StringHandle");
+        my $stdout := pir::new__PS("StringHandle");
         $stdout.open("blah", "rw");
-        my %save_handles := Program::swap_handles(:stdout($stdout), :stderr($stdout));
+        my %save_handles := swap_handles(:stdout($stdout), :stderr($stdout));
         try {
             $sub();
             CATCH {
@@ -300,8 +330,8 @@ class PLA::Harness::Test {
             }
         }
         my $output := $stdout.readall();
-        Program::swap_handles(|%save_handles);
-        @!lines := $output.split("\n");
+        swap_handles(|%save_handles);
+        @!lines := pir::split__PSS("\n", $output);
     }
 
     method run() {
@@ -309,13 +339,15 @@ class PLA::Harness::Test {
         if $!status ne "ABORTED" {
             self.get_plan();
             self.parse();
+        } else {
+            pir::say($!errdetails);
         }
     }
 
     method get_plan() {
         # TODO: Detect bad plan
         my $plan        := @!lines[0];
-        my @plan_parts  := $plan.split('..');
+        my @plan_parts  := pir::split("..", $plan);
         my $!num_tests  := @plan_parts[1];
         @!lines.shift;
     }
@@ -367,15 +399,15 @@ class PLA::Harness::Line {
             return;
         } else {
             $!ignore := 0;
-            my @line_parts := $line.split("ok ");
+            my @line_parts := pir::split("ok ", $line);
             if @line_parts[0] eq 'not ' {
                 $!result := 0;
-                $!name := $line.split(' - ')[1];
+                $!name := pir::split(' - ', $line)[1];
             }
             else {
                 $!result := 1;
             }
-            $!number := @line_parts[1].split(' ')[0];
+            $!number := pir::split(' ', @line_parts[1])[0];
         }
     }
 

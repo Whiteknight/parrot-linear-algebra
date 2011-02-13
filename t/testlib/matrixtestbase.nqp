@@ -20,9 +20,9 @@ class Pla::MatrixTestBase is UnitTest::Testcase {
     method AssertSize($m, $rows, $cols) {
         my $real_rows := pir::getattribute__PPS($m, "rows");
         my $real_cols := pir::getattribute__PPS($m, "cols");
-        assert_equal($real_rows, $rows,
+        Assert::equal($real_rows, $rows,
             "matrix does not have correct number of rows. $rows expected, $real_rows actual");
-        assert_equal($real_cols, $cols,
+        Assert::equal($real_cols, $cols,
             "matrix does not have correct number of columns. $cols expected, $real_cols actual");
     }
 
@@ -30,10 +30,10 @@ class Pla::MatrixTestBase is UnitTest::Testcase {
         my $nullval := self.factory.nullvalue;
         my $val := $m{Key.new($row, $col)};
         if pir::isnull__IP($nullval) == 1 {
-            assert_instance_of($val, "Undef",
+            Assert::instance_of($val, "Undef",
                 "Expected null value at position ($row,$col). Had $val.");
         } else {
-            assert_equal($val, $nullval,
+            Assert::equal($val, $nullval,
                 "Expected default value $nullval at position ($row,$col). Had $val");
         }
     }
@@ -41,9 +41,9 @@ class Pla::MatrixTestBase is UnitTest::Testcase {
     method AssertValueAtIs($m, $row, $col, $expected) {
         my $val := $m{Key.new($row, $col)};
         if pir::isnull__IP($expected) {
-            assert_null($val, "Value not null at ($row,$col). Have $val");
+            Assert::null($val, "Value not null at ($row,$col). Have $val");
         } else {
-            assert_equal($val, $expected,
+            Assert::equal($val, $expected,
                 "Values not equal at ($row,$col). Had $val, wanted $expected");
         }
     }
@@ -58,7 +58,7 @@ class Pla::MatrixTestBase is UnitTest::Testcase {
             store_lex "$found", $P2
         };
         my $type := pir::typeof__SP($x);
-        assert_not_null($found, $type ~ " does not have method " ~ $meth);
+        Assert::not_null($found, $type ~ " does not have method " ~ $meth);
     }
 }
 

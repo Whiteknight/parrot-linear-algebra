@@ -5,21 +5,21 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
 
     # Test that we can create a matrix
     method test_OP_new() {
-        assert_throws_nothing("Cannot create new matrix", {
+        Assert::throws_nothing("Cannot create new matrix", {
             my $m := self.factory.matrix();
-            assert_not_null($m, "Could not create a matrix");
+            Assert::not_null($m, "Could not create a matrix");
         });
     }
 
     method test_OP_does_NOT() {
         my $m := self.factory.matrix();
-        assert_false(pir::does($m, "gobbledegak"), "Does gobbledegak");
+        Assert::false(pir::does($m, "gobbledegak"), "Does gobbledegak");
     }
 
     # Test that a matrix does matrix
     method test_OP_does_Matrix() {
         my $m := self.factory.matrix();
-        assert_true(pir::does($m, "matrix"), "Does not do matrix");
+        Assert::true(pir::does($m, "matrix"), "Does not do matrix");
     }
 
     # Test that we can get_pmc_keyed on a matrix
@@ -28,12 +28,12 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
         my $a := self.factory.defaultvalue();
         $m{Key.new(0,0)} := $a;
         my $b := $m{Key.new(0,0)};
-        assert_equal($a, $b, "get_pmc_keyed doesn't work");
+        Assert::equal($a, $b, "get_pmc_keyed doesn't work");
     }
 
     # test that we can set a PMC at the given coordinates
     method test_VTABLE_set_pmc_keyed() {
-        assert_throws_nothing("Cannot set_pmc_keyed", {
+        Assert::throws_nothing("Cannot set_pmc_keyed", {
             my $m := self.factory.matrix();
             my $a := self.factory.defaultvalue();
             $m{Key.new(0,0)} := $a;
@@ -45,8 +45,8 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
     method test_VTABLE_clone() {
         my $m := self.factory.defaultmatrix2x2();
         my $n := pir::clone($m);
-        assert_equal($m, $n, "clones are not equal");
-        assert_not_same($m, $n, "clones are the same PMC!");
+        Assert::equal($m, $n, "clones are not equal");
+        Assert::not_same($m, $n, "clones are the same PMC!");
     }
 
     # TODO: Need to add lots more tests for is_equal. It uses a new float
@@ -56,7 +56,7 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
     method test_VTABLE_is_equal() {
         my $m := self.factory.defaultmatrix2x2();
         my $n := self.factory.defaultmatrix2x2();
-        assert_equal($m, $n, "equal matrices are not equal");
+        Assert::equal($m, $n, "equal matrices are not equal");
     }
 
     # Assert that two matrices of different sizes are not equal
@@ -64,7 +64,7 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
         my $m := self.factory.defaultmatrix2x2();
         my $n := self.factory.defaultmatrix2x2();
         $n{Key.new(2, 2)} := self.factory.nullvalue();
-        assert_not_equal($m, $n, "different sized matrices are equal");
+        Assert::not_equal($m, $n, "different sized matrices are equal");
     }
 
     # Test that two matrices of the same size but with different contents are
@@ -73,7 +73,7 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
         my $m := self.factory.defaultmatrix2x2();
         my $n := self.factory.defaultmatrix2x2();
         $n{Key.new(1,1)} := self.factory.fancyvalue(0);
-        assert_not_equal($m, $n, "non-equal matrices are equal");
+        Assert::not_equal($m, $n, "non-equal matrices are equal");
     }
 
     # Test that we can get named attributes about the matrix
@@ -91,7 +91,7 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
 
     # Assert that we can freeze a matrix to a string
     method test_VTABLE_freeze() {
-        assert_throws_nothing("Cannot set_pmc_keyed", {
+        Assert::throws_nothing("Cannot set_pmc_keyed", {
             my $m := self.factory.fancymatrix2x2();
             my $s := pir::freeze__SP($m);
         })
@@ -103,8 +103,8 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
         my $m := self.factory.fancymatrix2x2();
         my $s := pir::freeze__SP($m);
         my $n := pir::thaw__PS($s);
-        assert_equal($m, $n, "Freeze/thaw does not create equal PMCs");
-        assert_not_same($m, $n, "Freeze/thaw returns original");
+        Assert::equal($m, $n, "Freeze/thaw does not create equal PMCs");
+        Assert::not_same($m, $n, "Freeze/thaw returns original");
     }
 
     method test_VTABLE_get_string() {
@@ -126,19 +126,19 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
             $S2 .= $S0
             $S2 .= "'"
             #"get_string_keyed fails 0;0"
-            assert_equal($S1, $S0, $S2)
+            equal($S1, $S0, $S2)
 
             $S0 = $P0[0;1]
             $S1 = me.'fancyvalue'(1)
-            assert_equal($S1, $S0, "get_string_keyed fails 0;1")
+            equal($S1, $S0, "get_string_keyed fails 0;1")
 
             $S0 = $P0[1;0]
             $S1 = me.'fancyvalue'(2)
-            assert_equal($S1, $S0, "get_string_keyed fails 1;0")
+            equal($S1, $S0, "get_string_keyed fails 1;0")
 
             $S0 = $P0[1;1]
             $S1 = me.'fancyvalue'(3)
-            assert_equal($S1, $S0, "get_string_keyed fails 1;1")
+            equal($S1, $S0, "get_string_keyed fails 1;1")
         };
     }
 
@@ -152,19 +152,19 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
 
             $N0 = $P0[0]
             $N1 = me.'fancyvalue'(0)
-            assert_equal($N0, $N1, "Can get number 0 by linear index")
+            equal($N0, $N1, "Can get number 0 by linear index")
 
             $N0 = $P0[1]
             $N1 = me.'fancyvalue'(1)
-            assert_equal($N0, $N1, "Can get number 1 by linear index")
+            equal($N0, $N1, "Can get number 1 by linear index")
 
             $N0 = $P0[2]
             $N1 = me.'fancyvalue'(2)
-            assert_equal($N0, $N1, "Can get number 2 by linear index")
+            equal($N0, $N1, "Can get number 2 by linear index")
 
             $N0 = $P0[3]
             $N1 = me.'fancyvalue'(3)
-            assert_equal($N0, $N1, "Can get number 3 by linear index")
+            equal($N0, $N1, "Can get number 3 by linear index")
         }
     }
 
@@ -178,19 +178,19 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
 
             $I0 = $P0[0]
             $I1 = me.'fancyvalue'(0)
-            assert_equal($I0, $I1, "Can get integer 0 by linear index")
+            equal($I0, $I1, "Can get integer 0 by linear index")
 
             $I0 = $P0[1]
             $I1 = me.'fancyvalue'(1)
-            assert_equal($I0, $I1, "Can get integer 1 by linear index")
+            equal($I0, $I1, "Can get integer 1 by linear index")
 
             $I0 = $P0[2]
             $I1 = me.'fancyvalue'(2)
-            assert_equal($I0, $I1, "Can get integer 2 by linear index")
+            equal($I0, $I1, "Can get integer 2 by linear index")
 
             $I0 = $P0[3]
             $I1 = me.'fancyvalue'(3)
-            assert_equal($I0, $I1, "Can get integer 3 by linear index")
+            equal($I0, $I1, "Can get integer 3 by linear index")
         }
     }
 
@@ -204,19 +204,19 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
 
             $S0 = $P0[0]
             $S1 = me.'fancyvalue'(0)
-            assert_equal($S0, $S1, "Cannot get string keyed int 0")
+            equal($S0, $S1, "Cannot get string keyed int 0")
 
             $S0 = $P0[1]
             $S1 = me.'fancyvalue'(1)
-            assert_equal($S0, $S1, "Cannot get string keyed int 1")
+            equal($S0, $S1, "Cannot get string keyed int 1")
 
             $S0 = $P0[2]
             $S1 = me.'fancyvalue'(2)
-            assert_equal($S0, $S1, "Cannot get string keyed int 2")
+            equal($S0, $S1, "Cannot get string keyed int 2")
 
             $S0 = $P0[3]
             $S1 = me.'fancyvalue'(3)
-            assert_equal($S0, $S1, "Cannot get string keyed int 3")
+            equal($S0, $S1, "Cannot get string keyed int 3")
         }
     }
 
@@ -230,19 +230,19 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
 
             $P1 = $P0[0]
             $P2 = me.'fancyvalue'(0)
-            assert_equal($P1, $P2, "Got PMC 0 from linear index")
+            equal($P1, $P2, "Got PMC 0 from linear index")
 
             $P1 = $P0[1]
             $P2 = me.'fancyvalue'(1)
-            assert_equal($P1, $P2, "Got PMC 1 from linear index")
+            equal($P1, $P2, "Got PMC 1 from linear index")
 
             $P1 = $P0[2]
             $P2 = me.'fancyvalue'(2)
-            assert_equal($P1, $P2, "Got PMC 2 from linear index")
+            equal($P1, $P2, "Got PMC 2 from linear index")
 
             $P1 = $P0[3]
             $P2 = me.'fancyvalue'(3)
-            assert_equal($P1, $P2, "Got PMC 3 from linear index")
+            equal($P1, $P2, "Got PMC 3 from linear index")
         }
     }
 
@@ -261,10 +261,10 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
     # Test how we access values if we use one key instead of two
     method test_MISC_linear_indexing() {
         my $m := self.factory.fancymatrix2x2();
-        assert_equal($m[0], $m{Key.new(0,0)}, "cannot get first element linearly");
-        assert_equal($m[1], $m{Key.new(0,1)}, "cannot get first element linearly");
-        assert_equal($m[2], $m{Key.new(1,0)}, "cannot get first element linearly");
-        assert_equal($m[3], $m{Key.new(1,1)}, "cannot get first element linearly");
+        Assert::equal($m[0], $m{Key.new(0,0)}, "cannot get first element linearly");
+        Assert::equal($m[1], $m{Key.new(0,1)}, "cannot get first element linearly");
+        Assert::equal($m[2], $m{Key.new(1,0)}, "cannot get first element linearly");
+        Assert::equal($m[3], $m{Key.new(1,1)}, "cannot get first element linearly");
     }
 
     # TODO: Test the case where we pass a key with order greater than 2
@@ -296,7 +296,7 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
     method test_negative_array() {
         my $m := self.factory.defaultmatrix2x2();
 
-        assert_throws(Exception::OutOfBounds, "negative PCM array should throw exception", {
+        Assert::throws(Exception::OutOfBounds, "negative PCM array should throw exception", {
             my $e := $m{[-1]};
         });
     }
@@ -304,7 +304,7 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
     method test_empty_array() {
         my $m := self.factory.defaultmatrix2x2();
 
-        assert_throws(Exception::OutOfBounds, "empty PCM array should throw exception", {
+        Assert::throws(Exception::OutOfBounds, "empty PCM array should throw exception", {
             my $e := $m{[]};
         });
     }
@@ -314,7 +314,7 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
         $m.'item_at'(0,1,3);
         my $e := $m{[1]};
 
-        assert_equal($e, 3, "1 element PCM array should work");
+        Assert::equal($e, 3, "1 element PCM array should work");
     }
 
     method test_1_element_array_not_in_first_row() {
@@ -322,7 +322,7 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
         $m.'item_at'(2,2,3);
         my $e := $m{[8]};
 
-        assert_equal($e, 3, "1 element PCM array should work");
+        Assert::equal($e, 3, "1 element PCM array should work");
     }
 
     method test_2_elements_array() {
@@ -330,13 +330,13 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
         $m.'item_at'(1,1,3);
         my $e := $m{[1,1]};
 
-        assert_equal($e, 3, "2 elements PCM array should work");
+        Assert::equal($e, 3, "2 elements PCM array should work");
     }
 
     method test_more_than_2_elements_array() {
         my $m := self.factory.fancymatrix2x2();
 
-        assert_throws(Exception::OutOfBounds, "more than 2 elements PCM array should throw exception", {
+        Assert::throws(Exception::OutOfBounds, "more than 2 elements PCM array should throw exception", {
           my $e := $m{[1,2,3]};
         });
     }
@@ -345,7 +345,7 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
     method test_negative_key() {
         my $m := self.factory.defaultmatrix2x2();
 
-        assert_throws(Exception::OutOfBounds, "negative PCM key should throw exception", {
+        Assert::throws(Exception::OutOfBounds, "negative PCM key should throw exception", {
             my $e := $m{Key.new(-1)};
         });
     }
@@ -353,7 +353,7 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
     method test_empty_key() {
         my $m := self.factory.fancymatrix2x2();
 
-        assert_throws(Exception::OutOfBounds, "empty PCM key should throw exception", {
+        Assert::throws(Exception::OutOfBounds, "empty PCM key should throw exception", {
             my $e := $m{Key.new()};
         });
     }
@@ -363,7 +363,7 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
         $m.'item_at'(0,1,3);
         my $e := $m{Key.new(1)};
 
-        assert_equal($e, 3, "1 element PCM key should work");
+        Assert::equal($e, 3, "1 element PCM key should work");
     }
 
     method test_1_element_key_not_in_first_row() {
@@ -371,7 +371,7 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
         $m.'item_at'(2,2,3);
         my $e := $m{Key.new(8)};
 
-        assert_equal($e, 3, "1 element PCM key should work");
+        Assert::equal($e, 3, "1 element PCM key should work");
     }
 
     method test_2_elements_key() {
@@ -379,13 +379,13 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
         $m.'item_at'(1,1,3);
         my $e := $m{Key.new(1,1)};
 
-        assert_equal($e, 3, "2 elements PCM key should work");
+        Assert::equal($e, 3, "2 elements PCM key should work");
     }
 
     method test_more_than_2_elements_key() {
         my $m := self.factory.fancymatrix2x2();
 
-        assert_throws(Exception::OutOfBounds, "more than 2 elements PCM key should throw exception", {
+        Assert::throws(Exception::OutOfBounds, "more than 2 elements PCM key should throw exception", {
           my $e := $m{Key.new(0,1,3)};
         });
     }
