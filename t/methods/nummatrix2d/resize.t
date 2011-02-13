@@ -21,7 +21,7 @@ class Test::NumMatrix2D::Resize is Pla::Methods::Resize {
 
         $m.resize(1,1);
 
-        assert_equal($m, $n, "resize should not shrink the matrix");
+        Assert::equal($m, $n, "resize should not shrink the matrix");
     }
 
     method test_resize_to_bigger_numerical() {
@@ -34,7 +34,7 @@ class Test::NumMatrix2D::Resize is Pla::Methods::Resize {
 
         $m.resize(3,3);
 
-        assert_equal($m, $n, "cannot resize with numerical matrix");
+        Assert::equal($m, $n, "cannot resize with numerical matrix");
     }
 
     method test_resize_to_same_size_numerical() {
@@ -45,6 +45,6 @@ class Test::NumMatrix2D::Resize is Pla::Methods::Resize {
 
         $n.resize(2,2);
 
-        assert_equal($m, $n, "resize to same size is changing numerical matrix");
+        Assert::equal($m, $n, "resize to same size is changing numerical matrix");
     }
 }

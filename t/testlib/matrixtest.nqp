@@ -298,7 +298,7 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
     method test_negative_array() {
         my $m := self.factory.defaultmatrix2x2();
 
-        Assert::throws(Exception::OutOfBounds, "negative PCM array should throw exception", {
+        Assert::throws("negative PCM array should throw exception", {
             my $e := $m{[-1]};
         });
     }
@@ -306,7 +306,7 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
     method test_empty_array() {
         my $m := self.factory.defaultmatrix2x2();
 
-        Assert::throws(Exception::OutOfBounds, "empty PCM array should throw exception", {
+        Assert::throws("empty PCM array should throw exception", {
             my $e := $m{[]};
         });
     }
@@ -338,7 +338,7 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
     method test_more_than_2_elements_array() {
         my $m := self.factory.fancymatrix2x2();
 
-        Assert::throws(Exception::OutOfBounds, "more than 2 elements PCM array should throw exception", {
+        Assert::throws("more than 2 elements PCM array should throw exception", {
           my $e := $m{[1,2,3]};
         });
     }
@@ -347,7 +347,7 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
     method test_negative_key() {
         my $m := self.factory.defaultmatrix2x2();
 
-        Assert::throws(Exception::OutOfBounds, "negative PCM key should throw exception", {
+        Assert::throws("negative PCM key should throw exception", {
             my $e := $m{self.factory.key(-1)};
         });
     }
@@ -355,7 +355,7 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
     method test_empty_key() {
         my $m := self.factory.fancymatrix2x2();
 
-        Assert::throws(Exception::OutOfBounds, "empty PCM key should throw exception", {
+        Assert::throws("empty PCM key should throw exception", {
             my $e := $m{self.factory.key()};
         });
     }
@@ -387,7 +387,7 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
     method test_more_than_2_elements_key() {
         my $m := self.factory.fancymatrix2x2();
 
-        Assert::throws(Exception::OutOfBounds, "more than 2 elements PCM key should throw exception", {
+        Assert::throws("more than 2 elements PCM key should throw exception", {
           my $e := $m{self.factory.key(0,1,3)};
         });
     }

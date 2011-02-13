@@ -24,7 +24,7 @@ class Test::ComplexMatrix2D::Transpose is Pla::Methods::Transpose {
             "4+4i"
         );
         $m.transpose();
-        assert_equal($n, $m, "cannot transpose complex matrix");
+        Assert::equal($n, $m, "cannot transpose complex matrix");
     }
 
     method test_non_square_matrix_complex() {
@@ -41,6 +41,6 @@ class Test::ComplexMatrix2D::Transpose is Pla::Methods::Transpose {
         $n{Key.new(3,0)} := "4+4i";
 
         $m.transpose();
-        assert_equal($m, $n, "cannot transpose complex matrix with non-square dimensions");
+        Assert::equal($m, $n, "cannot transpose complex matrix with non-square dimensions");
     }
 }

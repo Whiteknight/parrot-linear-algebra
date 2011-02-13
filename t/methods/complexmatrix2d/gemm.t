@@ -40,7 +40,7 @@ class Test::ComplexMatrix2D::Gemm is Pla::Methods::Gemm {
         my $alpha := self.complex("2+0i");
         my $beta := self.complex("0+0i");
         my $Z := $A.'gemm'($alpha, $A, $B, $beta, $C);
-        assert_equal($Y, $Z, "cannot GEMM aA");
+        Assert::equal($Y, $Z, "cannot GEMM aA");
     }
 
     method test_METHOD_gemm_AB() {
@@ -57,7 +57,7 @@ class Test::ComplexMatrix2D::Gemm is Pla::Methods::Gemm {
                                 "0+132i", "0162i", "0+192i",
                                 "0+204i", "0+252i", "0+300i");
         my $Z := $A.'gemm'(self.complex("1"), $A, $B, self.complex("0.0"), $C);
-        assert_equal($Y, $Z, "gemm aAB does not work");
+        Assert::equal($Y, $Z, "gemm aAB does not work");
     }
 
     method test_METHOD_gemm_aAB() {
@@ -74,7 +74,7 @@ class Test::ComplexMatrix2D::Gemm is Pla::Methods::Gemm {
                                 "0+33i", "0+40.5i", "0+48i",
                                 "0+51i", "0+63i", "0+75i");
         my $Z := $A.'gemm'(self.complex("0.25"), $A, $B, self.complex("0.0"), $C);
-        assert_equal($Y, $Z, "gemm aAB does not work");
+        Assert::equal($Y, $Z, "gemm aAB does not work");
     }
 
     method test_METHOD_gemm_aABbC() {
@@ -91,7 +91,7 @@ class Test::ComplexMatrix2D::Gemm is Pla::Methods::Gemm {
                                 "4+33i", "5+40.5i", "6+48i",
                                 "7+51i", "8+63i", "9+75i");
         my $Z := $A.'gemm'(self.complex("0.25"), $A, $B, self.complex("1.0"), $C);
-        assert_equal($Y, $Z, "gemm aABbC does not work");
+        Assert::equal($Y, $Z, "gemm aABbC does not work");
     }
 
     # Test that we can call GEMM with alpha of various types
@@ -111,7 +111,7 @@ class Test::ComplexMatrix2D::Gemm is Pla::Methods::Gemm {
         my $alpha := self.complex("2+0i");
         my $beta := self.complex("0+0i");
         my $Z := $A.'gemm'($alpha, $A, $B, $beta, $C);
-        assert_equal($Y, $Z, "cannot GEMM using a complex-typed alpha");
+        Assert::equal($Y, $Z, "cannot GEMM using a complex-typed alpha");
     }
 
     method test_METHOD_gemm_ALPHA_num() {
@@ -130,7 +130,7 @@ class Test::ComplexMatrix2D::Gemm is Pla::Methods::Gemm {
         my $alpha := 2.0;
         my $beta := self.complex("0+0i");
         my $Z := $A.'gemm'($alpha, $A, $B, $beta, $C);
-        assert_equal($Y, $Z, "cannot GEMM using an numerically typed alpha");
+        Assert::equal($Y, $Z, "cannot GEMM using an numerically typed alpha");
     }
 
     method test_METHOD_gemm_ALPHA_int() {
@@ -149,7 +149,7 @@ class Test::ComplexMatrix2D::Gemm is Pla::Methods::Gemm {
         my $alpha := pir::box__Pi(2);
         my $beta := self.complex("0+0i");
         my $Z := $A.'gemm'($alpha, $A, $B, $beta, $C);
-        assert_equal($Y, $Z, "cannot GEMM using a int-typed alpha");
+        Assert::equal($Y, $Z, "cannot GEMM using a int-typed alpha");
     }
 
     method test_METHOD_gemm_ALPHA_bad() {
@@ -164,7 +164,7 @@ class Test::ComplexMatrix2D::Gemm is Pla::Methods::Gemm {
                                 0.0, 0.0, 0.0);
         my $alpha := "this is most definitely not convertible to a number of any form";
         my $beta := self.complex("0+0i");
-        assert_throws(Exception::InvalidStringRepresentation, "can GEMM using a badly typed alpha",
+        Assert::throws("can GEMM using a badly typed alpha",
         {
             $A.'gemm'($alpha, $A, $B, $beta, $C);
         });
@@ -189,7 +189,7 @@ class Test::ComplexMatrix2D::Gemm is Pla::Methods::Gemm {
         my $alpha := self.complex("0+0i");
         my $beta := self.complex("2+0i");
         my $Z := $A.'gemm'($alpha, $A, $B, $beta, $C);
-        assert_equal($Y, $Z, "cannot GEMM using a complex-typed beta");
+        Assert::equal($Y, $Z, "cannot GEMM using a complex-typed beta");
     }
 
 	method test_METHOD_gemm_BETA_array_num() {
@@ -210,7 +210,7 @@ class Test::ComplexMatrix2D::Gemm is Pla::Methods::Gemm {
         my $alpha := self.complex("0+0i");
         my $beta := (2.0, 0.0);
         my $Z := $A.'gemm'($alpha, $A, $B, $beta, $C);
-        assert_equal($Y, $Z, "cannot GEMM using a numerically array typed beta");
+        Assert::equal($Y, $Z, "cannot GEMM using a numerically array typed beta");
     }
 
 	method test_METHOD_gemm_BETA_array_int() {
@@ -231,7 +231,7 @@ class Test::ComplexMatrix2D::Gemm is Pla::Methods::Gemm {
         my $alpha := self.complex("0+0i");
         my $beta := (2, 0);
         my $Z := $A.'gemm'($alpha, $A, $B, $beta, $C);
-        assert_equal($Y, $Z, "cannot GEMM using a int array typed beta");
+        Assert::equal($Y, $Z, "cannot GEMM using a int array typed beta");
     }
 
     method test_METHOD_gemm_BETA_num() {
@@ -252,7 +252,7 @@ class Test::ComplexMatrix2D::Gemm is Pla::Methods::Gemm {
         my $alpha := self.complex("0+0i");
         my $beta := 2.0;
         my $Z := $A.'gemm'($alpha, $A, $B, $beta, $C);
-        assert_equal($Y, $Z, "cannot GEMM using an numerically typed beta");
+        Assert::equal($Y, $Z, "cannot GEMM using an numerically typed beta");
     }
 
     method test_METHOD_gemm_BETA_int() {
@@ -273,7 +273,7 @@ class Test::ComplexMatrix2D::Gemm is Pla::Methods::Gemm {
         my $alpha := self.complex("0+0i");
         my $beta := pir::box__Pi(2);
         my $Z := $A.'gemm'($alpha, $A, $B, $beta, $C);
-        assert_equal($Y, $Z, "cannot GEMM using an int-typed beta");
+        Assert::equal($Y, $Z, "cannot GEMM using an int-typed beta");
     }
 
     method test_METHOD_gemm_BETA_bad() {
@@ -290,7 +290,7 @@ class Test::ComplexMatrix2D::Gemm is Pla::Methods::Gemm {
 
         my $alpha := self.complex("0+0i");
         my $beta := "this is most definitely not convertible to a number of any form";
-        assert_throws(Exception::InvalidStringRepresentation, "can GEMM using a badly typed beta",
+        Assert::throws("can GEMM using a badly typed beta",
         {
             $A.'gemm'($alpha, $A, $B, $beta, $C);
         });

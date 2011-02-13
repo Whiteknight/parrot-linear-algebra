@@ -23,27 +23,27 @@ class Test::NumMatrix2D::Transpose is Pla::Methods::Transpose {
         );
 
         $m.transpose();
-        assert_equal($m, $n, "cannot tranpose numerical");
+        Assert::equal($m, $n, "cannot tranpose numerical");
     }
 
     method test_non_square_tranpose_numerical() {
         my $m := self.factory.matrix();
-        $m{Key.new(0,0)} := 11;
-        $m{Key.new(0,1)} := 12;
-        $m{Key.new(0,2)} := 13;
-        $m{Key.new(1,0)} := 21;
-        $m{Key.new(1,1)} := 22;
-        $m{Key.new(1,2)} := 23;
+        $m{self.factory.key(0,0)} := 11;
+        $m{self.factory.key(0,1)} := 12;
+        $m{self.factory.key(0,2)} := 13;
+        $m{self.factory.key(1,0)} := 21;
+        $m{self.factory.key(1,1)} := 22;
+        $m{self.factory.key(1,2)} := 23;
 
         my $n := self.factory.matrix();
-        $n{Key.new(0,0)} := 11;
-        $n{Key.new(0,1)} := 21;
-        $n{Key.new(1,0)} := 12;
-        $n{Key.new(1,1)} := 22;
-        $n{Key.new(2,0)} := 13;
-        $n{Key.new(2,1)} := 23;
+        $n{self.factory.key(0,0)} := 11;
+        $n{self.factory.key(0,1)} := 21;
+        $n{self.factory.key(1,0)} := 12;
+        $n{self.factory.key(1,1)} := 22;
+        $n{self.factory.key(2,0)} := 13;
+        $n{self.factory.key(2,1)} := 23;
 
         $m.transpose();
-        assert_equal($m, $n, "cannot transpose numerical matrix with non-square dimensions");
+        Assert::equal($m, $n, "cannot transpose numerical matrix with non-square dimensions");
     }
 }

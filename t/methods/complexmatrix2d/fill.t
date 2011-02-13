@@ -20,7 +20,7 @@ class Test::ComplexMatrix2D::Fill is Pla::Methods::Fill {
             "1+1i"
         );
         $m.fill("1+1i");
-        assert_equal($n, $m, "Cannot fill complex");
+        Assert::equal($n, $m, "Cannot fill complex");
     }
 
     # test that the fill method can be used to resize the matrix
@@ -33,7 +33,7 @@ class Test::ComplexMatrix2D::Fill is Pla::Methods::Fill {
         my $n := self.factory.matrix();
 
         $n.fill("1+1i", 2, 2);
-        assert_equal($n, $m, "Cannot fill+Resize complex");
+        Assert::equal($n, $m, "Cannot fill+Resize complex");
     }
 
     method test_fill_array() {
@@ -46,7 +46,7 @@ class Test::ComplexMatrix2D::Fill is Pla::Methods::Fill {
         );
         my $array := (1, 1);
         $m.fill($array);
-        assert_equal($n, $m, "Cannot fill using an array");
+        Assert::equal($n, $m, "Cannot fill using an array");
     }
 
     method test_fill_with_resizing_array() {
@@ -59,6 +59,6 @@ class Test::ComplexMatrix2D::Fill is Pla::Methods::Fill {
 
         my $array := (1, 1);
         $n.fill($array, 2, 2);
-        assert_equal($n, $m, "Cannot fill+Resize using an array");
+        Assert::equal($n, $m, "Cannot fill+Resize using an array");
     }
 }

@@ -16,14 +16,14 @@ class Test::NumMatrix2D::ItemAt is Pla::Methods::ItemAt {
 
         my $expected := 22;
 
-        assert_equal($m.item_at(1,1), $expected, "cannot item_at with numerical matrix");
+        Assert::equal($m.item_at(1,1), $expected, "cannot item_at with numerical matrix");
     }
 
     method test_get_item_at_out_of_bounds_numerical() {
         my $m := self.factory.matrix2x2(11, 12,
                                         21, 22);
 
-        assert_throws(Exception::OutOfBounds, "can item_at out of bounds",
+        Assert::throws("can item_at out of bounds",
         {
             $m.item_at(2, 2);
         });
@@ -35,14 +35,14 @@ class Test::NumMatrix2D::ItemAt is Pla::Methods::ItemAt {
 
         $m.item_at(0, 0, 99);
 
-        assert_equal($m.item_at(0,0), 99, "cannot set item_at with numerical matrix");
+        Assert::equal($m.item_at(0,0), 99, "cannot set item_at with numerical matrix");
     }
 
     method test_set_item_at_out_of_bounds_numerical() {
         my $m := self.factory.matrix2x2(11, 12,
                                         21, 22);
 
-        assert_throws(Exception::OutOfBounds, "can item_at out of bounds",
+        Assert::throws("can item_at out of bounds",
         {
             $m.item_at(2, 2, 99);
         });
@@ -52,7 +52,7 @@ class Test::NumMatrix2D::ItemAt is Pla::Methods::ItemAt {
         my $m := self.factory.matrix2x2(11, 12,
                                         21, 22);
 
-        assert_throws(Exception::OutOfBounds, "can item_at out of bounds (negative index)",
+        Assert::throws("can item_at out of bounds (negative index)",
         {
             $m.item_at(-1, -1, 99);
         });

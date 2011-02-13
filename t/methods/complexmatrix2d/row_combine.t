@@ -36,7 +36,7 @@ class Test::ComplexMatrix2D::RowCombine is Pla::Methods::RowCombine {
         my $B := self.factory.matrix2x2($val1, $val2,
                                 self.factory.fancyvalue(2), self.factory.fancyvalue(3));
         $A.row_combine(1, 0, 1);
-        assert_equal($A, $B, "cannot row_combine");
+        Assert::equal($A, $B, "cannot row_combine");
     }
 
     method test_non_unity_gain_complex() {
@@ -45,6 +45,6 @@ class Test::ComplexMatrix2D::RowCombine is Pla::Methods::RowCombine {
                                 self.factory.fancyvalue(1) + self.factory.fancyvalue(3)  * self.factory.fancyvalue(0),
                                 self.factory.fancyvalue(2), self.factory.fancyvalue(3));
         $A.row_combine(1, 0, self.factory.fancyvalue(0));
-        assert_equal($A, $B, "cannot row_combine");
+        Assert::equal($A, $B, "cannot row_combine");
     }
 }
