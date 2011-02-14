@@ -15,7 +15,6 @@ method factory() {
 method test_VTABLE_get_integer_keyed() {
     my $factory := self.factory;
     my $m := self.factory.matrix();
-    pir::say("B");
     my $n := 42;
     my $o;
     Q:PIR {
