@@ -9,7 +9,7 @@ class Pla::Methods::ItemAt is Pla::MatrixTestBase {
 
     method test_out_of_bounds_index_A() {
         my $m := self.factory.defaultmatrix2x2();
-        Assert::throws(Exception::OutOfBounds, "can item_at out of bounds",
+        Assert::throws("can item_at out of bounds",
         {
             $m.item_at(1, 4);
         });
@@ -17,7 +17,7 @@ class Pla::Methods::ItemAt is Pla::MatrixTestBase {
 
     method test_out_of_bounds_index_B() {
         my $m := self.factory.defaultmatrix2x2();
-        Assert::throws(Exception::OutOfBounds, "can item_at out of bounds",
+        Assert::throws("can item_at out of bounds",
         {
             $m.item_at(4, 1);
         });
@@ -25,7 +25,7 @@ class Pla::Methods::ItemAt is Pla::MatrixTestBase {
 
     method test_negative_index_A() {
         my $m := self.factory.defaultmatrix2x2();
-        Assert::throws(Exception::OutOfBounds, "can item_at out of bounds",
+        Assert::throws("can item_at out of bounds",
         {
             $m.item_at(-1, 0);
         });
@@ -33,7 +33,7 @@ class Pla::Methods::ItemAt is Pla::MatrixTestBase {
 
     method test_negative_index_B() {
         my $m := self.factory.defaultmatrix2x2();
-        Assert::throws(Exception::OutOfBounds, "can item_at out of bounds",
+        Assert::throws("can item_at out of bounds",
         {
             $m.item_at(0, -1);
         });
@@ -41,7 +41,7 @@ class Pla::Methods::ItemAt is Pla::MatrixTestBase {
 
     method test_item_from_empty_matrix() {
         my $m := self.factory.matrix();
-        Assert::throws(Exception::OutOfBounds, "can item_at out of bounds",
+        Assert::throws("can item_at out of bounds",
         {
             $m.item_at(0, 0);
         });
@@ -57,7 +57,7 @@ class Pla::Methods::ItemAt is Pla::MatrixTestBase {
 
     method test_set_out_of_bounds_index_A() {
         my $m := self.factory.defaultmatrix2x2();
-        Assert::throws(Exception::OutOfBounds, "can item_at out of bounds",
+        Assert::throws("can item_at out of bounds",
         {
             $m.item_at(4, 1, self.factory.fancyvalue(0));
         });
@@ -65,7 +65,7 @@ class Pla::Methods::ItemAt is Pla::MatrixTestBase {
 
     method test_set_out_of_bounds_index_B() {
         my $m := self.factory.defaultmatrix2x2();
-        Assert::throws(Exception::OutOfBounds, "can item_at out of bounds",
+        Assert::throws("can item_at out of bounds",
         {
             $m.item_at(1, 4, self.factory.fancyvalue(0));
         });
@@ -73,7 +73,7 @@ class Pla::Methods::ItemAt is Pla::MatrixTestBase {
 
     method test_set_at_negative_index_A() {
         my $m := self.factory.defaultmatrix2x2();
-        Assert::throws(Exception::OutOfBounds, "can item_at out of bounds",
+        Assert::throws("can item_at out of bounds",
         {
             $m.item_at(-1, -1, self.factory.fancyvalue(0));
         });
@@ -81,7 +81,7 @@ class Pla::Methods::ItemAt is Pla::MatrixTestBase {
 
     method test_set_at_negative_index_B() {
         my $m := self.factory.defaultmatrix2x2();
-        Assert::throws(Exception::OutOfBounds, "can item_at out of bounds",
+        Assert::throws("can item_at out of bounds",
         {
             $m.item_at(-1, -1, self.factory.fancyvalue(0));
         });
@@ -89,7 +89,7 @@ class Pla::Methods::ItemAt is Pla::MatrixTestBase {
 
     method test_set_empty_matrix_does_not_grow() {
         my $m := self.factory.matrix();
-        Assert::throws(Exception::OutOfBounds, "can item_at out of bounds",
+        Assert::throws("can item_at out of bounds",
         {
             $m.item_at(0, 0, self.factory.fancyvalue(0));
         });

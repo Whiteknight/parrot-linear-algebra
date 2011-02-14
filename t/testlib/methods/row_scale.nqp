@@ -18,7 +18,7 @@ class Pla::Methods::RowScale is Pla::MatrixTestBase {
     }
 
     method test_negative_row_index() {
-        Assert::throws(Exception::OutOfBounds, "index is negative",
+        Assert::throws("index is negative",
         {
             my $A := self.factory.defaultmatrix3x3();
             $A.row_scale(-1, 1);
@@ -26,7 +26,7 @@ class Pla::Methods::RowScale is Pla::MatrixTestBase {
     }
 
     method test_row_index_out_of_bounds() {
-        Assert::throws(Exception::OutOfBounds, "index is negative",
+        Assert::throws("index is negative",
         {
             my $A := self.factory.defaultmatrix3x3();
             $A.row_scale(7, 1);

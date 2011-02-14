@@ -28,7 +28,7 @@ class Pla::MatrixTestBase is UnitTest::Testcase {
 
     method AssertNullValueAt($m, $row, $col) {
         my $nullval := self.factory.nullvalue;
-        my $val := $m{Key.new($row, $col)};
+        my $val := $m{self.factory.key($row, $col)};
         if pir::isnull__IP($nullval) == 1 {
             Assert::instance_of($val, "Undef",
                 "Expected null value at position ($row,$col). Had $val.");
@@ -39,7 +39,7 @@ class Pla::MatrixTestBase is UnitTest::Testcase {
     }
 
     method AssertValueAtIs($m, $row, $col, $expected) {
-        my $val := $m{Key.new($row, $col)};
+        my $val := $m{self.factory.key($row, $col)};
         if pir::isnull__IP($expected) {
             Assert::null($val, "Value not null at ($row,$col). Have $val");
         } else {

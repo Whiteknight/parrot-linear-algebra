@@ -11,22 +11,22 @@ method factory() {
     return $!factory;
 }
 
-sub equals($a, $b, $r) { Assert::equals($a, $b, $r); }
+sub equal($a, $b, $r) { Assert::equal($a, $b, $r); }
 
 method test_VTABLE_get_number_keyed() {
-    todo("Tests Needed!");
+    self.todo("Tests Needed!");
 }
 
 method test_VTABLE_get_integer_keyed() {
-    todo("Tests Needed!");
+    self.todo("Tests Needed!");
 }
 
 method test_VTABLE_get_string_keyed() {
-    todo("Tests Needed!");
+    self.todo("Tests Needed!");
 }
 
 method test_VTABLE_set_pmc_keyed_STRING() {
-    my $m := Parrot::new("ComplexMatrix2D");
+    my $m := self.factory.matrix();
     my $a := "1+1i";  # a String PMC, not a Complex
     $m{self.factory.key(0,0)} := $a;
     my $b := $m{self.factory.key(0,0)};
@@ -36,7 +36,7 @@ method test_VTABLE_set_pmc_keyed_STRING() {
 }
 
 method test_VTABLE_set_pmc_keyed_ARRAY() {
-    my $m := Parrot::new("ComplexMatrix2D");
+    my $m := self.factory.matrix();
     my $a := (1,1);
     $m{self.factory.key(0,0)} := $a;
     my $b := $m{self.factory.key(0,0)};
@@ -46,7 +46,7 @@ method test_VTABLE_set_pmc_keyed_ARRAY() {
 }
 
 method test_VTABLE_set_pmc_keyed_INTEGER() {
-    my $m := Parrot::new("ComplexMatrix2D");
+    my $m := self.factory.matrix();
     my $a := pir::box__PI(1);
     $m{self.factory.key(0,0)} := $a;
     my $b := $m{self.factory.key(0,0)};
@@ -56,7 +56,7 @@ method test_VTABLE_set_pmc_keyed_INTEGER() {
 }
 
 method test_VTABLE_set_pmc_keyed_FLOAT() {
-    my $m := Parrot::new("ComplexMatrix2D");
+    my $m := self.factory.matrix();
     my $a := pir::box__PN(3.5);
     $m{self.factory.key(0,0)} := $a;
     my $b := $m{self.factory.key(0,0)};
@@ -66,8 +66,8 @@ method test_VTABLE_set_pmc_keyed_FLOAT() {
 }
 
 method test_VTABLE_set_string_keyed() {
-    my $m := Parrot::new("ComplexMatrix2D");
-    my $a := Parrot::new("Complex");
+    my $m := self.factory.matrix();
+    my $a := pir::new__PS("Complex");
     # Keep this as raw PIR for now to make sure we are calling the correct vtable
     Q:PIR {
         $P0 = find_lex "$m"
@@ -79,10 +79,8 @@ method test_VTABLE_set_string_keyed() {
 }
 
 method test_VTABLE_get_string() {
-    todo("Tests Needed!");
+    self.todo("Tests Needed!");
 }
-
-
 
 method test_METHOD_conjugate() {
     my $m := self.factory.matrix2x2("1+1i", "2+2i", "3+3i", "4+4i");

@@ -5,7 +5,7 @@ class Pla::Methods::Gemm is Pla::MatrixTestBase {
     method test_METHOD_gemm_aABbC() { self.RequireOverride("test_METHOD_gemm_aABbC"); }
 
     method test_bad_type_A() {
-        Assert::throws(Exception::OutOfBounds, "A is bad type",
+        Assert::throws("A is bad type",
         {
             my $A := "foobar";
             my $B := self.factory.defaultmatrix3x3();
@@ -15,7 +15,7 @@ class Pla::Methods::Gemm is Pla::MatrixTestBase {
     }
 
     method test_bad_type_B() {
-        Assert::throws(Exception::OutOfBounds, "B is bad type",
+        Assert::throws("B is bad type",
         {
             my $A := self.factory.defaultmatrix3x3();
             my $B := "foobar";
@@ -25,7 +25,7 @@ class Pla::Methods::Gemm is Pla::MatrixTestBase {
     }
 
     method test_bad_type_C() {
-        Assert::throws(Exception::OutOfBounds, "C is bad type",
+        Assert::throws("C is bad type",
         {
             my $A := self.factory.defaultmatrix3x3();
             my $B := self.factory.defaultmatrix3x3();
@@ -35,7 +35,7 @@ class Pla::Methods::Gemm is Pla::MatrixTestBase {
     }
 
     method test_bad_size_A() {
-        Assert::throws(Exception::OutOfBounds, "A has incorrect size",
+        Assert::throws("A has incorrect size",
         {
             my $A := self.factory.defaultmatrix2x2();
             my $B := self.factory.defaultmatrix3x3();
@@ -45,7 +45,7 @@ class Pla::Methods::Gemm is Pla::MatrixTestBase {
     }
 
     method test_bad_size_B() {
-        Assert::throws(Exception::OutOfBounds, "B has incorrect size",
+        Assert::throws("B has incorrect size",
         {
             my $A := self.factory.defaultmatrix3x3();
             my $B := self.factory.defaultmatrix2x2();
@@ -55,7 +55,7 @@ class Pla::Methods::Gemm is Pla::MatrixTestBase {
     }
 
     method test_bad_size_C() {
-        Assert::throws(Exception::OutOfBounds, "C has incorrect size",
+        Assert::throws("C has incorrect size",
         {
             my $A := self.factory.defaultmatrix3x3();
             my $B := self.factory.defaultmatrix3x3();
