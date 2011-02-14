@@ -6,13 +6,12 @@ A linear algebra library package for the Parrot Virtual Machine
 
 The goals of the Parrot-Linear-Algebra (PLA) project are to develop a good,
 high-performance linear algebra toolset for use with the Parrot Virtual
-Machine, and programs that run on top of Parrot. In pursuit of these goals,
+Machine and programs which run on top of Parrot. In pursuit of these goals,
 high-performance PMC matrix types will be developed, along with interfaces
 to the BLAS and LAPACK libraries for high-performance operations.
 
 In addition to these core goals, PLA may also provide a series of ancillary
-tools that are similar in implementation to it's high-performance core
-utilities.
+tools that are similar in implementation or purpose to its core utilities.
 
 == STATUS ==
 
@@ -56,7 +55,7 @@ dependencies.
 
 Here are a list of dependencies for PLA:
 
-* Parrot 2.7.0
+* Parrot 3.0.0 (Or later)
 
     PLA is an extension for Parrot and requires Parrot to build and run.
     Releases of PLA will target supported releases of Parrot. Supported
@@ -112,18 +111,21 @@ Here are a list of dependencies for PLA:
 
         http://www.netlib.org/lapack
 
-    LAPACK bindings are currently in development.
+    LAPACK bindings are currently in development, and are not required to
+    build or run PLA.
 
-* Kakapo
+* Parrot-Test
 
-    Kakapo is a framework library for the NQP language. PLA currently uses
-    Kakapo to implement it's unit testing suite. You can build and install
-    PLA without Kakapo, but you will need the framework to run the test suite.
-    You can obtain Kakapo from it's source code repository on Gitorious, and
-    get documentation from its project page on Google Code:
+    Parrot-Test is a testing framework library for the Parrot Virtual Machine.
+    It provides a number of testing tools to be used by other projects. PLA
+    currently uses Parrot-Test to implement its unit testing suite. You can
+    build and install PLA without Parrot-Test, but you will need the framework
+    to run the test suite. The test suite helps to verify that PLA is
+    operating correctly on your platform.
 
-        http://gitorious.org/kakapo
-        http://code.google.com/p/kakapo-parrot/
+    You can obtain Parrot-Test from it's source code repository on Github:
+
+        http://github.com/Whiteknight/parrot-test
 
 * Other
 
@@ -146,9 +148,9 @@ To get, build, test, and install Parrot-Linear-Algebra, follow these steps
     parrot-nqp setup.nqp test
     parrot-nqp setup.nqp install
 
-Testing only works if you have Kakapo installed on your system. To install,
-you may need root privileges on your system. There is currently no known way
-to build or deploy PLA on Windows.
+Testing only works if you have Parrot-Test installed on your system. To
+install, you may need root privileges on your system. There is currently no
+known way to build or deploy PLA on Windows.
 
 == DIRECTORY STRUCTURE ==
 
