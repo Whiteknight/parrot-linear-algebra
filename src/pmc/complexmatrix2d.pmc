@@ -356,7 +356,7 @@ add_matrices_pmc(PARROT_INTERP, PMC * A, PMC * B, INTVAL sub)
     FLOATVAL * const s_b = attrs_b->storage;
     PMC * item;
     INTVAL i, j;
-    
+
     if (attrs_b->rows != rows || attrs_b->cols != cols)
         Parrot_ex_throw_from_c_args(interp, NULL, EXCEPTION_OUT_OF_BOUNDS,
             PLATYPENAME ": sizes do not match");
@@ -366,7 +366,7 @@ add_matrices_pmc(PARROT_INTERP, PMC * A, PMC * B, INTVAL sub)
                 item = VTABLE_get_pmc_keyed_int(interp, B, (cols*i)+j );
                 if (!PMC_IS_NULL(item)) {
                     R_ITEM_XY_ROWMAJOR(s_a, rows, cols, i, j) -=
-                        VTABLE_get_number(interp, item); 
+                        VTABLE_get_number(interp, item);
                 }
             }
         }
@@ -377,7 +377,7 @@ add_matrices_pmc(PARROT_INTERP, PMC * A, PMC * B, INTVAL sub)
                 item = VTABLE_get_pmc_keyed_int(interp, B, (cols*i)+j );
                 if (!PMC_IS_NULL(item)) {
                     R_ITEM_XY_ROWMAJOR(s_a, rows, cols, i, j) +=
-                        VTABLE_get_number(interp, item); 
+                        VTABLE_get_number(interp, item);
                 }
             }
         }
@@ -975,19 +975,19 @@ Add the integer value to every element in the matrix.
         add_matrices(INTERP, dest, value, 0);
         return dest;
     }
-    
+
     MULTI PMC *add(NumMatrix2D *value, PMC *dest) {
         dest = VTABLE_clone(INTERP, SELF);
         add_matrices_pmc(INTERP, dest, value, 0);
         return dest;
     }
-    
+
     MULTI PMC *add(PMCMatrix2D *value, PMC *dest) {
         dest = VTABLE_clone(INTERP, SELF);
         add_matrices_pmc(INTERP, dest, value, 0);
         return dest;
     }
-    
+
     MULTI PMC *add(Complex *value, PMC *dest) {
         dest = VTABLE_clone(INTERP, SELF);
         add_scalar_complex(INTERP, dest, value, 0);
@@ -1106,7 +1106,7 @@ Subtract the integer value from every element in the matrix.
         add_matrices(INTERP, dest, value, 1);
         return dest;
     }
-    
+
     MULTI PMC *subtract(NumMatrix2D *value, PMC *dest) {
         dest = VTABLE_clone(INTERP, SELF);
         add_matrices_pmc(INTERP, dest, value, 1);
@@ -1118,7 +1118,7 @@ Subtract the integer value from every element in the matrix.
         add_matrices_pmc(INTERP, dest, value, 1);
         return dest;
     }
-    
+
     MULTI PMC *subtract(Complex* value, PMC *dest) {
         dest = VTABLE_clone(INTERP, SELF);
         add_scalar_complex(INTERP, SELF, value, 1);
