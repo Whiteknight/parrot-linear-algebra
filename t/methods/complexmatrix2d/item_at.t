@@ -13,7 +13,7 @@ class Test::ComplexMatrix2D::ItemAt is Pla::Methods::ItemAt {
     method test_set_optional_third_parameter_complex() {
         my $m := self.factory.defaultmatrix2x2();
         my $n := self.factory.defaultmatrix2x2();
-        $n{Key.new(1, 1)} := "1+1i";
+        $n{self.factory.key(1, 1)} := "1+1i";
         $m.item_at(1, 1, "1+1i");
         Assert::equal($m, $n, "item_at(VALUE) does not work like keyed access");
     }
@@ -21,7 +21,7 @@ class Test::ComplexMatrix2D::ItemAt is Pla::Methods::ItemAt {
     method test_set_optional_third_parameter_array() {
         my $m := self.factory.defaultmatrix2x2();
         my $n := self.factory.defaultmatrix2x2();
-        $n{Key.new(1, 1)} := (1,1);
+        $n{self.factory.key(1, 1)} := (1,1);
         $m.item_at(1, 1, (1,1));
         Assert::equal($m, $n, "item_at(VALUE) does not work like keyed access when VALUE is an array");
     }

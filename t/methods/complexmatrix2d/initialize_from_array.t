@@ -40,7 +40,7 @@ class Test::ComplexMatrix2D::InitializeFromArray is Pla::Methods::InitializeFrom
 
     method test_ignore_extra_values_complex() {
         my $m := self.factory.matrix();
-        $m{Key.new(0,0)} := "1+1i";
+        $m{self.factory.key(0,0)} := "1+1i";
         my $n := self.factory.matrix();
         $n.initialize_from_array(1, 1, [ "1+1i", "2+2i",
                                          "3+3i", "4+4i" ]);
