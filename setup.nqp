@@ -1,7 +1,6 @@
 #!parrot-nqp
 INIT {
     pir::load_bytecode('distutils.pbc');
-    pir::load_bytecode('nqp-setting.pbc');
 }
 
 MAIN(get_args());
@@ -78,8 +77,8 @@ sub setup_smolder(%PLA) {
 
 # final step, coerce the list of dynpmc ldflags into a string
 sub setup_dynpmc_flags(%PLA) {
-    %PLA{'dynpmc_ldflags'} := %PLA{'dynpmc_ldflags_list'}.join(' ');
-    %PLA{'dynpmc_cflags'} := %PLA{'dynpmc_cflags_list'}.join(' ');
+    %PLA{'dynpmc_ldflags'} := pir::join(' ', %PLA{'dynpmc_ldflags_list'});
+    %PLA{'dynpmc_cflags'} := pir::join(' ', %PLA{'dynpmc_cflags_list'});
 }
 
 sub setup_PLA_keys(%PLA) {
