@@ -3,7 +3,7 @@
 my $test := Test::Sanity.new();
 $test.suite.run();
 
-class Test::Sanity is UnitTest::Testcase {
+class Test::Sanity is Rosella::Testcase {
 
     method test_load_linalg_group() {
         my $pla := pir::loadlib__ps("./dynext/linalg_group");

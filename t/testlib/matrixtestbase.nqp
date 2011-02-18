@@ -5,7 +5,7 @@
 # testing a matrix. Actual test cases should not inherit from this class
 # directly, but instead inherit from a specialized sub-type depending on the
 # PMC being tested
-class Pla::MatrixTestBase is UnitTest::Testcase {
+class Pla::MatrixTestBase is Rosella::Testcase {
 
     method factory() {
         self.RequireOverride("factory");

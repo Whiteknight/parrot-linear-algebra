@@ -1,5 +1,5 @@
 
-class Pla::Matrix::Loader is UnitTest::Loader {
+class Pla::Matrix::Loader is Rosella::Loader {
 
     method order_tests(@tests) {
         my $test_method := 'test_ME';
