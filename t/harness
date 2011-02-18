@@ -1,7 +1,6 @@
 #! parrot-nqp
 
 INIT {
-    pir::load_bytecode('rosella/core.pbc');
     pir::load_bytecode('rosella/tap_harness.pbc');
     pir::load_bytecode('rosella/xunit.pbc');
     pir::load_bytecode('t/testlib/pla_test.pbc');
@@ -24,5 +23,5 @@ if ($harness.run_was_success()) {
     $harness.add_test_dirs("PIR", 't/pir-subclass');
     $harness.run(:run_inline(1));
 }
-my $output := Rosella::Harness::Output::Console.new();
+my $output := Rosella::build(Rosella::Harness::Output::Console);
 $output.show_results_summary($harness);
