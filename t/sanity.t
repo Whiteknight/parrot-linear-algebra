@@ -1,7 +1,6 @@
 #! parrot-nqp
 
-my $test := Test::Sanity.new();
-$test.suite.run();
+Rosella::Testcase::test(Test::Sanity);
 
 class Test::Sanity is Rosella::Testcase {
 

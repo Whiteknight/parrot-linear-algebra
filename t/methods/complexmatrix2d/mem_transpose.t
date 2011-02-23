@@ -1,5 +1,4 @@
-my $tests := Test::ComplexMatrix2D::MemTranspose.new();
-$tests.suite.run;
+Rosella::Testcase::test(Test::ComplexMatrix2D::MemTranspose);
 
 class Test::ComplexMatrix2D::MemTranspose is Pla::Methods::MemTranspose {
     has $!factory;

@@ -1,5 +1,4 @@
-my $tests := Test::ComplexMatrix2D::ItemAt.new();
-$tests.suite.run;
+Rosella::Testcase::test(Test::ComplexMatrix2D::ItemAt);
 
 class Test::ComplexMatrix2D::ItemAt is Pla::Methods::ItemAt {
     has $!factory;

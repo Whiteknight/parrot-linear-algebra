@@ -1,5 +1,4 @@
-my $tests := Test::ComplexMatrix2D::Fill.new();
-$tests.suite.run;
+Rosella::Testcase::test(Test::ComplexMatrix2D::Fill);
 
 class Test::ComplexMatrix2D::Fill is Pla::Methods::Fill {
     has $!factory;

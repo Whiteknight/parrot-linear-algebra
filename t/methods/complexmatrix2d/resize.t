@@ -1,5 +1,4 @@
-my $tests := Test::ComplexMatrix2D::Resize.new();
-$tests.suite.run;
+Rosella::Testcase::test(Test::ComplexMatrix2D::Resize);
 
 class Test::ComplexMatrix2D::Resize is Pla::Methods::Resize {
 

@@ -1,5 +1,4 @@
-my $tests := Test::NumMatrix2D::RowSwap.new();
-$tests.suite.run;
+Rosella::Testcase::test(Test::NumMatrix2D::RowSwap);
 
 class Test::NumMatrix2D::RowSwap is Pla::Methods::RowSwap {
 

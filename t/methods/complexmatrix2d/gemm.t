@@ -1,5 +1,4 @@
-my $tests := Test::ComplexMatrix2D::Gemm.new();
-$tests.suite.run;
+Rosella::Testcase::test(Test::ComplexMatrix2D::Gemm);
 
 class Test::ComplexMatrix2D::Gemm is Pla::Methods::Gemm {
     has $!factory;

@@ -1,5 +1,4 @@
-my $tests := Test::ComplexMatrix2D::IterateFunctionInplace.new();
-$tests.suite.run;
+Rosella::Testcase::test(Test::ComplexMatrix2D::IterateFunctionInplace);
 
 class Test::ComplexMatrix2D::IterateFunctionInplace is Pla::Methods::IterateFunctionInplace {
     has $!factory;

@@ -1,5 +1,4 @@
-my $tests := Test::ComplexMatrix2D::RowScale.new();
-$tests.suite.run;
+Rosella::Testcase::test(Test::ComplexMatrix2D::RowScale);
 
 class Test::ComplexMatrix2D::RowScale is Pla::Methods::RowScale {
     has $!factory;

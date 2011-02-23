@@ -1,5 +1,4 @@
-my $tests := Test::NumMatrix2D::InitializeFromArray.new();
-$tests.suite.run;
+Rosella::Testcase::test(Test::NumMatrix2D::InitializeFromArray);
 
 class Test::NumMatrix2D::InitializeFromArray is Pla::Methods::InitializeFromArray {
 

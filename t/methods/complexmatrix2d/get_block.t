@@ -1,5 +1,4 @@
-my $tests := Test::ComplexMatrix2D::GetBlock.new();
-$tests.suite.run;
+Rosella::Testcase::test(Test::ComplexMatrix2D::GetBlock);
 
 class Test::ComplexMatrix2D::GetBlock is Pla::Methods::GetBlock {
     has $!factory;

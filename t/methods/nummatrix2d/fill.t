@@ -1,5 +1,4 @@
-my $tests := Test::NumMatrix2D::Fill.new();
-$tests.suite.run;
+Rosella::Testcase::test(Test::NumMatrix2D::Fill);
 
 class Test::NumMatrix2D::Fill is Pla::Methods::Fill {
 

@@ -1,5 +1,4 @@
-my $tests := Test::NumMatrix2D::IterateFunctionExternal.new();
-$tests.suite.run;
+Rosella::Testcase::test(Test::NumMatrix2D::IterateFunctionExternal);
 
 class Test::NumMatrix2D::IterateFunctionExternal is Pla::Methods::IterateFunctionExternal {
     has $!factory;

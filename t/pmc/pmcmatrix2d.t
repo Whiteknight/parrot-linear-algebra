@@ -1,5 +1,4 @@
-my $tests := Test::PmcMatrix2D.new();
-$tests.suite.run;
+Rosella::Testcase::test(Test::PmcMatrix2D);
 
 class Test::PmcMatrix2D is Pla::MatrixTest {
 

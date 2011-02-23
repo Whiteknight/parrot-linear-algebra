@@ -1,5 +1,4 @@
-my $tests := Test::NumMatrix2D::IterateFunctionInplace.new();
-$tests.suite.run;
+Rosella::Testcase::test(Test::NumMatrix2D::IterateFunctionInplace);
 
 class Test::NumMatrix2D::IterateFunctionInplace is Pla::Methods::IterateFunctionInplace {
 

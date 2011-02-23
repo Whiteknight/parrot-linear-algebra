@@ -1,5 +1,4 @@
-my $tests := Test::ComplexMatrix2D::InitializeFromArray.new();
-$tests.suite.run;
+Rosella::Testcase::test(Test::ComplexMatrix2D::InitializeFromArray);
 
 class Test::ComplexMatrix2D::InitializeFromArray is Pla::Methods::InitializeFromArray {
     has $!factory;

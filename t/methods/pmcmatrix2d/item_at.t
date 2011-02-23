@@ -1,8 +1,6 @@
-my $tests := Test::PMCMatrix2D::ItemAt.new();
-$tests.suite.run;
+Rosella::Testcase::test(Test::PMCMatrix2D::ItemAt);
 
 class Test::PMCMatrix2D::ItemAt is Pla::Methods::ItemAt {
-
     has $!factory;
     method factory() {
         unless pir::defined__IP($!factory) {

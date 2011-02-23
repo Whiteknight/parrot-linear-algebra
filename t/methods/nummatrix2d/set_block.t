@@ -1,5 +1,4 @@
-my $tests := Test::NumMatrix2D::SetBlock.new();
-$tests.suite.run;
+Rosella::Testcase::test(Test::NumMatrix2D::SetBlock);
 
 class Test::NumMatrix2D::SetBlock is Pla::Methods::SetBlock {
 

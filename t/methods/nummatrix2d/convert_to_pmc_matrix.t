@@ -1,5 +1,4 @@
-my $tests := Test::NumMatrix2D::ConvertToPmcMatrix.new();
-$tests.suite.run;
+Rosella::Testcase::test(Test::NumMatrix2D::ConvertToPmcMatrix);
 
 class Test::NumMatrix2D::ConvertToPmcMatrix is Pla::Methods::ConvertToPmcMatrix {
 

@@ -1,5 +1,4 @@
-my $tests := Test::NumMatrix2D::Gemm.new();
-$tests.suite.run;
+Rosella::Testcase::test(Test::NumMatrix2D::Gemm);
 
 class Test::NumMatrix2D::Gemm is Pla::Methods::Gemm {
 

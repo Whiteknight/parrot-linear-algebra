@@ -1,5 +1,4 @@
-my $tests := Test::PMCMatrix2D::IterateFunctionExternal.new();
-$tests.suite.run;
+Rosella::Testcase::test(Test::PMCMatrix2D::IterateFunctionExternal);
 
 class Test::PMCMatrix2D::IterateFunctionExternal is Pla::Methods::IterateFunctionExternal {
 

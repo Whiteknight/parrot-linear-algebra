@@ -1,5 +1,4 @@
-my $tests := Test::ComplexMatrix2D.new();
-$tests.suite.run();
+Rosella::Testcase::test(Test::ComplexMatrix2D);
 
 class Test::ComplexMatrix2D is Pla::NumericMatrixTest;
 

@@ -1,5 +1,4 @@
-my $tests := Test::NumMatrix2D::GetBlock.new();
-$tests.suite.run;
+Rosella::Testcase::test(Test::NumMatrix2D::GetBlock);
 
 class Test::NumMatrix2D::GetBlock is Pla::Methods::GetBlock {
 
