@@ -1,4 +1,4 @@
-Rosella::Testcase::test(Test::NumMatrix2D::RowSwap);
+Rosella::Test::test(Test::NumMatrix2D::RowSwap);
 
 class Test::NumMatrix2D::RowSwap is Pla::Methods::RowSwap {
 

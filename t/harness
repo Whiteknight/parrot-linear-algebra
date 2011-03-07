@@ -2,7 +2,7 @@
 
 INIT {
     pir::load_bytecode('rosella/tap_harness.pbc');
-    pir::load_bytecode('rosella/xunit.pbc');
+    pir::load_bytecode('rosella/test.pbc');
     pir::load_bytecode('t/testlib/pla_test.pbc');
 }
 
@@ -23,5 +23,5 @@ if ($harness.run_was_success()) {
     $harness.add_test_dirs("PIR", 't/pir-subclass');
     $harness.run(:run_inline(1));
 }
-my $output := Rosella::build(Rosella::Harness::Output::Console);
+my $output := Rosella::build(Rosella::Harness::Output);
 $output.show_results_summary($harness);

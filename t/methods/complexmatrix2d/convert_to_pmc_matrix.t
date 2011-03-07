@@ -1,4 +1,4 @@
-Rosella::Testcase::test(Test::ComplexMatrix2D::ConvertToPmcMatrix);
+Rosella::Test::test(Test::ComplexMatrix2D::ConvertToPmcMatrix);
 
 class Test::ComplexMatrix2D::ConvertToPmcMatrix is Pla::Methods::ConvertToPmcMatrix {
     has $!factory;

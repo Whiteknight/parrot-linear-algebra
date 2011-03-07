@@ -1,4 +1,4 @@
-Rosella::Testcase::test(Test::NumMatrix2D::MemTranspose);
+Rosella::Test::test(Test::NumMatrix2D::MemTranspose);
 
 class Test::NumMatrix2D::MemTranspose is Pla::Methods::MemTranspose {
 

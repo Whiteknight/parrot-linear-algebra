@@ -1,4 +1,4 @@
-Rosella::Testcase::test(Test::ComplexMatrix2D::ItemAt);
+Rosella::Test::test(Test::ComplexMatrix2D::ItemAt);
 
 class Test::ComplexMatrix2D::ItemAt is Pla::Methods::ItemAt {
     has $!factory;

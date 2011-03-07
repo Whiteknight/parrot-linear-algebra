@@ -1,4 +1,4 @@
-Rosella::Testcase::test(Test::ComplexMatrix2D::GetBlock);
+Rosella::Test::test(Test::ComplexMatrix2D::GetBlock);
 
 class Test::ComplexMatrix2D::GetBlock is Pla::Methods::GetBlock {
     has $!factory;

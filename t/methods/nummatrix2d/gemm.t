@@ -1,4 +1,4 @@
-Rosella::Testcase::test(Test::NumMatrix2D::Gemm);
+Rosella::Test::test(Test::NumMatrix2D::Gemm);
 
 class Test::NumMatrix2D::Gemm is Pla::Methods::Gemm {
 

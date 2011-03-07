@@ -1,4 +1,4 @@
-Rosella::Testcase::test(Test::ComplexMatrix2D::Gemm);
+Rosella::Test::test(Test::ComplexMatrix2D::Gemm);
 
 class Test::ComplexMatrix2D::Gemm is Pla::Methods::Gemm {
     has $!factory;

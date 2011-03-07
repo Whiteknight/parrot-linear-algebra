@@ -1,4 +1,4 @@
-Rosella::Testcase::test(Test::ComplexMatrix2D::IterateFunctionExternal);
+Rosella::Test::test(Test::ComplexMatrix2D::IterateFunctionExternal);
 
 class Test::ComplexMatrix2D::IterateFunctionExternal is Pla::Methods::IterateFunctionExternal {
     has $!factory;

@@ -1,4 +1,4 @@
-Rosella::Testcase::test(Test::ComplexMatrix2D::Transpose);
+Rosella::Test::test(Test::ComplexMatrix2D::Transpose);
 
 class Test::ComplexMatrix2D::Transpose is Pla::Methods::Transpose {
     has $!factory;

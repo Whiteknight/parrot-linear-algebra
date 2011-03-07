@@ -1,4 +1,4 @@
-Rosella::Testcase::test(Test::NumMatrix2D::RowCombine);
+Rosella::Test::test(Test::NumMatrix2D::RowCombine);
 
 class Test::NumMatrix2D::RowCombine is Pla::Methods::RowCombine {
     has $!factory;
