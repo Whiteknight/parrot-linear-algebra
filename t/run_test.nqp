@@ -62,6 +62,8 @@ sub compile_and_execute($filename) {
     try {
         $sub();
         CATCH {
+            pir::say($!);
+            pir::say(pir::join('\n', $!.backtrace_strings()));
             # WAT DO?
         }
     }
