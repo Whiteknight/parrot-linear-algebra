@@ -1,4 +1,4 @@
-Rosella::Testcase::test(Test::ComplexMatrix2D::Fill);
+Rosella::Test::test(Test::ComplexMatrix2D::Fill);
 
 class Test::ComplexMatrix2D::Fill is Pla::Methods::Fill {
     has $!factory;

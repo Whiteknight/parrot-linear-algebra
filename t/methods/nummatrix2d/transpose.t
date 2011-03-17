@@ -1,4 +1,4 @@
-Rosella::Testcase::test(Test::NumMatrix2D::Transpose);
+Rosella::Test::test(Test::NumMatrix2D::Transpose);
 
 class Test::NumMatrix2D::Transpose is Pla::Methods::Transpose {
 

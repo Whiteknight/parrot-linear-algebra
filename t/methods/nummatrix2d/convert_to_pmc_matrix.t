@@ -1,4 +1,4 @@
-Rosella::Testcase::test(Test::NumMatrix2D::ConvertToPmcMatrix);
+Rosella::Test::test(Test::NumMatrix2D::ConvertToPmcMatrix);
 
 class Test::NumMatrix2D::ConvertToPmcMatrix is Pla::Methods::ConvertToPmcMatrix {
 

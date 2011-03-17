@@ -1,4 +1,4 @@
-Rosella::Testcase::test(Test::NumMatrix2D::SetBlock);
+Rosella::Test::test(Test::NumMatrix2D::SetBlock);
 
 class Test::NumMatrix2D::SetBlock is Pla::Methods::SetBlock {
 

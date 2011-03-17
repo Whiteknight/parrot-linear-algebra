@@ -1,4 +1,4 @@
-Rosella::Testcase::test(Test::ComplexMatrix2D);
+Rosella::Test::test(Test::ComplexMatrix2D);
 
 class Test::ComplexMatrix2D is Pla::NumericMatrixTest;
 

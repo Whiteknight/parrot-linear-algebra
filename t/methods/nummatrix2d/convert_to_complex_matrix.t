@@ -1,4 +1,4 @@
-Rosella::Testcase::test(Test::NumMatrix2D::ConvertToComplexMatrix);
+Rosella::Test::test(Test::NumMatrix2D::ConvertToComplexMatrix);
 
 class Test::NumMatrix2D::ConvertToComplexMatrix is Pla::Methods::ConvertToComplexMatrix {
     has $!factory;

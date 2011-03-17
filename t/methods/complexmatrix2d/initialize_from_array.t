@@ -1,4 +1,4 @@
-Rosella::Testcase::test(Test::ComplexMatrix2D::InitializeFromArray);
+Rosella::Test::test(Test::ComplexMatrix2D::InitializeFromArray);
 
 class Test::ComplexMatrix2D::InitializeFromArray is Pla::Methods::InitializeFromArray {
     has $!factory;

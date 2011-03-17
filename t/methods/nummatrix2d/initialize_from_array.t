@@ -1,4 +1,4 @@
-Rosella::Testcase::test(Test::NumMatrix2D::InitializeFromArray);
+Rosella::Test::test(Test::NumMatrix2D::InitializeFromArray);
 
 class Test::NumMatrix2D::InitializeFromArray is Pla::Methods::InitializeFromArray {
 

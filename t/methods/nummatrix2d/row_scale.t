@@ -1,4 +1,4 @@
-Rosella::Testcase::test(Test::NumMatrix2D::RowScale);
+Rosella::Test::test(Test::NumMatrix2D::RowScale);
 
 class Test::NumMatrix2D::RowScale is Pla::Methods::RowScale {
 

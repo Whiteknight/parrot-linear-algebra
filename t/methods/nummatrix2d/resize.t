@@ -1,4 +1,4 @@
-Rosella::Testcase::test(Test::NumMatrix2D::Resize);
+Rosella::Test::test(Test::NumMatrix2D::Resize);
 
 class Test::NumMatrix2D::Resize is Pla::Methods::Resize {
     has $!factory;

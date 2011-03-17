@@ -1,4 +1,4 @@
-Rosella::Testcase::test(Test::PMCMatrix2D::InitializeFromArray);
+Rosella::Test::test(Test::PMCMatrix2D::InitializeFromArray);
 
 class Test::PMCMatrix2D::InitializeFromArray is Pla::Methods::InitializeFromArray {
     has $!factory;

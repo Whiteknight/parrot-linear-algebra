@@ -1,4 +1,4 @@
-Rosella::Testcase::test(Test::NumMatrix2D::Fill);
+Rosella::Test::test(Test::NumMatrix2D::Fill);
 
 class Test::NumMatrix2D::Fill is Pla::Methods::Fill {
 

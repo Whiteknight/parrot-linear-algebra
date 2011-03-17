@@ -1,4 +1,4 @@
-Rosella::Testcase::test(Test::NumMatrix2D::ItemAt);
+Rosella::Test::test(Test::NumMatrix2D::ItemAt);
 
 class Test::NumMatrix2D::ItemAt is Pla::Methods::ItemAt {
     has $!factory;

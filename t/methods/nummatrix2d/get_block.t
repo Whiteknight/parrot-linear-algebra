@@ -1,4 +1,4 @@
-Rosella::Testcase::test(Test::NumMatrix2D::GetBlock);
+Rosella::Test::test(Test::NumMatrix2D::GetBlock);
 
 class Test::NumMatrix2D::GetBlock is Pla::Methods::GetBlock {
 

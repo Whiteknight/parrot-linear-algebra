@@ -1,4 +1,4 @@
-Rosella::Testcase::test(Test::NumMatrix2D::InitializeFromArgs);
+Rosella::Test::test(Test::NumMatrix2D::InitializeFromArgs);
 
 class Test::NumMatrix2D::InitializeFromArgs is Pla::Methods::InitializeFromArgs {
     has $!factory;

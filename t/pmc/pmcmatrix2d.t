@@ -1,4 +1,4 @@
-Rosella::Testcase::test(Test::PmcMatrix2D);
+Rosella::Test::test(Test::PmcMatrix2D);
 
 class Test::PmcMatrix2D is Pla::MatrixTest {
 
