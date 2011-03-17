@@ -1,7 +1,7 @@
 #! parrot-nqp
 INIT {
-    pir::load_bytecode('parrot_test_common.pbc');
-    pir::load_bytecode('parrot_test_xunit.pbc');
+    pir::load_bytecode('rosella/test.pbc');
+    pir::load_bytecode('rosella/tap_harness.pbc');
     pir::load_bytecode('t/testlib/pla_test.pbc');
 }
 
