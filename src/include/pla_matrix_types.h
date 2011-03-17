@@ -6,16 +6,17 @@ extern INTVAL __PLA_Type_ComplexMatrix2D;
 extern INTVAL __PLA_Type_PMCMatrix2D;
 
 #define ALLOCATE_STORAGE_NumMatrix2D(s) \
-    (FLOATVAL *)mem_sys_allocate_zeroed(s * sizeof (FLOATVAL))
+    ((s) ? (FLOATVAL *)mem_sys_allocate_zeroed(s * sizeof (FLOATVAL)) : NULL)
 #define DECLATTRS_NumMatrix2D(p, a) Parrot_NumMatrix2D_attributes * const (a) = \
     (Parrot_NumMatrix2D_attributes *)((p)->data)
 
 #define ALLOCATE_STORAGE_ComplexMatrix2D(s) \
-    (FLOATVAL *)mem_sys_allocate_zeroed(s * sizeof (FLOATVAL) * 2)
+    ((s) ? (FLOATVAL *)mem_sys_allocate_zeroed(s * sizeof (FLOATVAL) * 2) : NULL)
 #define DECLATTRS_ComplexMatrix2D(p, a) Parrot_ComplexMatrix2D_attributes * const (a) = \
     (Parrot_ComplexMatrix2D_attributes *)((p)->data)
 
-#define ALLOCATE_STORAGE_PMCMatrix2D(s) (PMC **)mem_sys_allocate_zeroed(s * sizeof (PMC *))
+#define ALLOCATE_STORAGE_PMCMatrix2D(s) \
+    ((s) ? (PMC **)mem_sys_allocate_zeroed(s * sizeof (PMC *)) : NULL)
 #define DECLATTRS_PMCMatrix2D(p, a) Parrot_PMCMatrix2D_attributes * const (a) = \
     (Parrot_PMCMatrix2D_attributes *)((p)->data)
 
