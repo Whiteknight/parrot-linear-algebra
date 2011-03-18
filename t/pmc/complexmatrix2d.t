@@ -74,7 +74,7 @@ method test_VTABLE_set_string_keyed() {
         $P1 = $P0[0;0]
         store_lex "$a", $P1
     };
-    Assert::equal($a, "1+1i", "set_string_keyed doesn't work");
+    Assert::equal(~$a, "1+1i", "set_string_keyed doesn't work");
 }
 
 method test_VTABLE_get_string() {
