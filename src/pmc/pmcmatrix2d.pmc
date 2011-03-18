@@ -82,14 +82,12 @@ init_from_pmc_array(PARROT_INTERP, PMC * self, INTVAL rows_size,
         for (j = 0; j < cols_size; j++) {
             PMC * const value = VTABLE_get_pmc_keyed_int(interp, values, num);
             ITEM_XY_ROWMAJOR(s, self_rows, self_cols, i, j) = value;
+            PARROT_GC_WRITE_BARRIER(interp, self);
             num++;
-            if (num >= init_elems) {
-                PARROT_GC_WRITE_BARRIER(interp, self);
+            if (num >= init_elems)
                 return;
-            }
         }
     }
-    PARROT_GC_WRITE_BARRIER(interp, self);
 }
 
 /* If the matrix is lazily transposed, actually transpose the physical memory
@@ -699,9 +697,9 @@ unaffected. Calling fill() never causes the matrix to shrink.
                 else
                     v = VTABLE_clone(INTERP, value);
                 ITEM_XY_ROWMAJOR(s, x_size, y_size, rows, cols) = v;
+                PARROT_GC_WRITE_BARRIER(interp, SELF);
             }
         }
-        PARROT_GC_WRITE_BARRIER(interp, SELF);
     }
 
 /*
@@ -825,12 +823,12 @@ computation to a new matrix. Return the new matrix of results.
                 PMC * result = PMCNULL;
                 Parrot_ext_call(INTERP, func, "PPIIPf->P", SELF, value, i, j, args, &result);
                 ITEM_XY_ROWMAJOR(new_s, rows_size, cols_size, i, j) = result;
+                PARROT_GC_WRITE_BARRIER(interp, SELF);
             }
         }
         attrs->storage = new_s;
         if (old_s)
             free(old_s);
-        PARROT_GC_WRITE_BARRIER(interp, SELF);
     }
 
     METHOD iterate_function_external(PMC * func, PMC * args :slurpy) {
@@ -964,9 +962,9 @@ Set a block in the matrix, growing it if needed.
             for (j = 0; j < blck_rows; j++) {
                 ITEM_XY_ROWMAJOR(self_s, self_rows, self_cols, j + rows_idx, i + cols_idx) =
                     ITEM_XY_ROWMAJOR(blck_s, blck_rows, blck_cols, j, i);
+                PARROT_GC_WRITE_BARRIER(interp, SELF);
             }
         }
-        PARROT_GC_WRITE_BARRIER(interp, SELF);
     }
 
 /*
