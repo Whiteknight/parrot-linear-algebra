@@ -93,7 +93,7 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
 
     # Assert that we can freeze a matrix to a string
     method test_VTABLE_freeze() {
-        Assert::throws_nothing("Cannot set_pmc_keyed", {
+        Assert::throws_nothing({
             my $m := self.factory.fancymatrix2x2();
             my $s := pir::freeze__SP($m);
         })
