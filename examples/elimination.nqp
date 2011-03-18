@@ -44,8 +44,9 @@ sub gaussian_elimination($A) {
             #pir::say($A);
 
             my $scale := $A.item_at($i, $j);
-            pir::say("row " ~ $i ~ " / " ~ $scale);
-            $A.row_scale($i, (1/$scale));
+            $scale := pir::div__NnN(1.0, $scale);
+            pir::say("row $i / $scale ($scale)");
+            $A.row_scale($i, $scale);
             #pir::say($A);
 
             my $u := pir::clone($i) + 1;
@@ -83,8 +84,9 @@ sub gauss_jordan_elimination($A) {
             #pir::say($A);
 
             my $scale := $A.item_at($i, $j);
-            pir::say("row " ~ $i ~ " / " ~ $scale);
-            $A.row_scale($i, (1/$scale));
+            $scale := pir::div__NnN(1.0, $scale);
+            pir::say("row $i / $scale ($scale)");
+            $A.row_scale($i, $scale);
             #pir::say($A);
 
             my $u := pir::clone($i) + 1;
