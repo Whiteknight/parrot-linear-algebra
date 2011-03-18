@@ -83,10 +83,13 @@ init_from_pmc_array(PARROT_INTERP, PMC * self, INTVAL rows_size,
             PMC * const value = VTABLE_get_pmc_keyed_int(interp, values, num);
             ITEM_XY_ROWMAJOR(s, self_rows, self_cols, i, j) = value;
             num++;
-            if (num >= init_elems)
+            if (num >= init_elems) {
+                PARROT_GC_WRITE_BARRIER(interp, self);
                 return;
+            }
         }
     }
+    PARROT_GC_WRITE_BARRIER(interp, self);
 }
 
 /* If the matrix is lazily transposed, actually transpose the physical memory
@@ -698,6 +701,7 @@ unaffected. Calling fill() never causes the matrix to shrink.
                 ITEM_XY_ROWMAJOR(s, x_size, y_size, rows, cols) = v;
             }
         }
+        PARROT_GC_WRITE_BARRIER(interp, SELF);
     }
 
 /*
@@ -722,8 +726,10 @@ Return a single PMC at the specified coordinates
             Parrot_ex_throw_from_c_args(INTERP, NULL, EXCEPTION_OUT_OF_BOUNDS,
                 PLATYPENAME ": indices out of bounds in item_at");
         }
-        if (has_value)
+        if (has_value) {
             ITEM_XY(s, flags, rows, cols, row, col) = value;
+            PARROT_GC_WRITE_BARRIER(interp, SELF);
+        }
         p = ITEM_XY(s, flags, rows, cols, row, col);
         RETURN(PMC * p);
     }
@@ -824,6 +830,7 @@ computation to a new matrix. Return the new matrix of results.
         attrs->storage = new_s;
         if (old_s)
             free(old_s);
+        PARROT_GC_WRITE_BARRIER(interp, SELF);
     }
 
     METHOD iterate_function_external(PMC * func, PMC * args :slurpy) {
@@ -959,6 +966,7 @@ Set a block in the matrix, growing it if needed.
                     ITEM_XY_ROWMAJOR(blck_s, blck_rows, blck_cols, j, i);
             }
         }
+        PARROT_GC_WRITE_BARRIER(interp, SELF);
     }
 
 /*
