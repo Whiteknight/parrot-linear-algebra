@@ -55,7 +55,7 @@ method test_VTABLE_add_NUMMATRIX2D() {
 }
 
 method test_VTABLE_add_NUMMATRIX2D_SIZEFAIL() {
-    Assert::throws("error on sizes not equal", {
+    Assert::throws({
         my $m := self.factory.defaultmatrix2x2();
         my $n := self.factory.defaultmatrix3x3();
         pir::add__PPP($m, $n);
@@ -72,7 +72,7 @@ method test_VTABLE_add_COMPLEXMATRIX2D() {
 }
 
 method test_VTABLE_add_COMPLEXMATRIX2D_SIZEFAIL() {
-    Assert::throws("error on sizes not equal", {
+    Assert::throws({
         my $m := self.factory.defaultmatrix2x2();
         my $n := self.factory_complex.defaultmatrix3x3();
         pir::add__PPP($m, $n);
@@ -89,7 +89,7 @@ method test_VTABLE_add_PMCMATRIX2D() {
 }
 
 method test_VTABLE_add_PMCMATRIX2D_SIZEFAIL() {
-    Assert::throws("error on sizes not equal", {
+    Assert::throws({
         my $m := self.factory.defaultmatrix2x2();
         my $n := self.factory_pmc.defaultmatrix3x3();
         pir::add__PPP($m, $n);
@@ -121,7 +121,7 @@ method test_VTABLE_subtract_NUMMATRIX2D() {
 }
 
 method test_VTABLE_subtract_NUMMATRIX2D_SIZEFAIL() {
-    Assert::throws("error on sizes not equal", {
+    Assert::throws({
         my $m := self.factory.defaultmatrix2x2();
         my $n := self.factory.defaultmatrix3x3();
         pir::sub__PPP($m, $n);
@@ -138,7 +138,7 @@ method test_VTABLE_subtract_COMPLEXMATRIX2D() {
 }
 
 method test_VTABLE_subtract_COMPLEXMATRIX2D_SIZEFAIL() {
-    Assert::throws("error on sizes not equal", {
+    Assert::throws({
         my $m := self.factory.defaultmatrix2x2();
         my $n := self.factory_complex.defaultmatrix3x3();
         pir::sub__PPP($m, $n);
@@ -155,7 +155,7 @@ method test_VTABLE_subtract_PMCMATRIX2D() {
 }
 
 method test_VTABLE_subtract_PMCMATRIX2D_SIZEFAIL() {
-    Assert::throws("error on sizes not equal", {
+    Assert::throws({
         my $m := self.factory.defaultmatrix2x2();
         my $n := self.factory_pmc.defaultmatrix3x3();
         pir::sub__PPP($m, $n);
@@ -197,7 +197,7 @@ method test_VTABLE_multiply_NUMMATRIX2D() {
 }
 
 method test_VTABLE_multiply_NUMMATRIX2D_SIZEFAIL() {
-    Assert::throws("error on sizes not equal", {
+    Assert::throws({
         my $A := self.factory.matrix3x3(1.0, 2.0, 3.0,
                                 4.0, 5.0, 6.0,
                                 7.0, 8.0, 9.0);

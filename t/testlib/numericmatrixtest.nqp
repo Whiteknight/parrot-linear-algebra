@@ -23,7 +23,7 @@ class Pla::NumericMatrixTest is Pla::MatrixTest {
     }
 
     method test_VTABLE_set_number_keyed() {
-        Assert::throws_nothing("Cannot create NumMatrix2D", {
+        Assert::throws_nothing({
             my $m := self.factory.matrix();
             Q:PIR {
                 $P0 = find_lex "$m"

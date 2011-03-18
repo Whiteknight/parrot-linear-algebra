@@ -7,10 +7,10 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
 
     # Test that we can create a matrix
     method test_OP_new() {
-        Assert::throws_nothing("Cannot create new matrix", {
+        Assert::throws_nothing({
             my $m := self.factory.matrix();
             Assert::not_null($m, "Could not create a matrix");
-        });
+        }, "Cannot create new matrix");
     }
 
     method test_OP_does_NOT() {
@@ -35,11 +35,11 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
 
     # test that we can set a PMC at the given coordinates
     method test_VTABLE_set_pmc_keyed() {
-        Assert::throws_nothing("Cannot set_pmc_keyed", {
+        Assert::throws_nothing({
             my $m := self.factory.matrix();
             my $a := self.factory.defaultvalue();
             $m{self.factory.key(0,0)} := $a;
-        });
+        }, "Cannot set_pmc_keyed");
     }
 
     # Test cloning of the matrix. Clones should be different objects with the
@@ -298,7 +298,7 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
     method test_negative_array() {
         my $m := self.factory.defaultmatrix2x2();
 
-        Assert::throws("negative PCM array should throw exception", {
+        Assert::throws({
             my $e := $m{[-1]};
         });
     }
@@ -306,7 +306,7 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
     method test_empty_array() {
         my $m := self.factory.defaultmatrix2x2();
 
-        Assert::throws("empty PCM array should throw exception", {
+        Assert::throws({
             my $e := $m{[]};
         });
     }
@@ -338,7 +338,7 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
     method test_more_than_2_elements_array() {
         my $m := self.factory.fancymatrix2x2();
 
-        Assert::throws("more than 2 elements PCM array should throw exception", {
+        Assert::throws({
           my $e := $m{[1,2,3]};
         });
     }
@@ -347,7 +347,7 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
     method test_negative_key() {
         my $m := self.factory.defaultmatrix2x2();
 
-        Assert::throws("negative PCM key should throw exception", {
+        Assert::throws({
             my $e := $m{self.factory.key(-1)};
         });
     }
@@ -355,7 +355,7 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
     method test_empty_key() {
         my $m := self.factory.fancymatrix2x2();
 
-        Assert::throws("empty PCM key should throw exception", {
+        Assert::throws({
             my $e := $m{self.factory.key()};
         });
     }
@@ -387,7 +387,7 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
     method test_more_than_2_elements_key() {
         my $m := self.factory.fancymatrix2x2();
 
-        Assert::throws("more than 2 elements PCM key should throw exception", {
+        Assert::throws({
           my $e := $m{self.factory.key(0,1,3)};
         });
     }
