@@ -25,3 +25,5 @@ if ($harness.run_was_success()) {
 }
 my $output := Rosella::build(Rosella::Harness::Output);
 $output.show_results_summary($harness);
+$output.show_error_detail($harness);
+$output.show_failure_detail($harness);
