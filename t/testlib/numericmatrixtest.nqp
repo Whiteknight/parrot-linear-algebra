@@ -6,7 +6,7 @@ class Pla::NumericMatrixTest is Pla::MatrixTest {
     # Test that a numeric matrix does numericmatrix
     method test_OP_does_numericmatrix() {
         my $m := self.factory.matrix();
-        Assert::true(pir::does($m, "numericmatrix"), "Does not do numericmatrix");
+        Assert::is_true(pir::does($m, "numericmatrix"), "Does not do numericmatrix");
     }
 
     # Test that all core matrix types have some common methods

@@ -15,13 +15,13 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
 
     method test_OP_does_NOT() {
         my $m := self.factory.matrix();
-        Assert::false(pir::does($m, "gobbledegak"), "Does gobbledegak");
+        Assert::is_false(pir::does($m, "gobbledegak"), "Does gobbledegak");
     }
 
     # Test that a matrix does matrix
     method test_OP_does_Matrix() {
         my $m := self.factory.matrix();
-        Assert::true(pir::does($m, "matrix"), "Does not do matrix");
+        Assert::is_true(pir::does($m, "matrix"), "Does not do matrix");
     }
 
     # Test that we can get_pmc_keyed on a matrix
