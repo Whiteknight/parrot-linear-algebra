@@ -5,13 +5,13 @@ class Pla::NumericMatrixTest is Pla::MatrixTest {
 
     # Test that a numeric matrix does numericmatrix
     method test_OP_does_numericmatrix() {
-        my $m := self.factory.matrix();
+        my $m := $!context.factory.matrix();
         Assert::is_true(pir::does($m, "numericmatrix"), "Does not do numericmatrix");
     }
 
     # Test that all core matrix types have some common methods
     method test_MISC_have_NumericMatrix_role_methods() {
-        my $m := self.factory.matrix();
+        my $m := $!context.factory.matrix();
         # Core matrix types should all have these methods in common.
         # Individual types may have additional methods. The signatures for
         # these will change depending on the type, so we don't check those
@@ -24,7 +24,7 @@ class Pla::NumericMatrixTest is Pla::MatrixTest {
 
     method test_VTABLE_set_number_keyed() {
         Assert::throws_nothing({
-            my $m := self.factory.matrix();
+            my $m := $!context.factory.matrix();
             Q:PIR {
                 $P0 = find_lex "$m"
                 $P0[2;2] = 3.0
@@ -35,7 +35,7 @@ class Pla::NumericMatrixTest is Pla::MatrixTest {
     }
 
     method test_VTABLE_get_number_keyed() {
-        my $m := self.factory.matrix();
+        my $m := $!context.factory.matrix();
         Q:PIR {
             $P0 = find_lex "$m"
             $P0[2;2] = 3.0
@@ -72,7 +72,7 @@ class Pla::NumericMatrixTest is Pla::MatrixTest {
     }
 
     method test_VTABLE_get_integer_keyed() {
-        my $m := self.factory.matrix2x2(4.0, 2.0, 3.0, 1.0);
+        my $m := $!context.factory.matrix2x2(4.0, 2.0, 3.0, 1.0);
         Q:PIR {
             $P0 = find_lex "$m"
 
@@ -91,7 +91,7 @@ class Pla::NumericMatrixTest is Pla::MatrixTest {
     }
 
     method test_VTABLE_set_integer_keyed() {
-        my $m := self.factory.matrix();
+        my $m := $!context.factory.matrix();
         Q:PIR {
             $P0 = find_lex "$m"
             $P0[1;1] = 1
@@ -114,16 +114,16 @@ class Pla::NumericMatrixTest is Pla::MatrixTest {
     }
 
     method test_VTABLE_add_DEFAULT() {
-        my $m := self.factory.matrix2x2(1.0, 3.0, 2.0, 4.0);
-        my $n := self.factory.matrix2x2(3.5, 5.5, 4.5, 6.5);
+        my $m := $!context.factory.matrix2x2(1.0, 3.0, 2.0, 4.0);
+        my $n := $!context.factory.matrix2x2(3.5, 5.5, 4.5, 6.5);
         my $o := 2.5;
         my $p := pir::add__PPP($m, $o);
         Assert::equal($p, $n, "Cannot add float");
     }
 
     method test_VTABLE_add_int() {
-        my $m := self.factory.matrix2x2(1.0, 3.0, 2.0, 4.0);
-        my $n := self.factory.matrix2x2(5.0, 7.0, 6.0, 8.0);
+        my $m := $!context.factory.matrix2x2(1.0, 3.0, 2.0, 4.0);
+        my $n := $!context.factory.matrix2x2(5.0, 7.0, 6.0, 8.0);
         Q:PIR {
             $P0 = find_lex "$m"
             $P1 = find_lex "$n"
@@ -133,8 +133,8 @@ class Pla::NumericMatrixTest is Pla::MatrixTest {
     }
 
     method test_VTABLE_add_float() {
-        my $m := self.factory.matrix2x2(1.0, 3.0, 2.0, 4.0);
-        my $n := self.factory.matrix2x2(3.5, 5.5, 4.5, 6.5);
+        my $m := $!context.factory.matrix2x2(1.0, 3.0, 2.0, 4.0);
+        my $n := $!context.factory.matrix2x2(3.5, 5.5, 4.5, 6.5);
         Q:PIR {
             $P0 = find_lex "$m"
             $P1 = find_lex "$n"
@@ -144,8 +144,8 @@ class Pla::NumericMatrixTest is Pla::MatrixTest {
     }
 
     method test_VTABLE_i_add_DEFAULT() {
-        my $m := self.factory.matrix2x2(1.0, 3.0, 2.0, 4.0);
-        my $n := self.factory.matrix2x2(3.5, 5.5, 4.5, 6.5);
+        my $m := $!context.factory.matrix2x2(1.0, 3.0, 2.0, 4.0);
+        my $n := $!context.factory.matrix2x2(3.5, 5.5, 4.5, 6.5);
         Q:PIR {
             $P0 = find_lex "$m"
             $P1 = find_lex "$n"
@@ -156,8 +156,8 @@ class Pla::NumericMatrixTest is Pla::MatrixTest {
     }
 
     method test_VTABLE_i_add_int() {
-        my $m := self.factory.matrix2x2(1.0, 3.0, 2.0, 4.0);
-        my $n := self.factory.matrix2x2(5.0, 7.0, 6.0, 8.0);
+        my $m := $!context.factory.matrix2x2(1.0, 3.0, 2.0, 4.0);
+        my $n := $!context.factory.matrix2x2(5.0, 7.0, 6.0, 8.0);
         Q:PIR {
             $P0 = find_lex "$m"
             $P1 = find_lex "$n"
@@ -167,8 +167,8 @@ class Pla::NumericMatrixTest is Pla::MatrixTest {
     }
 
     method test_VTABLE_i_add_float() {
-        my $m := self.factory.matrix2x2(1.0, 3.0, 2.0, 4.0);
-        my $n := self.factory.matrix2x2(5.5, 7.5, 6.5, 8.5);
+        my $m := $!context.factory.matrix2x2(1.0, 3.0, 2.0, 4.0);
+        my $n := $!context.factory.matrix2x2(5.5, 7.5, 6.5, 8.5);
         Q:PIR {
             $P0 = find_lex "$m"
             $P1 = find_lex "$n"
@@ -178,16 +178,16 @@ class Pla::NumericMatrixTest is Pla::MatrixTest {
     }
 
     method test_VTABLE_subtract_DEFAULT() {
-        my $m := self.factory.matrix2x2(1.0, 3.0, 2.0, 4.0);
-        my $n := self.factory.matrix2x2(-1.5, 0.5, -0.5, 1.5);
+        my $m := $!context.factory.matrix2x2(1.0, 3.0, 2.0, 4.0);
+        my $n := $!context.factory.matrix2x2(-1.5, 0.5, -0.5, 1.5);
         my $o := 2.5;
         my $p := pir::sub__PPP($m, $o);
         Assert::equal($p, $n, "Cannot subtract float");
     }
 
     method test_VTABLE_subtract_int() {
-        my $m := self.factory.matrix2x2(1.0, 3.0, 2.0, 4.0);
-        my $n := self.factory.matrix2x2(0.0, 2.0, 1.0, 3.0);
+        my $m := $!context.factory.matrix2x2(1.0, 3.0, 2.0, 4.0);
+        my $n := $!context.factory.matrix2x2(0.0, 2.0, 1.0, 3.0);
         Q:PIR {
             $P0 = find_lex "$m"
             $P1 = find_lex "$n"
@@ -197,8 +197,8 @@ class Pla::NumericMatrixTest is Pla::MatrixTest {
     }
 
     method test_VTABLE_subtract_float() {
-        my $m := self.factory.matrix2x2(1.0, 3.0, 2.0, 4.0);
-        my $n := self.factory.matrix2x2(0.5, 2.5, 1.5, 3.5);
+        my $m := $!context.factory.matrix2x2(1.0, 3.0, 2.0, 4.0);
+        my $n := $!context.factory.matrix2x2(0.5, 2.5, 1.5, 3.5);
         Q:PIR {
             $P0 = find_lex "$m"
             $P1 = find_lex "$n"
@@ -208,8 +208,8 @@ class Pla::NumericMatrixTest is Pla::MatrixTest {
     }
 
     method test_VTABLE_i_subtract_DEFAULT() {
-        my $m := self.factory.matrix2x2(1.0, 3.0, 2.0, 4.0);
-        my $n := self.factory.matrix2x2(-1.5, 0.5, -0.5, 1.5);
+        my $m := $!context.factory.matrix2x2(1.0, 3.0, 2.0, 4.0);
+        my $n := $!context.factory.matrix2x2(-1.5, 0.5, -0.5, 1.5);
         my $o := 2.5;
         Q:PIR {
             $P0 = find_lex "$m"
@@ -221,8 +221,8 @@ class Pla::NumericMatrixTest is Pla::MatrixTest {
     }
 
     method test_VTABLE_i_subtract_int() {
-        my $m := self.factory.matrix2x2(1.0, 3.0, 2.0, 4.0);
-        my $n := self.factory.matrix2x2(-3.0, -1.0, -2.0, 0.0);
+        my $m := $!context.factory.matrix2x2(1.0, 3.0, 2.0, 4.0);
+        my $n := $!context.factory.matrix2x2(-3.0, -1.0, -2.0, 0.0);
         Q:PIR {
             $P0 = find_lex "$m"
             $P1 = find_lex "$n"
@@ -232,8 +232,8 @@ class Pla::NumericMatrixTest is Pla::MatrixTest {
     }
 
     method test_VTABLE_i_subtract_float() {
-        my $m := self.factory.matrix2x2(1.0, 3.0, 2.0, 4.0);
-        my $n := self.factory.matrix2x2(-3.5, -1.5, -2.5, -0.5);
+        my $m := $!context.factory.matrix2x2(1.0, 3.0, 2.0, 4.0);
+        my $n := $!context.factory.matrix2x2(-3.5, -1.5, -2.5, -0.5);
         Q:PIR {
             $P0 = find_lex "$m"
             $P1 = find_lex "$n"
@@ -243,15 +243,15 @@ class Pla::NumericMatrixTest is Pla::MatrixTest {
     }
 
     method test_VTABLE_multiply_DEFAULT() {
-        my $m := self.factory.matrix2x2(1.0, 2.0, 3.0, 4.0);
-        my $n := self.factory.matrix2x2(2.5, 5.0, 7.5, 10.0);
+        my $m := $!context.factory.matrix2x2(1.0, 2.0, 3.0, 4.0);
+        my $n := $!context.factory.matrix2x2(2.5, 5.0, 7.5, 10.0);
         my $p := pir::mul__PPP($m, 2.5);
         Assert::equal($n, $p, "multiply matrix * float");
     }
 
     method test_VTABLE_multiply_int() {
-        my $m := self.factory.matrix2x2(1.0, 3.0, 2.0, 4.0);
-        my $n := self.factory.matrix2x2(5.0, 15.0, 10.0, 20.0);
+        my $m := $!context.factory.matrix2x2(1.0, 3.0, 2.0, 4.0);
+        my $n := $!context.factory.matrix2x2(5.0, 15.0, 10.0, 20.0);
         Q:PIR {
             $P0 = find_lex "$m"
             $P1 = find_lex "$n"
@@ -261,8 +261,8 @@ class Pla::NumericMatrixTest is Pla::MatrixTest {
     }
 
     method test_VTABLE_multiply_float() {
-        my $m := self.factory.matrix2x2(1.0, 3.0, 2.0, 4.0);
-        my $n := self.factory.matrix2x2(2.5, 7.5, 5.0, 10.0);
+        my $m := $!context.factory.matrix2x2(1.0, 3.0, 2.0, 4.0);
+        my $n := $!context.factory.matrix2x2(2.5, 7.5, 5.0, 10.0);
         Q:PIR {
             $P0 = find_lex "$m"
             $P1 = find_lex "$n"
@@ -272,10 +272,10 @@ class Pla::NumericMatrixTest is Pla::MatrixTest {
     }
 
     method test_VTABLE_i_multiply_DEFAULT() {
-        my $A := self.factory.matrix3x3(1.0, 2.0, 3.0,
+        my $A := $!context.factory.matrix3x3(1.0, 2.0, 3.0,
                                 4.0, 5.0, 6.0,
                                 7.0, 8.0, 9.0);
-        my $B := self.factory.matrix3x3(2.0, 4.0, 6.0,
+        my $B := $!context.factory.matrix3x3(2.0, 4.0, 6.0,
                                 8.0, 10.0, 12.0,
                                 14.0, 16.0, 18.0);
         Q:PIR {
@@ -288,10 +288,10 @@ class Pla::NumericMatrixTest is Pla::MatrixTest {
     }
 
     method test_VTABLE_i_multiply_int() {
-        my $A := self.factory.matrix3x3(1.0, 2.0, 3.0,
+        my $A := $!context.factory.matrix3x3(1.0, 2.0, 3.0,
                                 4.0, 5.0, 6.0,
                                 7.0, 8.0, 9.0);
-        my $B := self.factory.matrix3x3(2.0, 4.0, 6.0,
+        my $B := $!context.factory.matrix3x3(2.0, 4.0, 6.0,
                                 8.0, 10.0, 12.0,
                                 14.0, 16.0, 18.0);
         Q:PIR {
@@ -303,10 +303,10 @@ class Pla::NumericMatrixTest is Pla::MatrixTest {
     }
 
     method test_VTABLE_i_multiply_float() {
-        my $A := self.factory.matrix3x3(1.0, 2.0, 3.0,
+        my $A := $!context.factory.matrix3x3(1.0, 2.0, 3.0,
                                 4.0, 5.0, 6.0,
                                 7.0, 8.0, 9.0);
-        my $B := self.factory.matrix3x3(2.0, 4.0, 6.0,
+        my $B := $!context.factory.matrix3x3(2.0, 4.0, 6.0,
                                 8.0, 10.0, 12.0,
                                 14.0, 16.0, 18.0);
         Q:PIR {

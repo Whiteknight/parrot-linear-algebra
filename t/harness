@@ -1,29 +1,35 @@
 #! parrot-nqp
 
 INIT {
-    pir::load_bytecode('rosella/tap_harness.pbc');
+    pir::load_bytecode('rosella/harness.pbc');
     pir::load_bytecode('rosella/test.pbc');
     pir::load_bytecode('t/testlib/pla_test.pbc');
 }
 
+pir::say("A");
+my $testfactory := Rosella::build(Rosella::Harness::TestRun::Factory);
+pir::say("B");
 my $harness := Rosella::build(Rosella::Harness);
+pir::say("C");
+my $testview := $harness.default_view();
+
+$testfactory.add_test_dirs("NQP", "t", :recurse(0));
+my $sanityrun := $testfactory.create;
+$testview.add_run($sanityrun, 0);
+
+$testfactory.add_test_dirs("NQP", 't/pmc',
+    't/methods/nummatrix2d',
+    't/methods/complexmatrix2d',
+    't/methods/pmcmatrix2d',
+    :recurse(0)
+);
+my $testrun := $testfactory.create;
+$testview.add_run($testrun, 0);
 
 # First run the sanity tests. The sanity tests load the dynamic library, which
 # is required for everything else. Don't attempt to run any other tests if the
 # sanity test fails
-$harness.add_test_dirs("NQP", 't');
-$harness.run(:run_inline(1));
-if ($harness.run_was_success()) {
-    $harness.add_test_dirs("NQP",
-        't/pmc',
-        't/methods/nummatrix2d',
-        't/methods/complexmatrix2d',
-        't/methods/pmcmatrix2d',
-    );
-    $harness.add_test_dirs("PIR", 't/pir-subclass');
-    $harness.run(:run_inline(1));
+if ($harness.run($sanityrun, $testview)) {
+    $harness.run($testrun, $testview);
 }
-my $output := Rosella::build(Rosella::Harness::Output);
-$output.show_results_summary($harness);
-$output.show_error_detail($harness);
-$output.show_failure_detail($harness);
+$testview.show_results();

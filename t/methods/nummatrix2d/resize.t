@@ -1,18 +1,12 @@
-Rosella::Test::test(Test::NumMatrix2D::Resize);
+my $context := PLA::TestContext.new;
+$context.set_factory(Pla::MatrixFactory::ComplexMatrix2D);
+Rosella::Test::test(Test::NumMatrix2D::Resize, :context($context));
 
 class Test::NumMatrix2D::Resize is Pla::Methods::Resize {
-    has $!factory;
-
-    method factory() {
-        unless pir::defined__IP($!factory) {
-            $!factory := Pla::MatrixFactory::NumMatrix2D.new();
-        }
-        return $!factory;
-    }
 
     # resize method should never shrink a matrix
     method test_resize_to_smaller_numerical() {
-        my $m := self.factory.matrix3x3(11, 12, 13,
+        my $m := $!context.factory.matrix3x3(11, 12, 13,
                                       21, 22, 23,
                                       31, 32, 33);
 
@@ -24,10 +18,10 @@ class Test::NumMatrix2D::Resize is Pla::Methods::Resize {
     }
 
     method test_resize_to_bigger_numerical() {
-        my $m := self.factory.matrix2x2(11, 12,
+        my $m := $!context.factory.matrix2x2(11, 12,
                                         21, 22);
 
-        my $n := self.factory.matrix3x3(11, 12,  0,
+        my $n := $!context.factory.matrix3x3(11, 12,  0,
                                         21, 22,  0,
                                          0,  0,  0);
 
@@ -37,7 +31,7 @@ class Test::NumMatrix2D::Resize is Pla::Methods::Resize {
     }
 
     method test_resize_to_same_size_numerical() {
-        my $m := self.factory.matrix2x2(11, 12,
+        my $m := $!context.factory.matrix2x2(11, 12,
                                         21, 22);
 
         my $n := pir::clone($m);

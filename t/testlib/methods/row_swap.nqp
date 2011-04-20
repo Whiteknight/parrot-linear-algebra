@@ -1,16 +1,16 @@
 class Pla::Methods::RowSwap is Pla::MatrixTestBase {
     method test_row_swap() {
-        my $A := self.factory.matrix();
+        my $A := $!context.factory.matrix();
         $A.initialize_from_args(3, 3,
-                self.factory.fancyvalue(0), self.factory.fancyvalue(0), self.factory.fancyvalue(0),
-                self.factory.fancyvalue(1), self.factory.fancyvalue(1), self.factory.fancyvalue(1),
-                self.factory.fancyvalue(2), self.factory.fancyvalue(2), self.factory.fancyvalue(2));
+                $!context.factory.fancyvalue(0), self.factory.fancyvalue(0), self.factory.fancyvalue(0),
+                $!context.factory.fancyvalue(1), self.factory.fancyvalue(1), self.factory.fancyvalue(1),
+                $!context.factory.fancyvalue(2), self.factory.fancyvalue(2), self.factory.fancyvalue(2));
 
-        my $B := self.factory.matrix();
+        my $B := $!context.factory.matrix();
         $B.initialize_from_args(3, 3,
-                self.factory.fancyvalue(1), self.factory.fancyvalue(1), self.factory.fancyvalue(1),
-                self.factory.fancyvalue(2), self.factory.fancyvalue(2), self.factory.fancyvalue(2),
-                self.factory.fancyvalue(0), self.factory.fancyvalue(0), self.factory.fancyvalue(0));
+                $!context.factory.fancyvalue(1), self.factory.fancyvalue(1), self.factory.fancyvalue(1),
+                $!context.factory.fancyvalue(2), self.factory.fancyvalue(2), self.factory.fancyvalue(2),
+                $!context.factory.fancyvalue(0), self.factory.fancyvalue(0), self.factory.fancyvalue(0));
         $A.row_swap(0, 2);
         $A.row_swap(0, 1);
         Assert::equal($A, $B, "cannot row_swap");
@@ -19,7 +19,7 @@ class Pla::Methods::RowSwap is Pla::MatrixTestBase {
     method test_negative_index_A() {
         Assert::throws("Index A is out of bounds",
         {
-            my $A := self.factory.defaultmatrix3x3();
+            my $A := $!context.factory.defaultmatrix3x3();
             $A.row_swap(-1, 1);
         });
     }
@@ -27,7 +27,7 @@ class Pla::Methods::RowSwap is Pla::MatrixTestBase {
     method test_index_A_out_of_bounds() {
         Assert::throws("Index A is out of bounds",
         {
-            my $A := self.factory.defaultmatrix3x3();
+            my $A := $!context.factory.defaultmatrix3x3();
             $A.row_swap(7, 1);
         });
     }
@@ -35,7 +35,7 @@ class Pla::Methods::RowSwap is Pla::MatrixTestBase {
     method test_negative_index_B() {
         Assert::throws("Index B is out of bounds",
         {
-            my $A := self.factory.defaultmatrix3x3();
+            my $A := $!context.factory.defaultmatrix3x3();
             $A.row_swap(1, -1);
         });
     }
@@ -43,7 +43,7 @@ class Pla::Methods::RowSwap is Pla::MatrixTestBase {
     method test_index_B_out_of_bounds() {
         Assert::throws("Index B is out of bounds",
         {
-            my $A := self.factory.defaultmatrix3x3();
+            my $A := $!context.factory.defaultmatrix3x3();
             $A.row_swap(1, 7);
         });
     }

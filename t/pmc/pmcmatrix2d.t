@@ -1,19 +1,12 @@
-Rosella::Test::test(Test::PmcMatrix2D);
+my $context := PLA::TestContext.new;
+$context.set_factory(Pla::MatrixFactory::PMCMatrix2D);
+Rosella::Test::test(Test::PmcMatrix2D, :context($context));
 
 class Test::PmcMatrix2D is Pla::MatrixTest {
 
-has $!factory;
-
-method factory() {
-    unless pir::defined__IP($!factory) {
-        $!factory := Pla::MatrixFactory::PMCMatrix2D.new();
-    }
-    return $!factory;
-}
-
 method test_VTABLE_get_integer_keyed() {
-    my $factory := self.factory;
-    my $m := self.factory.matrix();
+    my $factory := $!context.factory;
+    my $m := $!context.factory.matrix();
     my $n := 42;
     my $o;
     Q:PIR {
@@ -28,7 +21,7 @@ method test_VTABLE_get_integer_keyed() {
 }
 
 method test_VTABLE_get_number_keyed() {
-    my $m := self.factory.matrix();
+    my $m := $!context.factory.matrix();
     my $n := 42.5;
     my $o;
     Q:PIR {
@@ -43,7 +36,7 @@ method test_VTABLE_get_number_keyed() {
 }
 
 method test_VTABLE_get_string_keyed() {
-    my $m := self.factory.matrix();
+    my $m := $!context.factory.matrix();
     my $n := "Hello World";
     my $o;
     Q:PIR {
@@ -58,7 +51,7 @@ method test_VTABLE_get_string_keyed() {
 }
 
 method test_VTABLE_set_integer_keyed() {
-    my $m := self.factory.matrix();
+    my $m := $!context.factory.matrix();
     my $n;
     Q:PIR {
         $P0 = find_lex "$m"
@@ -72,7 +65,7 @@ method test_VTABLE_set_integer_keyed() {
 }
 
 method test_VTABLE_set_number_keyed() {
-    my $m := self.factory.matrix();
+    my $m := $!context.factory.matrix();
     my $n;
     Q:PIR {
         $P0 = find_lex "$m"
@@ -86,7 +79,7 @@ method test_VTABLE_set_number_keyed() {
 }
 
 method test_VTABLE_set_string_keyed() {
-    my $m := self.factory.matrix();
+    my $m := $!context.factory.matrix();
     my $n;
     Q:PIR {
         $P0 = find_lex "$m"
@@ -100,7 +93,7 @@ method test_VTABLE_set_string_keyed() {
 }
 
 method test_VTABLE_get_string() {
-    my $m := self.factory.matrix();
+    my $m := $!context.factory.matrix();
     my $n;
     Q:PIR {
         $P0 = find_lex "$m"

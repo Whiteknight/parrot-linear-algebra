@@ -1,19 +1,12 @@
 Rosella::Test::test(Test::ComplexMatrix2D::RowCombine);
 
 class Test::ComplexMatrix2D::RowCombine is Pla::Methods::RowCombine {
-    has $!factory;
-    method factory() {
-        unless pir::defined__IP($!factory) {
-            $!factory := Pla::MatrixFactory::ComplexMatrix2D.new();
-        }
-        return $!factory;
-    }
 
     method test_row_combine_complex() {
-        my $A := self.factory.fancymatrix2x2();
+        my $A := $!context.factory.fancymatrix2x2();
         my $val1;
         my $val2;
-        my $factory := self.factory;
+        my $factory := $!context.factory;
         Q:PIR {
             .local pmc me
             me = find_lex "$factory"
@@ -32,18 +25,18 @@ class Test::ComplexMatrix2D::RowCombine is Pla::Methods::RowCombine {
             store_lex "$val2", $P5
         };
 
-        my $B := self.factory.matrix2x2($val1, $val2,
-                                self.factory.fancyvalue(2), self.factory.fancyvalue(3));
+        my $B := $!context.factory.matrix2x2($val1, $val2,
+                                $!context.factory.fancyvalue(2), $!context.factory.fancyvalue(3));
         $A.row_combine(1, 0, 1);
         Assert::equal($A, $B, "cannot row_combine");
     }
 
     method test_non_unity_gain_complex() {
-        my $A := self.factory.fancymatrix2x2();
-        my $B := self.factory.matrix2x2(self.factory.fancyvalue(0) + self.factory.fancyvalue(2) * self.factory.fancyvalue(0),
-                                self.factory.fancyvalue(1) + self.factory.fancyvalue(3)  * self.factory.fancyvalue(0),
-                                self.factory.fancyvalue(2), self.factory.fancyvalue(3));
-        $A.row_combine(1, 0, self.factory.fancyvalue(0));
+        my $A := $!context.factory.fancymatrix2x2();
+        my $B := $!context.factory.matrix2x2($!context.factory.fancyvalue(0) + $!context.factory.fancyvalue(2) * $!context.factory.fancyvalue(0),
+                                $!context.factory.fancyvalue(1) + $!context.factory.fancyvalue(3)  * $!context.factory.fancyvalue(0),
+                                $!context.factory.fancyvalue(2), $!context.factory.fancyvalue(3));
+        $A.row_combine(1, 0, $!context.factory.fancyvalue(0));
         Assert::equal($A, $B, "cannot row_combine");
     }
 }

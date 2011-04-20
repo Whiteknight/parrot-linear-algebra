@@ -2,7 +2,7 @@
 
 Rosella::Test::test(Test::Sanity);
 
-class Test::Sanity is Rosella::Test::Testcase {
+class Test::Sanity {
 
     method test_load_linalg_group() {
         my $pla := pir::loadlib__ps("./dynext/linalg_group");

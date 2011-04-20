@@ -1,16 +1,16 @@
 class Pla::Methods::RowScale is Pla::MatrixTestBase {
     method test_row_scale() {
-        my $A := self.factory.matrix();
+        my $A := $!context.factory.matrix();
         $A.initialize_from_args(3, 3,
-                self.factory.fancyvalue(0), self.factory.fancyvalue(0), self.factory.fancyvalue(0),
-                self.factory.fancyvalue(1), self.factory.fancyvalue(1), self.factory.fancyvalue(1),
-                self.factory.fancyvalue(2), self.factory.fancyvalue(2), self.factory.fancyvalue(2));
+                $!context.factory.fancyvalue(0), self.factory.fancyvalue(0), self.factory.fancyvalue(0),
+                $!context.factory.fancyvalue(1), self.factory.fancyvalue(1), self.factory.fancyvalue(1),
+                $!context.factory.fancyvalue(2), self.factory.fancyvalue(2), self.factory.fancyvalue(2));
 
-        my $B := self.factory.matrix();
+        my $B := $!context.factory.matrix();
         $B.initialize_from_args(3, 3,
-                self.factory.fancyvalue(0) * 2, self.factory.fancyvalue(0) * 2, self.factory.fancyvalue(0) * 2,
-                self.factory.fancyvalue(1) * 3, self.factory.fancyvalue(1) * 3, self.factory.fancyvalue(1) * 3,
-                self.factory.fancyvalue(2) * 4, self.factory.fancyvalue(2) * 4, self.factory.fancyvalue(2) * 4);
+                $!context.factory.fancyvalue(0) * 2, self.factory.fancyvalue(0) * 2, self.factory.fancyvalue(0) * 2,
+                $!context.factory.fancyvalue(1) * 3, self.factory.fancyvalue(1) * 3, self.factory.fancyvalue(1) * 3,
+                $!context.factory.fancyvalue(2) * 4, self.factory.fancyvalue(2) * 4, self.factory.fancyvalue(2) * 4);
         $A.row_scale(0, 2);
         $A.row_scale(1, 3);
         $A.row_scale(2, 4);
@@ -20,7 +20,7 @@ class Pla::Methods::RowScale is Pla::MatrixTestBase {
     method test_negative_row_index() {
         Assert::throws("index is negative",
         {
-            my $A := self.factory.defaultmatrix3x3();
+            my $A := $!context.factory.defaultmatrix3x3();
             $A.row_scale(-1, 1);
         });
     }
@@ -28,7 +28,7 @@ class Pla::Methods::RowScale is Pla::MatrixTestBase {
     method test_row_index_out_of_bounds() {
         Assert::throws("index is negative",
         {
-            my $A := self.factory.defaultmatrix3x3();
+            my $A := $!context.factory.defaultmatrix3x3();
             $A.row_scale(7, 1);
         });
     }

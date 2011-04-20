@@ -1,16 +1,11 @@
-Rosella::Test::test(Test::NumMatrix2D::ItemAt);
+my $context := PLA::TestContext.new;
+$context.set_factory(Pla::MatrixFactory::ComplexMatrix2D);
+Rosella::Test::test(Test::NumMatrix2D::ItemAt, :context($context));
 
 class Test::NumMatrix2D::ItemAt is Pla::Methods::ItemAt {
-    has $!factory;
-    method factory() {
-        unless pir::defined__IP($!factory) {
-            $!factory := Pla::MatrixFactory::NumMatrix2D.new();
-        }
-        return $!factory;
-    }
 
     method test_get_item_at_numerical() {
-        my $m := self.factory.matrix2x2(11, 12,
+        my $m := $!context.factory.matrix2x2(11, 12,
                                         21, 22);
 
         my $expected := 22;
@@ -19,7 +14,7 @@ class Test::NumMatrix2D::ItemAt is Pla::Methods::ItemAt {
     }
 
     method test_get_item_at_out_of_bounds_numerical() {
-        my $m := self.factory.matrix2x2(11, 12,
+        my $m := $!context.factory.matrix2x2(11, 12,
                                         21, 22);
 
         Assert::throws("can item_at out of bounds",
@@ -29,7 +24,7 @@ class Test::NumMatrix2D::ItemAt is Pla::Methods::ItemAt {
     }
 
     method test_set_item_at_numerical() {
-        my $m := self.factory.matrix2x2(11, 12,
+        my $m := $!context.factory.matrix2x2(11, 12,
                                         21, 22);
 
         $m.item_at(0, 0, 99);
@@ -38,7 +33,7 @@ class Test::NumMatrix2D::ItemAt is Pla::Methods::ItemAt {
     }
 
     method test_set_item_at_out_of_bounds_numerical() {
-        my $m := self.factory.matrix2x2(11, 12,
+        my $m := $!context.factory.matrix2x2(11, 12,
                                         21, 22);
 
         Assert::throws("can item_at out of bounds",
@@ -48,7 +43,7 @@ class Test::NumMatrix2D::ItemAt is Pla::Methods::ItemAt {
     }
 
     method test_set_item_at_negative_index_numerical() {
-        my $m := self.factory.matrix2x2(11, 12,
+        my $m := $!context.factory.matrix2x2(11, 12,
                                         21, 22);
 
         Assert::throws("can item_at out of bounds (negative index)",

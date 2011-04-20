@@ -252,11 +252,12 @@ sub setup_dynpmc(%PLA) {
 }
 
 sub setup_testlib(%PLA) {
+    # loader
     my @testlib := <
         matrixtestbase
         matrixtest
         numericmatrixtest
-        loader
+        testcontext
         matrixtestfactory
         methods/convert_to_complex_matrix
         methods/convert_to_number_matrix

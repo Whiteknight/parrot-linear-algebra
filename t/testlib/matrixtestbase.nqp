@@ -5,19 +5,14 @@
 # testing a matrix. Actual test cases should not inherit from this class
 # directly, but instead inherit from a specialized sub-type depending on the
 # PMC being tested
-class Pla::MatrixTestBase is Rosella::Test::Testcase {
-
-    method factory() {
-        self.RequireOverride("factory");
-    }
-
-    method RequireOverride($m) {
+module Assert {
+    our sub RequireOverride($m) {
         Exception::MethodNotFound.new(
             :message("Must subclass " ~ $m ~ " in your test class")
         ).throw;
     }
 
-    method AssertSize($m, $rows, $cols) {
+    our sub Size($m, $rows, $cols) {
         my $real_rows := pir::getattribute__PPS($m, "rows");
         my $real_cols := pir::getattribute__PPS($m, "cols");
         Assert::equal($real_rows, $rows,
@@ -26,9 +21,9 @@ class Pla::MatrixTestBase is Rosella::Test::Testcase {
             "matrix does not have correct number of columns. $cols expected, $real_cols actual");
     }
 
-    method AssertNullValueAt($m, $row, $col) {
-        my $nullval := self.factory.nullvalue;
-        my $val := $m{self.factory.key($row, $col)};
+    our sub NullValueAt($factory, $m, $row, $col) {
+        my $nullval := $factory.nullvalue;
+        my $val := $m{$factory.key($row, $col)};
         if pir::isnull__IP($nullval) == 1 {
             Assert::instance_of($val, "Undef",
                 "Expected null value at position ($row,$col). Had $val.");
@@ -38,8 +33,8 @@ class Pla::MatrixTestBase is Rosella::Test::Testcase {
         }
     }
 
-    method AssertValueAtIs($m, $row, $col, $expected) {
-        my $val := $m{self.factory.key($row, $col)};
+    our sub ValueAtIs($factory, $m, $row, $col, $expected) {
+        my $val := $m{$factory.key($row, $col)};
         if pir::isnull__IP($expected) {
             Assert::null($val, "Value not null at ($row,$col). Have $val");
         } else {
@@ -48,7 +43,7 @@ class Pla::MatrixTestBase is Rosella::Test::Testcase {
         }
     }
 
-    method AssertHasMethod($x, $meth) {
+    our sub HasMethod($x, $meth) {
         my $found;
         Q:PIR {
             $P0 = find_lex "$x"
@@ -60,5 +55,9 @@ class Pla::MatrixTestBase is Rosella::Test::Testcase {
         my $type := pir::typeof__SP($x);
         Assert::not_null($found, $type ~ " does not have method " ~ $meth);
     }
+}
+
+class Pla::MatrixTestBase {
+
 }
 
