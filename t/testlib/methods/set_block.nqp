@@ -3,7 +3,7 @@ class Pla::Methods::SetBlock is Pla::MatrixTestBase {
     method test_set_block() {
         my $m := $!context.factory.fancymatrix2x2();
         my $n := $!context.factory.matrix();
-        $n{$!context.factory.key(2,2)} := self.factory.nullvalue;
+        $n{$!context.factory.key(2,2)} := $!context.factory.nullvalue;
         $n.set_block(1, 1, $m);
 
         # First, prove that we haven't resized it
@@ -17,10 +17,10 @@ class Pla::Methods::SetBlock is Pla::MatrixTestBase {
         Assert::NullValueAt($n, 0, 2);
 
         # Third, prove that the block was set properly
-        Assert::equal($n{$!context.factory.key(1,1)}, $m{self.factory.key(0,0)}, "value was set in wrong place");
-        Assert::equal($n{$!context.factory.key(1,2)}, $m{self.factory.key(0,1)}, "value was set in wrong place");
-        Assert::equal($n{$!context.factory.key(2,1)}, $m{self.factory.key(1,0)}, "value was set in wrong place");
-        Assert::equal($n{$!context.factory.key(2,2)}, $m{self.factory.key(1,1)}, "value was set in wrong place");
+        Assert::equal($n{$!context.factory.key(1,1)}, $m{$!context.factory.key(0,0)}, "value was set in wrong place");
+        Assert::equal($n{$!context.factory.key(1,2)}, $m{$!context.factory.key(0,1)}, "value was set in wrong place");
+        Assert::equal($n{$!context.factory.key(2,1)}, $m{$!context.factory.key(1,0)}, "value was set in wrong place");
+        Assert::equal($n{$!context.factory.key(2,2)}, $m{$!context.factory.key(1,1)}, "value was set in wrong place");
     }
 
     # Test set_block with a block of zero size
@@ -58,7 +58,7 @@ class Pla::Methods::SetBlock is Pla::MatrixTestBase {
     method test_resize_with_block_outside_bounds() {
         my $m := $!context.factory.defaultmatrix2x2();
         my $o := $!context.factory.matrix();
-        $o{$!context.factory.key(0, 0)} := self.factory.fancyvalue(2);
+        $o{$!context.factory.key(0, 0)} := $!context.factory.fancyvalue(2);
         $m.set_block(2, 2, $o);
         Assert::Size($m, 3, 3);
 
@@ -80,9 +80,9 @@ class Pla::Methods::SetBlock is Pla::MatrixTestBase {
     method test_block_larger_than_matrix() {
         my $m := $!context.factory.defaultmatrix2x2();
         my $o := $!context.factory.defaultmatrix2x2();
-        my $n := $!context.factory.matrix3x3(self.factory.defaultvalue, self.factory.defaultvalue, self.factory.nullvalue,
-                                $!context.factory.defaultvalue, self.factory.defaultvalue, self.factory.defaultvalue,
-                                $!context.factory.nullvalue,    self.factory.defaultvalue, self.factory.defaultvalue);
+        my $n := $!context.factory.matrix3x3($!context.factory.defaultvalue, $!context.factory.defaultvalue, $!context.factory.nullvalue,
+                                $!context.factory.defaultvalue, $!context.factory.defaultvalue, $!context.factory.defaultvalue,
+                                $!context.factory.nullvalue,    $!context.factory.defaultvalue, $!context.factory.defaultvalue);
         $m.set_block(1, 1, $o);
         Assert::Size($m, 3, 3);
         Assert::equal($m, $n, "set block with a large block does not resize the matrix");
@@ -116,10 +116,10 @@ class Pla::Methods::SetBlock is Pla::MatrixTestBase {
         Assert::NullValueAt($n, 0, 2);
 
         # Third, prove that the block was set properly
-        Assert::equal($n{$!context.factory.key(1,1)}, $m{self.factory.key(0,0)}, "value was set in wrong place 6");
-        Assert::equal($n{$!context.factory.key(1,2)}, $m{self.factory.key(0,1)}, "value was set in wrong place 7");
-        Assert::equal($n{$!context.factory.key(2,1)}, $m{self.factory.key(1,0)}, "value was set in wrong place 8");
-        Assert::equal($n{$!context.factory.key(2,2)}, $m{self.factory.key(1,1)}, "value was set in wrong place 9");
+        Assert::equal($n{$!context.factory.key(1,1)}, $m{$!context.factory.key(0,0)}, "value was set in wrong place 6");
+        Assert::equal($n{$!context.factory.key(1,2)}, $m{$!context.factory.key(0,1)}, "value was set in wrong place 7");
+        Assert::equal($n{$!context.factory.key(2,1)}, $m{$!context.factory.key(1,0)}, "value was set in wrong place 8");
+        Assert::equal($n{$!context.factory.key(2,2)}, $m{$!context.factory.key(1,1)}, "value was set in wrong place 9");
     }
 
     # Test that calling set_block with a scalar throws an exception

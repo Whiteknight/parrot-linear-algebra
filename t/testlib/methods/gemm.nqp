@@ -82,44 +82,44 @@ class Pla::Methods::Gemm is Pla::MatrixTestBase {
 
     method test_autoconvert_A_NumMatrix2D() {
         my $factory := Pla::MatrixFactory::NumMatrix2D.new();
-        self.__test_gemm_autoconvert($factory, $!context.factory, self.factory);
+        self.__test_gemm_autoconvert($factory, $!context.factory, $!context.factory);
     }
 
     method test_autoconvert_B_NumMatrix2D() {
         my $factory := Pla::MatrixFactory::NumMatrix2D.new();
-        self.__test_gemm_autoconvert($!context.factory, $factory, self.factory);
+        self.__test_gemm_autoconvert($!context.factory, $factory, $!context.factory);
     }
 
     method test_autoconvert_C_NumMatrix2D() {
         my $factory := Pla::MatrixFactory::NumMatrix2D.new();
-        self.__test_gemm_autoconvert($!context.factory, self.factory, $factory);
+        self.__test_gemm_autoconvert($!context.factory, $!context.factory, $factory);
     }
 
     method test_autoconvert_A_ComplexMatrix2D() {
         my $factory := Pla::MatrixFactory::ComplexMatrix2D.new();
-        self.__test_gemm_autoconvert($factory, $!context.factory, self.factory);
+        self.__test_gemm_autoconvert($factory, $!context.factory, $!context.factory);
     }
 
     method test_autoconvert_B_ComplexMatrix2D() {
         my $factory := Pla::MatrixFactory::ComplexMatrix2D.new();
-        self.__test_gemm_autoconvert($!context.factory, $factory, self.factory);
+        self.__test_gemm_autoconvert($!context.factory, $factory, $!context.factory);
     }
 
     method test_autoconvert_C_ComplexMatrix2D() {
         my $factory := Pla::MatrixFactory::ComplexMatrix2D.new();
-        self.__test_gemm_autoconvert($!context.factory, self.factory, $factory);
+        self.__test_gemm_autoconvert($!context.factory, $!context.factory, $factory);
     }
 
     method test_autoconvert_A_PMCMatrix2D() {
         my $factory := Pla::MatrixFactory::PMCMatrix2D.new();
-        self.__test_gemm_autoconvert($factory, $!context.factory, self.factory);
+        self.__test_gemm_autoconvert($factory, $!context.factory, $!context.factory);
     }
     method test_autoconvert_B_PMCMatrix2D() {
         my $factory := Pla::MatrixFactory::PMCMatrix2D.new();
-        self.__test_gemm_autoconvert($!context.factory, $factory, self.factory);
+        self.__test_gemm_autoconvert($!context.factory, $factory, $!context.factory);
     }
     method test_autoconvert_C_PMCMatrix2D() {
         my $factory := Pla::MatrixFactory::PMCMatrix2D.new();
-        self.__test_gemm_autoconvert($!context.factory, self.factory, $factory);
+        self.__test_gemm_autoconvert($!context.factory, $!context.factory, $factory);
     }
 }

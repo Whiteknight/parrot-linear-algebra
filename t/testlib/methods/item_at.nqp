@@ -50,7 +50,7 @@ class Pla::Methods::ItemAt is Pla::MatrixTestBase {
     method test_set_optional_third_parameter() {
         my $m := $!context.factory.fancymatrix2x2();
         my $n := $!context.factory.fancymatrix2x2();
-        $n{$!context.factory.key(1, 1)} := self.factory.fancyvalue(0);
+        $n{$!context.factory.key(1, 1)} := $!context.factory.fancyvalue(0);
         $m.item_at(1, 1, $!context.factory.fancyvalue(0));
         Assert::equal($m, $n, "item_at(VALUE) does not work like keyed access");
     }

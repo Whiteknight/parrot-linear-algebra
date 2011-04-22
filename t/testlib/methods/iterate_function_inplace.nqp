@@ -4,10 +4,10 @@ class Pla::Methods::IterateFunctionInplace is Pla::MatrixTestBase {
     method test_iterate_function_inplace() {
         my $m := $!context.factory.defaultmatrix2x2();
         my $n := $!context.factory.matrix();
-        $n{$!context.factory.key(0,0)} := self.factory.fancyvalue(0);
-        $n{$!context.factory.key(0,1)} := self.factory.fancyvalue(1);
-        $n{$!context.factory.key(1,0)} := self.factory.fancyvalue(2);
-        $n{$!context.factory.key(1,1)} := self.factory.fancyvalue(3);
+        $n{$!context.factory.key(0,0)} := $!context.factory.fancyvalue(0);
+        $n{$!context.factory.key(0,1)} := $!context.factory.fancyvalue(1);
+        $n{$!context.factory.key(1,0)} := $!context.factory.fancyvalue(2);
+        $n{$!context.factory.key(1,1)} := $!context.factory.fancyvalue(3);
         my $count := -1;
         my $sub := pir::newclosure__PP(sub ($matrix, $value, $x, $y) {
             $count++;
@@ -56,8 +56,8 @@ class Pla::Methods::IterateFunctionInplace is Pla::MatrixTestBase {
     method test_handles_lazy_transpose() {
         my $m := $!context.factory.fancymatrix2x2();
         $m.transpose();
-        my $n := $!context.factory.matrix2x2(self.factory.fancyvalue(0) * 2, self.factory.fancyvalue(2) * 2,
-                                $!context.factory.fancyvalue(1) * 2, self.factory.fancyvalue(3) * 2);
+        my $n := $!context.factory.matrix2x2($!context.factory.fancyvalue(0) * 2, $!context.factory.fancyvalue(2) * 2,
+                                $!context.factory.fancyvalue(1) * 2, $!context.factory.fancyvalue(3) * 2);
         my $sub := sub ($matrix, $value, $x, $y) {
             return ($value * 2);
         };
