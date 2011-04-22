@@ -26,7 +26,7 @@ $testview.add_run($testrun, 0);
 # First run the sanity tests. The sanity tests load the dynamic library, which
 # is required for everything else. Don't attempt to run any other tests if the
 # sanity test fails
-if ($harness.run($sanityrun, $testview), :run_inline(1)) {
-    $harness.run($testrun, $testview, :run_inline(1));
+if ($harness.run($sanityrun, $testview, :run_inline(1), :debug(1))) {
+    $harness.run($testrun, $testview, :run_inline(1), :debug(1));
 }
 $testview.show_results();
