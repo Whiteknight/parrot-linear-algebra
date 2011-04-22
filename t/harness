@@ -6,11 +6,8 @@ INIT {
     pir::load_bytecode('t/testlib/pla_test.pbc');
 }
 
-pir::say("A");
 my $testfactory := Rosella::build(Rosella::Harness::TestRun::Factory);
-pir::say("B");
 my $harness := Rosella::build(Rosella::Harness);
-pir::say("C");
 my $testview := $harness.default_view();
 
 $testfactory.add_test_dirs("NQP", "t", :recurse(0));
