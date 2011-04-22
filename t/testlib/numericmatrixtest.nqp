@@ -16,10 +16,10 @@ class Pla::NumericMatrixTest is Pla::MatrixTest {
         # Individual types may have additional methods. The signatures for
         # these will change depending on the type, so we don't check those
         # here.
-        self.AssertHasMethod($m, "gemm");
-        self.AssertHasMethod($m, "row_combine");
-        self.AssertHasMethod($m, "row_scale");
-        self.AssertHasMethod($m, "row_swap");
+        Assert::HasMethod($m, "gemm");
+        Assert::HasMethod($m, "row_combine");
+        Assert::HasMethod($m, "row_scale");
+        Assert::HasMethod($m, "row_swap");
     }
 
     method test_VTABLE_set_number_keyed() {

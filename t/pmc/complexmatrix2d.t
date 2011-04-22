@@ -7,15 +7,15 @@ class Test::ComplexMatrix2D is Pla::NumericMatrixTest;
 sub equal($a, $b, $r) { Assert::equal($a, $b, $r); }
 
 method test_VTABLE_get_number_keyed() {
-    $!context.todo("Tests Needed!");
+    $!status.todo("Tests Needed!");
 }
 
 method test_VTABLE_get_integer_keyed() {
-    $!context.todo("Tests Needed!");
+    $!status.todo("Tests Needed!");
 }
 
 method test_VTABLE_get_string_keyed() {
-    $!context.todo("Tests Needed!");
+    $!status.todo("Tests Needed!");
 }
 
 method test_VTABLE_set_pmc_keyed_STRING() {
@@ -72,7 +72,7 @@ method test_VTABLE_set_string_keyed() {
 }
 
 method test_VTABLE_get_string() {
-    $!context.todo("Tests Needed!");
+    $!status.todo("Tests Needed!");
 }
 
 method test_METHOD_conjugate() {

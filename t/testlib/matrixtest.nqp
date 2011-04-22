@@ -82,13 +82,13 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
     method test_VTABLE_get_attr_str() {
         my $m := $!context.factory.matrix();
         $m{$!context.factory.key(5,7)} := $!context.factory.defaultvalue;
-        self.AssertSize($m, 6, 8);
+        Assert::Size($m, 6, 8);
     }
 
     # Test that we can get attributes about an empty matrix
     method test_VTABLE_get_attr_str_EMPTY() {
         my $m := $!context.factory.matrix();
-        self.AssertSize($m, 0, 0);
+        Assert::Size($m, 0, 0);
     }
 
     # Assert that we can freeze a matrix to a string
@@ -251,13 +251,13 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
     # Test to show that autoresizing behavior of the type is consistent.
     method test_MISC_autoresizing() {
         my $m := $!context.factory.matrix();
-        self.AssertSize($m, 0, 0);
+        Assert::Size($m, 0, 0);
 
         $m{$!context.factory.key(3, 4)} := $!context.factory.defaultvalue;
-        self.AssertSize($m, 4, 5);
+        Assert::Size($m, 4, 5);
 
         $m{$!context.factory.key(7, 11)} := $!context.factory.defaultvalue;
-        self.AssertSize($m, 8, 12);
+        Assert::Size($m, 8, 12);
     }
 
     # Test how we access values if we use one key instead of two
@@ -278,20 +278,20 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
         # Individual types may have additional methods. The signatures for
         # these will change depending on the type, so we don't check those
         # here.
-        self.AssertHasMethod($m, "resize");
-        self.AssertHasMethod($m, "fill");
-        self.AssertHasMethod($m, "transpose");
-        self.AssertHasMethod($m, "mem_transpose");
-        self.AssertHasMethod($m, "iterate_function_inplace");
-        self.AssertHasMethod($m, "iterate_function_external");
-        self.AssertHasMethod($m, "initialize_from_array");
-        self.AssertHasMethod($m, "initialize_from_args");
-        self.AssertHasMethod($m, "get_block");
-        self.AssertHasMethod($m, "set_block");
-        self.AssertHasMethod($m, "item_at");
-        self.AssertHasMethod($m, "convert_to_number_matrix");
-        self.AssertHasMethod($m, "convert_to_complex_matrix");
-        self.AssertHasMethod($m, "convert_to_pmc_matrix");
+        Assert::HasMethod($m, "resize");
+        Assert::HasMethod($m, "fill");
+        Assert::HasMethod($m, "transpose");
+        Assert::HasMethod($m, "mem_transpose");
+        Assert::HasMethod($m, "iterate_function_inplace");
+        Assert::HasMethod($m, "iterate_function_external");
+        Assert::HasMethod($m, "initialize_from_array");
+        Assert::HasMethod($m, "initialize_from_args");
+        Assert::HasMethod($m, "get_block");
+        Assert::HasMethod($m, "set_block");
+        Assert::HasMethod($m, "item_at");
+        Assert::HasMethod($m, "convert_to_number_matrix");
+        Assert::HasMethod($m, "convert_to_complex_matrix");
+        Assert::HasMethod($m, "convert_to_pmc_matrix");
     }
 
 

@@ -1,4 +1,4 @@
-my $context := PLA::TestContext.new;
+my $context := Rosella::build(PLA::TestContext);
 $context.set_factory(Pla::MatrixFactory::NumMatrix2D);
 $context.set_data("factory_complex", Pla::MatrixFactory::ComplexMatrix2D.new);
 $context.set_data("factory_pmc", Pla::MatrixFactory::PMCMatrix2D.new);

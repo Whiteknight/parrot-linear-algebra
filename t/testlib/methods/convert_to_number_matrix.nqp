@@ -3,7 +3,7 @@ class Pla::Methods::ConvertToNumberMatrix is Pla::MatrixTestBase {
         my $A := $!context.factory.defaultmatrix2x2();
         my $B := $A.convert_to_number_matrix();
         Assert::equal(pir::typeof__SP($B), "NumMatrix2D", "cannot convert");
-        self.AssertSize($B, 2, 2);
+        Assert::Size($B, 2, 2);
     }
 
 }

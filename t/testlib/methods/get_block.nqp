@@ -3,16 +3,16 @@ class Pla::Methods::GetBlock is Pla::MatrixTestBase {
     method test_get_block() {
         my $m := $!context.factory.fancymatrix2x2();
         my $n := $m.get_block(0, 0, 1, 1);
-        self.AssertSize($n, 1, 1);
+        Assert::Size($n, 1, 1);
         Assert::equal($n{$!context.factory.key(0, 0)}, $m{self.factory.key(0, 0)}, "Cannot get_block with correct values");
 
         $n := $m.get_block(0, 0, 1, 2);
-        self.AssertSize($n, 1, 2);
+        Assert::Size($n, 1, 2);
         Assert::equal($n{$!context.factory.key(0, 0)}, $m{self.factory.key(0, 0)}, "Cannot get_block with correct values");
         Assert::equal($n{$!context.factory.key(0, 1)}, $m{self.factory.key(0, 1)}, "Cannot get_block with correct values");
 
         $n := $m.get_block(0, 1, 2, 1);
-        self.AssertSize($n, 2, 1);
+        Assert::Size($n, 2, 1);
         Assert::equal($n{$!context.factory.key(0, 0)}, $m{self.factory.key(0, 1)}, "Cannot get_block with correct values");
         Assert::equal($n{$!context.factory.key(1, 0)}, $m{self.factory.key(1, 1)}, "Cannot get_block with correct values");
     }
@@ -50,7 +50,7 @@ class Pla::Methods::GetBlock is Pla::MatrixTestBase {
     method test_request_zero_size_gets_zero_size() {
         my $m := $!context.factory.defaultmatrix2x2();
         my $n := $m.get_block(0, 0, 0, 0);
-        self.AssertSize($n, 0, 0);
+        Assert::Size($n, 0, 0);
     }
 
     # Test that get_block(-1,-1,0,0) throws the proper exception
