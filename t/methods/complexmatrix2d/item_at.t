@@ -1,4 +1,6 @@
-Rosella::Test::test(Test::ComplexMatrix2D::ItemAt);
+my $context := PLA::TestContext.new;
+$context.set_factory(Pla::MatrixFactory::ComplexMatrix2D);
+Rosella::Test::test(Test::ComplexMatrix2D::ItemAt, :context($context));
 
 class Test::ComplexMatrix2D::ItemAt is Pla::Methods::ItemAt {
 

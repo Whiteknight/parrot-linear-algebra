@@ -1,6 +1,6 @@
 my $context := PLA::TestContext.new;
 $context.set_factory(Pla::MatrixFactory::ComplexMatrix2D);
-Rosella::Test::test(Test::ComplexMatrix2D::GetBlock, context=>$context);
+Rosella::Test::test(Test::ComplexMatrix2D::GetBlock, :context($context));
 
 class Test::ComplexMatrix2D::GetBlock is Pla::Methods::GetBlock {
 

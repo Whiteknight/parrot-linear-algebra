@@ -1,4 +1,6 @@
-Rosella::Test::test(Test::ComplexMatrix2D::Transpose);
+my $context := PLA::TestContext.new;
+$context.set_factory(Pla::MatrixFactory::ComplexMatrix2D);
+Rosella::Test::test(Test::ComplexMatrix2D::Transpose, :context($context));
 
 class Test::ComplexMatrix2D::Transpose is Pla::Methods::Transpose {
     method test_mem_transpose_complex() {
