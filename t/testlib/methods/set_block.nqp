@@ -10,11 +10,11 @@ class Pla::Methods::SetBlock is Pla::MatrixTestBase {
         Assert::Size($n, 3, 3);
 
         # Second, let's prove that nothing was set where it doesn't belong.
-        Assert::NullValueAt($n, 0, 0);
-        Assert::NullValueAt($n, 1, 0);
-        Assert::NullValueAt($n, 2, 0);
-        Assert::NullValueAt($n, 0, 1);
-        Assert::NullValueAt($n, 0, 2);
+        Assert::NullValueAt($!context.factory, $n, 0, 0);
+        Assert::NullValueAt($!context.factory, $n, 1, 0);
+        Assert::NullValueAt($!context.factory, $n, 2, 0);
+        Assert::NullValueAt($!context.factory, $n, 0, 1);
+        Assert::NullValueAt($!context.factory, $n, 0, 2);
 
         # Third, prove that the block was set properly
         Assert::equal($n{$!context.factory.key(1,1)}, $m{$!context.factory.key(0,0)}, "value was set in wrong place");
@@ -42,15 +42,15 @@ class Pla::Methods::SetBlock is Pla::MatrixTestBase {
         my $o := $!context.factory.matrix();
         $m.set_block(3, 3, $o);
         Assert::Size($m, 3, 3);
-        Assert::NullValueAt($m, 2, 0);
-        Assert::NullValueAt($m, 2, 1);
-        Assert::NullValueAt($m, 2, 2);
-        Assert::NullValueAt($m, 1, 2);
+        Assert::NullValueAt($!context.factory, $m, 2, 0);
+        Assert::NullValueAt($!context.factory, $m, 2, 1);
+        Assert::NullValueAt($!context.factory, $m, 2, 2);
+        Assert::NullValueAt($!context.factory, $m, 1, 2);
 
-        Assert::ValueAtIs($m, 0, 0, $!context.factory.defaultvalue);
-        Assert::ValueAtIs($m, 0, 1, $!context.factory.defaultvalue);
-        Assert::ValueAtIs($m, 1, 0, $!context.factory.defaultvalue);
-        Assert::ValueAtIs($m, 1, 1, $!context.factory.defaultvalue);
+        Assert::ValueAtIs($!context.factory, $m, 0, 0, $!context.factory.defaultvalue);
+        Assert::ValueAtIs($!context.factory, $m, 0, 1, $!context.factory.defaultvalue);
+        Assert::ValueAtIs($!context.factory, $m, 1, 0, $!context.factory.defaultvalue);
+        Assert::ValueAtIs($!context.factory, $m, 1, 1, $!context.factory.defaultvalue);
     }
 
     # Test that set_block can resize the matrix if the specified coordinates
@@ -62,17 +62,17 @@ class Pla::Methods::SetBlock is Pla::MatrixTestBase {
         $m.set_block(2, 2, $o);
         Assert::Size($m, 3, 3);
 
-        Assert::ValueAtIs($m, 0, 0, $!context.factory.defaultvalue);
-        Assert::ValueAtIs($m, 0, 1, $!context.factory.defaultvalue);
-        Assert::ValueAtIs($m, 1, 0, $!context.factory.defaultvalue);
-        Assert::ValueAtIs($m, 1, 1, $!context.factory.defaultvalue);
+        Assert::ValueAtIs($!context.factory, $m, 0, 0, $!context.factory.defaultvalue);
+        Assert::ValueAtIs($!context.factory, $m, 0, 1, $!context.factory.defaultvalue);
+        Assert::ValueAtIs($!context.factory, $m, 1, 0, $!context.factory.defaultvalue);
+        Assert::ValueAtIs($!context.factory, $m, 1, 1, $!context.factory.defaultvalue);
 
-        Assert::NullValueAt($m, 2, 0);
-        Assert::NullValueAt($m, 2, 1);
-        Assert::NullValueAt($m, 0, 2);
-        Assert::NullValueAt($m, 1, 2);
+        Assert::NullValueAt($!context.factory, $m, 2, 0);
+        Assert::NullValueAt($!context.factory, $m, 2, 1);
+        Assert::NullValueAt($!context.factory, $m, 0, 2);
+        Assert::NullValueAt($!context.factory, $m, 1, 2);
 
-        Assert::ValueAtIs($m, 2, 2, $!context.factory.fancyvalue(2));
+        Assert::ValueAtIs($!context.factory, $m, 2, 2, $!context.factory.fancyvalue(2));
     }
 
     # Test that set_block can resize the matrix if the specified coordinates
@@ -109,11 +109,11 @@ class Pla::Methods::SetBlock is Pla::MatrixTestBase {
         Assert::Size($n, 3, 3);
 
         # Second, let's prove that nothing was set where it doesn't belong.
-        Assert::NullValueAt($n, 0, 0);
-        Assert::NullValueAt($n, 1, 0);
-        Assert::NullValueAt($n, 2, 0);
-        Assert::NullValueAt($n, 0, 1);
-        Assert::NullValueAt($n, 0, 2);
+        Assert::NullValueAt($!context.factory, $n, 0, 0);
+        Assert::NullValueAt($!context.factory, $n, 1, 0);
+        Assert::NullValueAt($!context.factory, $n, 2, 0);
+        Assert::NullValueAt($!context.factory, $n, 0, 1);
+        Assert::NullValueAt($!context.factory, $n, 0, 2);
 
         # Third, prove that the block was set properly
         Assert::equal($n{$!context.factory.key(1,1)}, $m{$!context.factory.key(0,0)}, "value was set in wrong place 6");
