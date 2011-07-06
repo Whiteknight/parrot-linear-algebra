@@ -1,6 +1,7 @@
 my $context := PLA::TestContext.new;
 $context.set_factory(Pla::MatrixFactory::ComplexMatrix2D);
-Rosella::Test::test(Test::ComplexMatrix2D, :context($context));
+my $asserter := Pla::MatrixAsserter.new;
+Rosella::Test::test(Test::ComplexMatrix2D, :context($context), :asserter($asserter));
 
 class Test::ComplexMatrix2D is Pla::NumericMatrixTest;
 

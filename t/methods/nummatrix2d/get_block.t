@@ -1,6 +1,7 @@
 my $context := PLA::TestContext.new;
 $context.set_factory(Pla::MatrixFactory::NumMatrix2D);
-Rosella::Test::test(Test::NumMatrix2D::GetBlock, :context($context));
+my $asserter := Pla::MatrixAsserter.new;
+Rosella::Test::test(Test::NumMatrix2D::GetBlock, :context($context), :asserter($asserter));
 
 class Test::NumMatrix2D::GetBlock is Pla::Methods::GetBlock {
 

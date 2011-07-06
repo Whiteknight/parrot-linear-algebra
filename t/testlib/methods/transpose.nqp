@@ -34,5 +34,4 @@ class Pla::Methods::Transpose is Pla::MatrixTestBase {
         $m.transpose();
         $!assert.equal($m, $n, "cannot transpose with non-square dimensions");
     }
-
 }

@@ -5,7 +5,7 @@
 # testing a matrix. Actual test cases should not inherit from this class
 # directly, but instead inherit from a specialized sub-type depending on the
 # PMC being tested
-class MatrixAsserter {
+class Pla::MatrixAsserter is Rosella::Test::Asserter {
     method RequireOverride($m) {
         Exception::MethodNotFound.new(
             :message("Must subclass " ~ $m ~ " in your test class")

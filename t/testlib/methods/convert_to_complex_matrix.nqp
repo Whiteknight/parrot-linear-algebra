@@ -5,5 +5,4 @@ class Pla::Methods::ConvertToComplexMatrix is Pla::MatrixTestBase {
         $!assert.equal(pir::typeof__SP($B), "ComplexMatrix2D", "cannot convert");
         $!assert.Size($B, 2, 2);
     }
-
 }
