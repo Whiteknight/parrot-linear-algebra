@@ -6,27 +6,28 @@ INIT {
     pir::load_bytecode('t/testlib/pla_test.pbc');
 }
 
-my $testfactory := Rosella::build(Rosella::Harness::TestRun::Factory);
-my $harness := Rosella::build(Rosella::Harness);
-my $testview := $harness.default_view();
+my $factory := Rosella::construct(Rosella::Harness::TestRun::Factory);
+my $harness := Rosella::construct(Rosella::Harness);
+my $view := $harness.default_view();
 
-$testfactory.add_test_dirs("NQP", "t", :recurse(0));
-my $sanityrun := $testfactory.create;
-$testview.add_run($sanityrun, 0);
+$factory.add_test_dirs("NQP", "t", :recurse(0));
+my $sanityrun := $factory.create;
+$view.add_run($sanityrun, 0);
 
-$testfactory.add_test_dirs("NQP", 't/pmc',
+$factory.add_test_dirs("NQP",
+    't/pmc',
     't/methods/nummatrix2d',
     't/methods/complexmatrix2d',
     't/methods/pmcmatrix2d',
     :recurse(0)
 );
-my $testrun := $testfactory.create;
-$testview.add_run($testrun, 0);
+my $testrun := $factory.create;
+$view.add_run($testrun, 0);
 
 # First run the sanity tests. The sanity tests load the dynamic library, which
 # is required for everything else. Don't attempt to run any other tests if the
 # sanity test fails
-if ($harness.run($sanityrun, $testview, :run_inline(1), :debug(1))) {
-    $harness.run($testrun, $testview, :run_inline(1), :debug(1));
+if ($harness.run($sanityrun, $view, :run_inline(1), :debug(1))) {
+    $harness.run($testrun, $view, :run_inline(1), :debug(1));
 }
-$testview.show_results();
+$view.show_results();
