@@ -14,7 +14,7 @@ class Pla::Methods::MemTranspose is Pla::MatrixTestBase {
             $!context.factory.fancyvalue(3)
         );
         $m.mem_transpose();
-        Assert::equal($n, $m, "cannot mem_transpose matrix");
+        $!assert.equal($n, $m, "cannot mem_transpose matrix");
     }
 
     # Test mem transposing non-square matrices
@@ -32,7 +32,7 @@ class Pla::Methods::MemTranspose is Pla::MatrixTestBase {
         $n{$!context.factory.key(3,0)} := $!context.factory.fancyvalue(3);
 
         $m.mem_transpose();
-        Assert::equal($m, $n, "cannot mem_transpose with non-square dimensions");
+        $!assert.equal($m, $n, "cannot mem_transpose with non-square dimensions");
     }
 
 }

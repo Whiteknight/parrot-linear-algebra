@@ -1,7 +1,7 @@
 class Pla::MatrixFactory {
     # A default value which can be set at a particular location and tested
     method defaultvalue() {
-        Assert::RequireOverride(self.defaultvalue);
+        $!assert.RequireOverride(self.defaultvalue);
     }
 
     sub key(*@parts) {
@@ -35,17 +35,17 @@ class Pla::MatrixFactory {
 
     # The null value which is auto-inserted into the matrix on resize.
     method nullvalue() {
-        Assert::RequireOverride(self.nullvalue);
+        $!assert.RequireOverride(self.nullvalue);
     }
 
     # A novel value which can be used to flag interesting changes in tests.
     method fancyvalue($idx) {
-        Assert::RequireOverride(self.fancyvalue);
+        $!assert.RequireOverride(self.fancyvalue);
     }
 
     # Create an empty matrix of the given type
     method matrix() {
-        Assert::RequireOverride(self.matrix);
+        $!assert.RequireOverride(self.matrix);
     }
 
     # Create a 2x2 matrix of the type with given values row-first

@@ -9,7 +9,7 @@ class Pla::Methods::Fill is Pla::MatrixTestBase {
             $!context.factory.fancyvalue(0)
         );
         $m.fill($!context.factory.fancyvalue(0));
-        Assert::equal($n, $m, "Cannot fill");
+        $!assert.equal($n, $m, "Cannot fill");
     }
 
     # test that the fill method can be used to resize the matrix
@@ -17,6 +17,6 @@ class Pla::Methods::Fill is Pla::MatrixTestBase {
         my $m := $!context.factory.defaultmatrix2x2();
         my $n := $!context.factory.matrix();
         $n.fill($!context.factory.defaultvalue(), 2, 2);
-        Assert::equal($n, $m, "Cannot fill+Resize");
+        $!assert.equal($n, $m, "Cannot fill+Resize");
     }
 }

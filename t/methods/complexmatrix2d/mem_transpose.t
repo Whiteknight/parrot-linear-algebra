@@ -18,7 +18,7 @@ class Test::ComplexMatrix2D::MemTranspose is Pla::Methods::MemTranspose {
             "4+4i"
         );
         $m.mem_transpose();
-        Assert::equal($n, $m, "cannot mem_transpose complex matrix");
+        $!assert.equal($n, $m, "cannot mem_transpose complex matrix");
     }
 
     method test_non_square_matrix_complex() {
@@ -35,6 +35,6 @@ class Test::ComplexMatrix2D::MemTranspose is Pla::Methods::MemTranspose {
         $n{$!context.factory.key(3,0)} := "4+4i";
 
         $m.mem_transpose();
-        Assert::equal($m, $n, "cannot mem_transpose complex matrix with non-square dimensions");
+        $!assert.equal($m, $n, "cannot mem_transpose complex matrix with non-square dimensions");
     }
 }

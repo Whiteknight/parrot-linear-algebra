@@ -14,8 +14,8 @@ class Pla::Methods::IterateFunctionInplace is Pla::MatrixTestBase {
             return $!context.factory.fancyvalue($count);
         });
         $m.iterate_function_inplace($sub);
-        Assert::equal($count, 3, "iteration did not happen for all elements");
-        Assert::equal($m, $n, "iteration did not create the correct result");
+        $!assert.equal($count, 3, "iteration did not happen for all elements");
+        $!assert.equal($m, $n, "iteration did not create the correct result");
     }
 
     # test that iterate_function_inplace calls the callback with the proper
@@ -26,13 +26,13 @@ class Pla::Methods::IterateFunctionInplace is Pla::MatrixTestBase {
         my $x_ords := [0, 0, 1, 1];
         my $y_ords := [0, 1, 0, 1];
         my $sub := pir::newclosure__PP(sub ($matrix, $value, $x, $y) {
-            Assert::equal($x, $x_ords[$count], "x coordinate is correct");
-            Assert::equal($y, $y_ords[$count], "y coordinate is correct");
+            $!assert.equal($x, $x_ords[$count], "x coordinate is correct");
+            $!assert.equal($y, $y_ords[$count], "y coordinate is correct");
             $count++;
             return ($!context.factory.defaultvalue());
         });
         $m.iterate_function_inplace($sub);
-        Assert::equal($count, 4, "iteration did not happen for all elements");
+        $!assert.equal($count, 4, "iteration did not happen for all elements");
     }
 
     # Test that iterate_function_inplace passes the correct args
@@ -42,13 +42,13 @@ class Pla::Methods::IterateFunctionInplace is Pla::MatrixTestBase {
         my $first := 5;
         my $second := 2;
         my $sub := pir::newclosure__PP(sub ($matrix, $value, $x, $y, $a, $b) {
-            Assert::equal($a, $first, "first arg is not equal: " ~ $x);
-            Assert::equal($b, $second, "second arg is not equal: " ~ $y);
+            $!assert.equal($a, $first, "first arg is not equal: " ~ $x);
+            $!assert.equal($b, $second, "second arg is not equal: " ~ $y);
             $count++;
             return ($!context.factory.defaultvalue());
         });
         $m.iterate_function_inplace($sub, $first, $second);
-        Assert::equal($count, 4, "iteration did not happen for all elements");
+        $!assert.equal($count, 4, "iteration did not happen for all elements");
     }
 
     # Test that iterate_function_external respects the transpose state of the
@@ -62,7 +62,7 @@ class Pla::Methods::IterateFunctionInplace is Pla::MatrixTestBase {
             return ($value * 2);
         };
         $m.iterate_function_inplace($sub);
-        Assert::equal($m, $n, "external iteration does not respect transpose");
+        $!assert.equal($m, $n, "external iteration does not respect transpose");
     }
 
 }

@@ -14,7 +14,7 @@ class Test::NumMatrix2D::GetBlock is Pla::Methods::GetBlock {
 
         my $o := $m.get_block(0, 0, 2, 2);
 
-        Assert::equal($n, $o, "cannot get block with numerical matrix");
+        $!assert.equal($n, $o, "cannot get block with numerical matrix");
     }
 
     method test_get_block_numerical_2() {
@@ -27,7 +27,7 @@ class Test::NumMatrix2D::GetBlock is Pla::Methods::GetBlock {
 
         my $o := $m.get_block(1, 1, 2, 2);
 
-        Assert::equal($n, $o, "cannot get block with numerical matrix");
+        $!assert.equal($n, $o, "cannot get block with numerical matrix");
     }
 
     method test_get_block_numerical_out_of_bounds() {
@@ -35,7 +35,7 @@ class Test::NumMatrix2D::GetBlock is Pla::Methods::GetBlock {
                                         21, 22, 23,
                                         31, 32, 33);
 
-        Assert::throws("can get_block numerical out of bounds",
+        $!assert.throws("can get_block numerical out of bounds",
         {
             $m.get_block(2, 2, 2, 2);
         });
@@ -46,7 +46,7 @@ class Test::NumMatrix2D::GetBlock is Pla::Methods::GetBlock {
                                         21, 22, 23,
                                         31, 32, 33);
 
-        Assert::throws("can get_block numerical with negative index",
+        $!assert.throws("can get_block numerical with negative index",
         {
             $m.get_block(-1, -1, 2, 2);
         });

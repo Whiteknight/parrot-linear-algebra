@@ -16,7 +16,7 @@ class Test::NumMatrix2D::MemTranspose is Pla::Methods::MemTranspose {
         );
 
         $m.transpose();
-        Assert::equal($m, $n, "cannot tranpose numerical");
+        $!assert.equal($m, $n, "cannot tranpose numerical");
     }
 
     method test_non_square_mem_tranpose_numerical() {
@@ -37,6 +37,6 @@ class Test::NumMatrix2D::MemTranspose is Pla::Methods::MemTranspose {
         $n{$!context.factory.key(2,1)} := 23;
 
         $m.transpose();
-        Assert::equal($m, $n, "cannot transpose numerical matrix with non-square dimensions");
+        $!assert.equal($m, $n, "cannot transpose numerical matrix with non-square dimensions");
     }
 }

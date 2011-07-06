@@ -17,7 +17,7 @@ method test_VTABLE_get_integer_keyed() {
         $P2 = box $I0
         store_lex "$o", $P2
     };
-    Assert::equal($n, $o, "get_integer_keyed does not work");
+    $!assert.equal($n, $o, "get_integer_keyed does not work");
 }
 
 method test_VTABLE_get_number_keyed() {
@@ -32,7 +32,7 @@ method test_VTABLE_get_number_keyed() {
         $P2 = box $N0
         store_lex "$o", $P2
     };
-    Assert::equal($n, $o, "get_number_keyed does not work");
+    $!assert.equal($n, $o, "get_number_keyed does not work");
 }
 
 method test_VTABLE_get_string_keyed() {
@@ -47,7 +47,7 @@ method test_VTABLE_get_string_keyed() {
         $P2 = box $S0
         store_lex "$o", $P2
     };
-    Assert::equal($n, $o, "get_string_keyed does not work");
+    $!assert.equal($n, $o, "get_string_keyed does not work");
 }
 
 method test_VTABLE_set_integer_keyed() {
@@ -61,7 +61,7 @@ method test_VTABLE_set_integer_keyed() {
         $P1 = box $I1
         store_lex "$n", $P1
     };
-    Assert::equal($n, 42, "set_integer_keyed does not work");
+    $!assert.equal($n, 42, "set_integer_keyed does not work");
 }
 
 method test_VTABLE_set_number_keyed() {
@@ -75,7 +75,7 @@ method test_VTABLE_set_number_keyed() {
         $P1 = box $N1
         store_lex "$n", $P1
     };
-    Assert::equal($n, 42.5, "set_number_keyed does not work");
+    $!assert.equal($n, 42.5, "set_number_keyed does not work");
 }
 
 method test_VTABLE_set_string_keyed() {
@@ -89,7 +89,7 @@ method test_VTABLE_set_string_keyed() {
         $P1 = box $S1
         store_lex "$n", $P1
     };
-    Assert::equal($n, "Hello World", "set_integer_keyed does not work");
+    $!assert.equal($n, "Hello World", "set_integer_keyed does not work");
 }
 
 method test_VTABLE_get_string() {
@@ -103,7 +103,7 @@ method test_VTABLE_get_string() {
         $P1 = box $S1
         store_lex "$n", $P1
     };
-    Assert::equal(~($m), '{' ~ "\n\t[0,0] = Hello World\n" ~ '}' ~ "\n", "get_string does not work");
+    $!assert.equal(~($m), '{' ~ "\n\t[0,0] = Hello World\n" ~ '}' ~ "\n", "get_string does not work");
 }
 
 }

@@ -5,7 +5,7 @@ class Pla::Methods::Gemm is Pla::MatrixTestBase {
     method test_METHOD_gemm_aABbC() { self.RequireOverride("test_METHOD_gemm_aABbC"); }
 
     method test_bad_type_A() {
-        Assert::throws("A is bad type",
+        $!assert.throws("A is bad type",
         {
             my $A := "foobar";
             my $B := $!context.factory.defaultmatrix3x3();
@@ -15,7 +15,7 @@ class Pla::Methods::Gemm is Pla::MatrixTestBase {
     }
 
     method test_bad_type_B() {
-        Assert::throws("B is bad type",
+        $!assert.throws("B is bad type",
         {
             my $A := $!context.factory.defaultmatrix3x3();
             my $B := "foobar";
@@ -25,7 +25,7 @@ class Pla::Methods::Gemm is Pla::MatrixTestBase {
     }
 
     method test_bad_type_C() {
-        Assert::throws("C is bad type",
+        $!assert.throws("C is bad type",
         {
             my $A := $!context.factory.defaultmatrix3x3();
             my $B := $!context.factory.defaultmatrix3x3();
@@ -35,7 +35,7 @@ class Pla::Methods::Gemm is Pla::MatrixTestBase {
     }
 
     method test_bad_size_A() {
-        Assert::throws("A has incorrect size",
+        $!assert.throws("A has incorrect size",
         {
             my $A := $!context.factory.defaultmatrix2x2();
             my $B := $!context.factory.defaultmatrix3x3();
@@ -45,7 +45,7 @@ class Pla::Methods::Gemm is Pla::MatrixTestBase {
     }
 
     method test_bad_size_B() {
-        Assert::throws("B has incorrect size",
+        $!assert.throws("B has incorrect size",
         {
             my $A := $!context.factory.defaultmatrix3x3();
             my $B := $!context.factory.defaultmatrix2x2();
@@ -55,7 +55,7 @@ class Pla::Methods::Gemm is Pla::MatrixTestBase {
     }
 
     method test_bad_size_C() {
-        Assert::throws("C has incorrect size",
+        $!assert.throws("C has incorrect size",
         {
             my $A := $!context.factory.defaultmatrix3x3();
             my $B := $!context.factory.defaultmatrix3x3();
@@ -76,7 +76,7 @@ class Pla::Methods::Gemm is Pla::MatrixTestBase {
         my $D := $m.gemm($alpha, $A, $B, $beta, $C);
         my $type_D := pir::typeof__SP($D);
         my $type_m := pir::typeof__SP($m);
-        Assert::equal($type_D, $type_m,
+        Rosella::construct(Rosella::Test::Asserter).equal($type_D, $type_m,
             "not the right type. Found " ~ $type_D ~ " expected " ~ $type_m);
     }
 

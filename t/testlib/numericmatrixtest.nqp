@@ -1,12 +1,15 @@
 
 class Pla::NumericMatrixTest is Pla::MatrixTest {
 
-    sub equal($a, $b, $r) { Assert::equal($a, $b, $r); }
+    sub equal($a, $b, $r) {
+        my $assert := Rosella::construct(Rosella::Test::Asserter);
+        $assert.equal($a, $b, $r);
+    }
 
     # Test that a numeric matrix does numericmatrix
     method test_OP_does_numericmatrix() {
         my $m := $!context.factory.matrix();
-        Assert::is_true(pir::does($m, "numericmatrix"), "Does not do numericmatrix");
+        $!assert.is_true(pir::does($m, "numericmatrix"), "Does not do numericmatrix");
     }
 
     # Test that all core matrix types have some common methods
@@ -16,14 +19,14 @@ class Pla::NumericMatrixTest is Pla::MatrixTest {
         # Individual types may have additional methods. The signatures for
         # these will change depending on the type, so we don't check those
         # here.
-        Assert::HasMethod($m, "gemm");
-        Assert::HasMethod($m, "row_combine");
-        Assert::HasMethod($m, "row_scale");
-        Assert::HasMethod($m, "row_swap");
+        $!assert.HasMethod($m, "gemm");
+        $!assert.HasMethod($m, "row_combine");
+        $!assert.HasMethod($m, "row_scale");
+        $!assert.HasMethod($m, "row_swap");
     }
 
     method test_VTABLE_set_number_keyed() {
-        Assert::throws_nothing({
+        $!assert.throws_nothing({
             my $m := $!context.factory.matrix();
             Q:PIR {
                 $P0 = find_lex "$m"
@@ -118,7 +121,7 @@ class Pla::NumericMatrixTest is Pla::MatrixTest {
         my $n := $!context.factory.matrix2x2(3.5, 5.5, 4.5, 6.5);
         my $o := 2.5;
         my $p := pir::add__PPP($m, $o);
-        Assert::equal($p, $n, "Cannot add float");
+        $!assert.equal($p, $n, "Cannot add float");
     }
 
     method test_VTABLE_add_int() {
@@ -182,7 +185,7 @@ class Pla::NumericMatrixTest is Pla::MatrixTest {
         my $n := $!context.factory.matrix2x2(-1.5, 0.5, -0.5, 1.5);
         my $o := 2.5;
         my $p := pir::sub__PPP($m, $o);
-        Assert::equal($p, $n, "Cannot subtract float");
+        $!assert.equal($p, $n, "Cannot subtract float");
     }
 
     method test_VTABLE_subtract_int() {
@@ -246,7 +249,7 @@ class Pla::NumericMatrixTest is Pla::MatrixTest {
         my $m := $!context.factory.matrix2x2(1.0, 2.0, 3.0, 4.0);
         my $n := $!context.factory.matrix2x2(2.5, 5.0, 7.5, 10.0);
         my $p := pir::mul__PPP($m, 2.5);
-        Assert::equal($n, $p, "multiply matrix * float");
+        $!assert.equal($n, $p, "multiply matrix * float");
     }
 
     method test_VTABLE_multiply_int() {

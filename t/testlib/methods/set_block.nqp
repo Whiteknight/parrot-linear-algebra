@@ -7,20 +7,20 @@ class Pla::Methods::SetBlock is Pla::MatrixTestBase {
         $n.set_block(1, 1, $m);
 
         # First, prove that we haven't resized it
-        Assert::Size($n, 3, 3);
+        $!assert.Size($n, 3, 3);
 
         # Second, let's prove that nothing was set where it doesn't belong.
-        Assert::NullValueAt($!context.factory, $n, 0, 0);
-        Assert::NullValueAt($!context.factory, $n, 1, 0);
-        Assert::NullValueAt($!context.factory, $n, 2, 0);
-        Assert::NullValueAt($!context.factory, $n, 0, 1);
-        Assert::NullValueAt($!context.factory, $n, 0, 2);
+        $!assert.NullValueAt($!context.factory, $n, 0, 0);
+        $!assert.NullValueAt($!context.factory, $n, 1, 0);
+        $!assert.NullValueAt($!context.factory, $n, 2, 0);
+        $!assert.NullValueAt($!context.factory, $n, 0, 1);
+        $!assert.NullValueAt($!context.factory, $n, 0, 2);
 
         # Third, prove that the block was set properly
-        Assert::equal($n{$!context.factory.key(1,1)}, $m{$!context.factory.key(0,0)}, "value was set in wrong place");
-        Assert::equal($n{$!context.factory.key(1,2)}, $m{$!context.factory.key(0,1)}, "value was set in wrong place");
-        Assert::equal($n{$!context.factory.key(2,1)}, $m{$!context.factory.key(1,0)}, "value was set in wrong place");
-        Assert::equal($n{$!context.factory.key(2,2)}, $m{$!context.factory.key(1,1)}, "value was set in wrong place");
+        $!assert.equal($n{$!context.factory.key(1,1)}, $m{$!context.factory.key(0,0)}, "value was set in wrong place");
+        $!assert.equal($n{$!context.factory.key(1,2)}, $m{$!context.factory.key(0,1)}, "value was set in wrong place");
+        $!assert.equal($n{$!context.factory.key(2,1)}, $m{$!context.factory.key(1,0)}, "value was set in wrong place");
+        $!assert.equal($n{$!context.factory.key(2,2)}, $m{$!context.factory.key(1,1)}, "value was set in wrong place");
     }
 
     # Test set_block with a block of zero size
@@ -29,7 +29,7 @@ class Pla::Methods::SetBlock is Pla::MatrixTestBase {
         my $n := pir::clone__PP($m);
         my $o := $!context.factory.matrix();
         $m.set_block(0, 0, $o);
-        Assert::equal($m, $n, "zero-size block insert changes the matrix");
+        $!assert.equal($m, $n, "zero-size block insert changes the matrix");
     }
 
     # set_block with a zero-sized block resizes the matrix, but to one less
@@ -41,16 +41,16 @@ class Pla::Methods::SetBlock is Pla::MatrixTestBase {
         my $m := $!context.factory.defaultmatrix2x2();
         my $o := $!context.factory.matrix();
         $m.set_block(3, 3, $o);
-        Assert::Size($m, 3, 3);
-        Assert::NullValueAt($!context.factory, $m, 2, 0);
-        Assert::NullValueAt($!context.factory, $m, 2, 1);
-        Assert::NullValueAt($!context.factory, $m, 2, 2);
-        Assert::NullValueAt($!context.factory, $m, 1, 2);
+        $!assert.Size($m, 3, 3);
+        $!assert.NullValueAt($!context.factory, $m, 2, 0);
+        $!assert.NullValueAt($!context.factory, $m, 2, 1);
+        $!assert.NullValueAt($!context.factory, $m, 2, 2);
+        $!assert.NullValueAt($!context.factory, $m, 1, 2);
 
-        Assert::ValueAtIs($!context.factory, $m, 0, 0, $!context.factory.defaultvalue);
-        Assert::ValueAtIs($!context.factory, $m, 0, 1, $!context.factory.defaultvalue);
-        Assert::ValueAtIs($!context.factory, $m, 1, 0, $!context.factory.defaultvalue);
-        Assert::ValueAtIs($!context.factory, $m, 1, 1, $!context.factory.defaultvalue);
+        $!assert.ValueAtIs($!context.factory, $m, 0, 0, $!context.factory.defaultvalue);
+        $!assert.ValueAtIs($!context.factory, $m, 0, 1, $!context.factory.defaultvalue);
+        $!assert.ValueAtIs($!context.factory, $m, 1, 0, $!context.factory.defaultvalue);
+        $!assert.ValueAtIs($!context.factory, $m, 1, 1, $!context.factory.defaultvalue);
     }
 
     # Test that set_block can resize the matrix if the specified coordinates
@@ -60,19 +60,19 @@ class Pla::Methods::SetBlock is Pla::MatrixTestBase {
         my $o := $!context.factory.matrix();
         $o{$!context.factory.key(0, 0)} := $!context.factory.fancyvalue(2);
         $m.set_block(2, 2, $o);
-        Assert::Size($m, 3, 3);
+        $!assert.Size($m, 3, 3);
 
-        Assert::ValueAtIs($!context.factory, $m, 0, 0, $!context.factory.defaultvalue);
-        Assert::ValueAtIs($!context.factory, $m, 0, 1, $!context.factory.defaultvalue);
-        Assert::ValueAtIs($!context.factory, $m, 1, 0, $!context.factory.defaultvalue);
-        Assert::ValueAtIs($!context.factory, $m, 1, 1, $!context.factory.defaultvalue);
+        $!assert.ValueAtIs($!context.factory, $m, 0, 0, $!context.factory.defaultvalue);
+        $!assert.ValueAtIs($!context.factory, $m, 0, 1, $!context.factory.defaultvalue);
+        $!assert.ValueAtIs($!context.factory, $m, 1, 0, $!context.factory.defaultvalue);
+        $!assert.ValueAtIs($!context.factory, $m, 1, 1, $!context.factory.defaultvalue);
 
-        Assert::NullValueAt($!context.factory, $m, 2, 0);
-        Assert::NullValueAt($!context.factory, $m, 2, 1);
-        Assert::NullValueAt($!context.factory, $m, 0, 2);
-        Assert::NullValueAt($!context.factory, $m, 1, 2);
+        $!assert.NullValueAt($!context.factory, $m, 2, 0);
+        $!assert.NullValueAt($!context.factory, $m, 2, 1);
+        $!assert.NullValueAt($!context.factory, $m, 0, 2);
+        $!assert.NullValueAt($!context.factory, $m, 1, 2);
 
-        Assert::ValueAtIs($!context.factory, $m, 2, 2, $!context.factory.fancyvalue(2));
+        $!assert.ValueAtIs($!context.factory, $m, 2, 2, $!context.factory.fancyvalue(2));
     }
 
     # Test that set_block can resize the matrix if the specified coordinates
@@ -84,13 +84,13 @@ class Pla::Methods::SetBlock is Pla::MatrixTestBase {
                                 $!context.factory.defaultvalue, $!context.factory.defaultvalue, $!context.factory.defaultvalue,
                                 $!context.factory.nullvalue,    $!context.factory.defaultvalue, $!context.factory.defaultvalue);
         $m.set_block(1, 1, $o);
-        Assert::Size($m, 3, 3);
-        Assert::equal($m, $n, "set block with a large block does not resize the matrix");
+        $!assert.Size($m, 3, 3);
+        $!assert.equal($m, $n, "set block with a large block does not resize the matrix");
     }
 
     # Test that set_block with negative indices throws an exception
     method test_negative_indicies() {
-        Assert::throws("Can set_block with negative indices",
+        $!assert.throws("Can set_block with negative indices",
         {
             my $m := $!context.factory.defaultmatrix2x2();
             my $o := $!context.factory.matrix();
@@ -106,20 +106,20 @@ class Pla::Methods::SetBlock is Pla::MatrixTestBase {
         $n.set_block(1, 1, $m);
 
         # First, prove that we haven't resized it
-        Assert::Size($n, 3, 3);
+        $!assert.Size($n, 3, 3);
 
         # Second, let's prove that nothing was set where it doesn't belong.
-        Assert::NullValueAt($!context.factory, $n, 0, 0);
-        Assert::NullValueAt($!context.factory, $n, 1, 0);
-        Assert::NullValueAt($!context.factory, $n, 2, 0);
-        Assert::NullValueAt($!context.factory, $n, 0, 1);
-        Assert::NullValueAt($!context.factory, $n, 0, 2);
+        $!assert.NullValueAt($!context.factory, $n, 0, 0);
+        $!assert.NullValueAt($!context.factory, $n, 1, 0);
+        $!assert.NullValueAt($!context.factory, $n, 2, 0);
+        $!assert.NullValueAt($!context.factory, $n, 0, 1);
+        $!assert.NullValueAt($!context.factory, $n, 0, 2);
 
         # Third, prove that the block was set properly
-        Assert::equal($n{$!context.factory.key(1,1)}, $m{$!context.factory.key(0,0)}, "value was set in wrong place 6");
-        Assert::equal($n{$!context.factory.key(1,2)}, $m{$!context.factory.key(0,1)}, "value was set in wrong place 7");
-        Assert::equal($n{$!context.factory.key(2,1)}, $m{$!context.factory.key(1,0)}, "value was set in wrong place 8");
-        Assert::equal($n{$!context.factory.key(2,2)}, $m{$!context.factory.key(1,1)}, "value was set in wrong place 9");
+        $!assert.equal($n{$!context.factory.key(1,1)}, $m{$!context.factory.key(0,0)}, "value was set in wrong place 6");
+        $!assert.equal($n{$!context.factory.key(1,2)}, $m{$!context.factory.key(0,1)}, "value was set in wrong place 7");
+        $!assert.equal($n{$!context.factory.key(2,1)}, $m{$!context.factory.key(1,0)}, "value was set in wrong place 8");
+        $!assert.equal($n{$!context.factory.key(2,2)}, $m{$!context.factory.key(1,1)}, "value was set in wrong place 9");
     }
 
     # Test that calling set_block with a scalar throws an exception
@@ -128,7 +128,7 @@ class Pla::Methods::SetBlock is Pla::MatrixTestBase {
     method test_set_scalar_as_block() {
         my $m := $!context.factory.defaultmatrix2x2();
         my $n := "";
-        Assert::throws("Can set_block a scalar", {
+        $!assert.throws("Can set_block a scalar", {
             $m.set_block(0, 0, $n);
         });
     }

@@ -4,7 +4,9 @@ Rosella::Test::test(Test::ComplexMatrix2D, :context($context));
 
 class Test::ComplexMatrix2D is Pla::NumericMatrixTest;
 
-sub equal($a, $b, $r) { Assert::equal($a, $b, $r); }
+sub equal($a, $b, $r) {
+    Rosella::construct(Rosella::Test::Asserter).equal($a, $b, $r);
+}
 
 method test_VTABLE_get_number_keyed() {
     $!status.todo("Tests Needed!");
@@ -23,9 +25,9 @@ method test_VTABLE_set_pmc_keyed_STRING() {
     my $a := "1+1i";  # a String PMC, not a Complex
     $m{$!context.factory.key(0,0)} := $a;
     my $b := $m{$!context.factory.key(0,0)};
-    Assert::instance_of($b, "Complex", "Cannot set_pmc_keyed<String>");
+    $!assert.instance_of($b, "Complex", "Cannot set_pmc_keyed<String>");
     my $c := pir::new__PSP("Complex", "1+1i");
-    Assert::equal($b, $c, "did not get the correct value back");
+    $!assert.equal($b, $c, "did not get the correct value back");
 }
 
 method test_VTABLE_set_pmc_keyed_ARRAY() {
@@ -33,9 +35,9 @@ method test_VTABLE_set_pmc_keyed_ARRAY() {
     my $a := (1,1);
     $m{$!context.factory.key(0,0)} := $a;
     my $b := $m{$!context.factory.key(0,0)};
-    Assert::instance_of($b, "Complex", "Cannot set_pmc_keyed<Array>");
+    $!assert.instance_of($b, "Complex", "Cannot set_pmc_keyed<Array>");
     my $c := pir::new__PSP("Complex", "1+1i");
-    Assert::equal($b, $c, "did not get the correct value back");
+    $!assert.equal($b, $c, "did not get the correct value back");
 }
 
 method test_VTABLE_set_pmc_keyed_INTEGER() {
@@ -43,9 +45,9 @@ method test_VTABLE_set_pmc_keyed_INTEGER() {
     my $a := pir::box__PI(1);
     $m{$!context.factory.key(0,0)} := $a;
     my $b := $m{$!context.factory.key(0,0)};
-    Assert::instance_of($b, "Complex", "Cannot set_pmc_keyed<Integer>");
+    $!assert.instance_of($b, "Complex", "Cannot set_pmc_keyed<Integer>");
     my $c := pir::new__PSP("Complex", "1+0i");
-    Assert::equal($b, $c, "did not get the correct value back");
+    $!assert.equal($b, $c, "did not get the correct value back");
 }
 
 method test_VTABLE_set_pmc_keyed_FLOAT() {
@@ -53,9 +55,9 @@ method test_VTABLE_set_pmc_keyed_FLOAT() {
     my $a := pir::box__PN(3.5);
     $m{$!context.factory.key(0,0)} := $a;
     my $b := $m{$!context.factory.key(0,0)};
-    Assert::instance_of($b, "Complex", "Cannot set_pmc_keyed<Float>");
+    $!assert.instance_of($b, "Complex", "Cannot set_pmc_keyed<Float>");
     my $c := pir::new__PSP("Complex", "3.5+0i");
-    Assert::equal($b, $c, "did not get the correct value back");
+    $!assert.equal($b, $c, "did not get the correct value back");
 }
 
 method test_VTABLE_set_string_keyed() {
@@ -68,7 +70,7 @@ method test_VTABLE_set_string_keyed() {
         $P1 = $P0[0;0]
         store_lex "$a", $P1
     };
-    Assert::equal(~$a, "1+1i", "set_string_keyed doesn't work");
+    $!assert.equal(~$a, "1+1i", "set_string_keyed doesn't work");
 }
 
 method test_VTABLE_get_string() {
@@ -79,7 +81,7 @@ method test_METHOD_conjugate() {
     my $m := $!context.factory.matrix2x2("1+1i", "2+2i", "3+3i", "4+4i");
     my $n := $!context.factory.matrix2x2("1-1i", "2-2i", "3-3i", "4-4i");
     $m.conjugate();
-    Assert::equal($m, $n, "conjugate does not work");
+    $!assert.equal($m, $n, "conjugate does not work");
 }
 
 method test_add_nummatrix() {

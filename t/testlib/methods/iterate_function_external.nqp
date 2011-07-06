@@ -7,7 +7,7 @@ class Pla::Methods::IterateFunctionExternal is Pla::MatrixTestBase {
             return $value;
         };
         my $o := $m.iterate_function_external($sub);
-        Assert::equal($o, $m, "Cannot copy by iterating external");
+        $!assert.equal($o, $m, "Cannot copy by iterating external");
     }
 
     # Test that iterate_function_external passes the correct coordinates
@@ -20,7 +20,7 @@ class Pla::Methods::IterateFunctionExternal is Pla::MatrixTestBase {
             return ($!context.factory.fancyvalue($x + $y));
         });
         my $o := $m.iterate_function_external($sub);
-        Assert::equal($o, $n, "cannot iterate external with proper coords");
+        $!assert.equal($o, $n, "cannot iterate external with proper coords");
     }
 
     # Test that iterate_function_external passes the correct args
@@ -33,7 +33,7 @@ class Pla::Methods::IterateFunctionExternal is Pla::MatrixTestBase {
             return ($!context.factory.fancyvalue($a + $b));
         });
         my $o := $m.iterate_function_external($sub, 1, 2);
-        Assert::equal($o, $n, "cannot iterate external with args");
+        $!assert.equal($o, $n, "cannot iterate external with args");
     }
 
     # Test that iterate_function_external respects the transpose state of the
@@ -47,6 +47,6 @@ class Pla::Methods::IterateFunctionExternal is Pla::MatrixTestBase {
             return $value * 2;
         };
         my $o := $m.iterate_function_external($sub);
-        Assert::equal($o, $n, "external iteration does not respect transpose");
+        $!assert.equal($o, $n, "external iteration does not respect transpose");
     }
 }

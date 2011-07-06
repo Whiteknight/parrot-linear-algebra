@@ -21,7 +21,7 @@ class Pla::Methods::RowCombine is Pla::MatrixTestBase {
         my $B := $!context.factory.matrix2x2($val1, $val2,
                                 $!context.factory.fancyvalue(2), $!context.factory.fancyvalue(3));
         $A.row_combine(1, 0, 1);
-        Assert::equal($A, $B, "cannot row_combine");
+        $!assert.equal($A, $B, "cannot row_combine");
     }
 
     method test_non_unity_gain() {
@@ -30,11 +30,11 @@ class Pla::Methods::RowCombine is Pla::MatrixTestBase {
                                 $!context.factory.fancyvalue(1) + $!context.factory.fancyvalue(3)  * $!context.factory.fancyvalue(0),
                                 $!context.factory.fancyvalue(2), $!context.factory.fancyvalue(3));
         $A.row_combine(1, 0, $!context.factory.fancyvalue(0));
-        Assert::equal($A, $B, "cannot row_combine");
+        $!assert.equal($A, $B, "cannot row_combine");
     }
 
     method test_negative_index_A() {
-        Assert::throws("Index A is out of bounds",
+        $!assert.throws("Index A is out of bounds",
         {
             my $A := $!context.factory.defaultmatrix3x3();
             $A.row_combine(-1, 1, 1);
@@ -42,7 +42,7 @@ class Pla::Methods::RowCombine is Pla::MatrixTestBase {
     }
 
     method test_index_A_out_of_bounds() {
-        Assert::throws("Index A is out of bounds",
+        $!assert.throws("Index A is out of bounds",
         {
             my $A := $!context.factory.defaultmatrix3x3();
             $A.row_combine(7, 1, 1);
@@ -50,7 +50,7 @@ class Pla::Methods::RowCombine is Pla::MatrixTestBase {
     }
 
     method test_negative_index_B() {
-        Assert::throws("Index B is out of bounds",
+        $!assert.throws("Index B is out of bounds",
         {
             my $A := $!context.factory.defaultmatrix3x3();
             $A.row_combine(1, -1, 1);
@@ -58,7 +58,7 @@ class Pla::Methods::RowCombine is Pla::MatrixTestBase {
     }
 
     method test_index_B_out_of_bounds() {
-        Assert::throws("Index B is out of bounds",
+        $!assert.throws("Index B is out of bounds",
         {
             my $A := $!context.factory.defaultmatrix3x3();
             $A.row_combine(1, 7, 1);

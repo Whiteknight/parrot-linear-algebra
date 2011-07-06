@@ -14,7 +14,7 @@ class Pla::Methods::Transpose is Pla::MatrixTestBase {
             $!context.factory.fancyvalue(3)
         );
         $m.transpose();
-        Assert::equal($n, $m, "cannot transpose matrix");
+        $!assert.equal($n, $m, "cannot transpose matrix");
     }
 
     # Test transposing non-square matrices
@@ -32,7 +32,7 @@ class Pla::Methods::Transpose is Pla::MatrixTestBase {
         $n{$!context.factory.key(3,0)} := $!context.factory.fancyvalue(3);
 
         $m.transpose();
-        Assert::equal($m, $n, "cannot transpose with non-square dimensions");
+        $!assert.equal($m, $n, "cannot transpose with non-square dimensions");
     }
 
 }

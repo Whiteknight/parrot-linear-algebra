@@ -6,7 +6,7 @@ class Pla::Methods::InitializeFromArgs is Pla::MatrixTestBase {
         my $n := $!context.factory.matrix();
         $n.initialize_from_args(2, 2, $!context.factory.fancyvalue(0), $!context.factory.fancyvalue(1),
                                       $!context.factory.fancyvalue(2), $!context.factory.fancyvalue(3));
-        Assert::equal($n, $m, "cannot initialize_from_args");
+        $!assert.equal($n, $m, "cannot initialize_from_args");
     }
 
     # Test that we can initialize from an arg list with zero padding
@@ -17,7 +17,7 @@ class Pla::Methods::InitializeFromArgs is Pla::MatrixTestBase {
         my $n := $!context.factory.matrix();
         $n.initialize_from_args(3, 3, $!context.factory.fancyvalue(0), $!context.factory.fancyvalue(1),
                                       $!context.factory.fancyvalue(2), $!context.factory.fancyvalue(3));
-        Assert::equal($n, $m, "cannot initalize from args with zero padding");
+        $!assert.equal($n, $m, "cannot initalize from args with zero padding");
     }
 
     # Test that we can initialize from an arg list, ignoring values that we
@@ -28,7 +28,7 @@ class Pla::Methods::InitializeFromArgs is Pla::MatrixTestBase {
         my $n := $!context.factory.matrix();
         $n.initialize_from_args(1, 1, $!context.factory.fancyvalue(0), $!context.factory.fancyvalue(1),
                                       $!context.factory.fancyvalue(2), $!context.factory.fancyvalue(3));
-        Assert::equal($n, $m, "cannot initialize from args undersized");
+        $!assert.equal($n, $m, "cannot initialize from args undersized");
     }
 
 

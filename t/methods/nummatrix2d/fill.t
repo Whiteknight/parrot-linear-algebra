@@ -10,7 +10,7 @@ class Test::NumMatrix2D::Fill is Pla::Methods::Fill {
 
         $m.fill(4);
 
-        Assert::equal($m, $n, "cannot fill numerical");
+        $!assert.equal($m, $n, "cannot fill numerical");
     }
 
     method test_fill_with_resizing_numerical() {
@@ -21,6 +21,6 @@ class Test::NumMatrix2D::Fill is Pla::Methods::Fill {
 
         $m.fill(2, 3, 3);
 
-        Assert::equal($m, $n, "cannot fill (with resize) numerical");
+        $!assert.equal($m, $n, "cannot fill (with resize) numerical");
     }
 }
