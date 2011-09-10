@@ -57,7 +57,14 @@ class Pla::MatrixAsserter is Rosella::Test::Asserter {
     }
 }
 
-class Pla::MatrixTestBase {
-
+module Pla::MatrixTestBase {
+    our sub Test($type, $factorytype) {
+        my $context := PLA::TestContext.new;
+        $context.set_factory($factorytype);
+        my $asserter := Pla::MatrixAsserter.new;
+        Rosella::Test::test($type, :context($context), :asserter($asserter));
+    }
 }
+
+class Pla::MatrixTestBase { }
 
