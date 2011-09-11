@@ -2,7 +2,7 @@
 
 .HLL 'ComplexMatrix2D_SUBCLASS_TEST'
 
-.sub test
+.sub test :main
     $P0 = get_class 'Complex'
     $P1 = subclass $P0, 'TestComplex'
     $P2 = getinterp

@@ -3,7 +3,7 @@
 
 .HLL 'NumMatrix2D_SUBCLASS_TEST'
 
-.sub test
+.sub test :main
     $P0 = get_class 'Float'
     $P1 = subclass $P0, 'TestFloat'
     $P2 = getinterp

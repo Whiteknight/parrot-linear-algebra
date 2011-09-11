@@ -2,7 +2,7 @@
 
 .HLL 'PMCMatrix2D_SUBCLASS_TEST'
 
-.sub test
+.sub test :main
     $P0 = get_class 'Integer'
     $P1 = subclass $P0, 'TestInteger'
     $P2 = getinterp
