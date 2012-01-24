@@ -1,9 +1,11 @@
-my $context := Rosella::construct(PLA::TestContext);
-$context.set_factory(Pla::MatrixFactory::NumMatrix2D);
-$context.set_data("factory_complex", Pla::MatrixFactory::ComplexMatrix2D.new);
-$context.set_data("factory_pmc", Pla::MatrixFactory::PMCMatrix2D.new);
-my $asserter := Pla::MatrixAsserter.new;
-Rosella::Test::test(Test::NumMatrix2D, :context($context), :asserter($asserter));
+
+INIT {
+    my $rosella := pir::load_bytecode__Ps("rosella/core.pbc");
+    Rosella::initialize_rosella("test");
+    Rosella::load_bytecode_file('t/testlib/pla_test.pbc', "load");
+}
+
+Pla::MatrixTestBase::Test(Test::NumMatrix2D, Pla::MatrixFactory::NumMatrix2D);
 
 class Test::NumMatrix2D is Pla::NumericMatrixTest;
 

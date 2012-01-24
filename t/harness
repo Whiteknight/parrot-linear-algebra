@@ -10,9 +10,9 @@ my $harness := Rosella::construct(Rosella::Harness);
 $harness.add_test_dirs("NQP", "t", :recurse(0)).setup_test_run;
 $harness.add_test_dirs("NQP",
     't/pmc',
-    't/methods/nummatrix2d',
-    't/methods/complexmatrix2d',
-    't/methods/pmcmatrix2d',
+#    't/methods/nummatrix2d',
+#    't/methods/complexmatrix2d',
+#    't/methods/pmcmatrix2d',
     :recurse(0)
 ).setup_test_run;
 $harness.add_test_dirs("PIR",

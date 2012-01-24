@@ -59,9 +59,13 @@ class Pla::MatrixAsserter is Rosella::Test::Asserter {
 
 module Pla::MatrixTestBase {
     our sub Test($type, $factorytype) {
-        my $context := PLA::TestContext.new;
+        my $pla := pir::loadlib__ps("./dynext/linalg_group");
+        my $context := Rosella::construct(PLA::TestContext);
         $context.set_factory($factorytype);
-        my $asserter := Pla::MatrixAsserter.new;
+        $context.set_data("factory_complex", Pla::MatrixFactory::ComplexMatrix2D.new);
+        $context.set_data("factory_pmc", Pla::MatrixFactory::PMCMatrix2D.new);
+        $context.set_data("factory_number", Pla::MatrixFactory::NumMatrix2D.new);
+        my $asserter := Rosella::construct(Pla::MatrixAsserter);
         Rosella::Test::test($type, :context($context), :asserter($asserter));
     }
 }

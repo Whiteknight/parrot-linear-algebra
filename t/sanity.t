@@ -1,5 +1,11 @@
 #! parrot-nqp
 
+INIT {
+    my $rosella := pir::load_bytecode__Ps("rosella/core.pbc");
+    Rosella::initialize_rosella("test");
+    Rosella::load_bytecode_file('t/testlib/pla_test.pbc', "load");
+}
+
 Rosella::Test::test(Test::Sanity);
 
 class Test::Sanity {

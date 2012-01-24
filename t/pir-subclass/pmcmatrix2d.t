@@ -1,5 +1,15 @@
 #!parrot
 
+.sub setup :anon :init
+    $P0 = load_bytecode "rosella/core.pbc"
+    $P1 = get_root_global [ 'parrot' ; 'Rosella' ], 'initialize_rosella'
+    #$P1 = get_root_global ["Rosella"], "initialize_rosella"
+    $P1("test")
+    $P2 = get_root_global ['parrot' ; "Rosella"], "load_bytecode_file"
+    $P2('t/testlib/pla_test.pbc', "load")
+    $P3 = loadlib "./dynext/linalg_group"
+.end
+
 .HLL 'PMCMatrix2D_SUBCLASS_TEST'
 
 .sub test :main

@@ -1,7 +1,11 @@
-my $context := PLA::TestContext.new;
-$context.set_factory(Pla::MatrixFactory::PMCMatrix2D);
-my $asserter := Pla::MatrixAsserter.new;
-Rosella::Test::test(Test::PmcMatrix2D, :context($context), :asserter($asserter));
+
+INIT {
+    my $rosella := pir::load_bytecode__Ps("rosella/core.pbc");
+    Rosella::initialize_rosella("test");
+    Rosella::load_bytecode_file('t/testlib/pla_test.pbc', "load");
+}
+
+Pla::MatrixTestBase::Test(Test::PmcMatrix2D, Pla::MatrixFactory::PMCMatrix2D);
 
 class Test::PmcMatrix2D is Pla::MatrixTest {
 
