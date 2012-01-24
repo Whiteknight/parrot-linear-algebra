@@ -1,13 +1,13 @@
 all: build
 
 build:
-	winxed setup.winxed build
+	parrot-nqp setup.nqp build
 
 test: build
-	winxed setup.winxed test
+	parrot-nqp setup.nqp test
 
 install: build
-	winxed setup.winxed install
+	parrot-nqp setup.nqp install
 
 clean:
-	winxed setup.winxed clean
+	parrot-nqp setup.nqp clean

@@ -20,5 +20,5 @@ $harness.add_test_dirs("PIR",
     :recurse(0)
 ).setup_test_run;
 
-$harness.run(:run_inline(1));
-$harness.default_view.show_results();
+$harness.run();
+$harness.show_results();
