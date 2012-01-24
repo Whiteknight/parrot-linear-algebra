@@ -1,0 +1,122 @@
+$include "Rosella/Core.winxed";
+$include "Rosella/Query.winxed";
+
+class Pla.MatrixIterator : Rosella.Query.Iterable.Source
+{
+    var cur_row;
+    var cur_col;
+
+    function MatrixIterator(var m)
+    {
+        self.data = m;
+        self.cur_row = 0;
+        self.cur_col = 0;
+    }
+
+    function next()
+    {
+        var k = new Pla.MatrixIteratorKey(self.data, self.cur_row, self.cur_col);
+        self.cur_col = int(self.cur_col) + 1;
+        if (int(self.cur_col) >= self.data.cols) {
+            self.cur_col = 0;
+            self.cur_row = int(self.cur_row) + 1;
+        }
+        return k;
+    }
+
+    function has_more()
+    {
+        return self.data != null && int(self.cur_row) < self.data.rows;
+    }
+
+    function next_and_more()
+    {
+        if (!self.has_more())
+            self.__empty();
+        var v = self.next();
+        int m = self.has_more();
+        return v, m;
+    }
+
+    function get_bool[vtable]()
+    {
+        return self.has_more();
+    }
+
+    function on_iterator(var f)
+    {
+        return f(self);
+    }
+
+    function reset()
+    {
+        self.cur_row = 0;
+        self.cur_col = 0;
+    }
+
+    function shift_string[vtable]()
+    {
+        var value = self.next();
+        return string(value.value());
+    }
+
+    function shift_pmc[vtable]()
+    {
+        return self.next();
+    }
+
+    function shift_integer[vtable]()
+    {
+        var value = self.next();
+        return int(value.value());
+    }
+}
+
+class Pla.MatrixIteratorKey
+{
+    var matrix;
+    var index_row;
+    var index_col;
+
+    function MatrixIteratorKey(var m, int row, int col)
+    {
+        self.matrix = m;
+        self.index_row = row;
+        self.index_col = col;
+    }
+
+    function value()
+    {
+        return self.matrix.item_at(int(self.index_row), int(self.index_col));
+    }
+
+    function row()
+    {
+        return int(self.index_row);
+    }
+
+    function col()
+    {
+        return int(self.index_col);
+    }
+}
+
+function main[main](var args)
+{
+    Rosella.Parrot.try_report(function() {
+        test_main(args);
+    });
+}
+
+function test_main(var args)
+{
+    var pla = loadlib("./../../dynext/linalg_group");
+    var m = new 'NumMatrix2D';
+    m.initialize_from_args(3, 3, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+    say(m);
+
+    var i = new Pla.MatrixIterator(m);
+    say(i.has_more());
+    i.foreach(function(x) { Rosella.IO.sayf("[%d, %d] = %d", x.row(), x.col(), x.value()); });
+}
+
