@@ -1,7 +1,9 @@
-my $context := PLA::TestContext.new;
-$context.set_factory(Pla::MatrixFactory::NumMatrix2D);
-my $asserter := Pla::MatrixAsserter.new;
-Rosella::Test::test(Test::NumMatrix2D::GetBlock, :context($context), :asserter($asserter));
+INIT {
+    my $rosella := pir::load_bytecode__Ps("rosella/core.pbc");
+    Rosella::initialize_rosella("test");
+    Rosella::load_bytecode_file('t/testlib/pla_test.pbc', "load");
+}
+Pla::MatrixTestBase::Test(Test::NumMatrix2D::GetBlock, Pla::MatrixFactory::NumMatrix2D);
 
 class Test::NumMatrix2D::GetBlock is Pla::Methods::GetBlock {
 

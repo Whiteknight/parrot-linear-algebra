@@ -1,7 +1,9 @@
-my $context := PLA::TestContext.new;
-$context.set_factory(Pla::MatrixFactory::ComplexMatrix2D);
-my $asserter := Pla::MatrixAsserter.new;
-Rosella::Test::test(Test::ComplexMatrix2D::Resize, :context($context), :asserter($asserter));
+INIT {
+    my $rosella := pir::load_bytecode__Ps("rosella/core.pbc");
+    Rosella::initialize_rosella("test");
+    Rosella::load_bytecode_file('t/testlib/pla_test.pbc', "load");
+}
+Pla::MatrixTestBase::Test(Test::ComplexMatrix2D::Resize, Pla::MatrixFactory::ComplexMatrix2D);
 
 class Test::ComplexMatrix2D::Resize is Pla::Methods::Resize {
 
