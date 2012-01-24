@@ -64,7 +64,7 @@ sub setup_test_manifest(%PLA) {
 }
 
 sub setup_smolder(%PLA) {
-    %PLA{'prove_exec'} := 'parrot-nqp t/run_test.nqp';
+    %PLA{'prove_exec'} := 'parrot-nqp';
     %PLA{'smolder_url'} :=
         'http://smolder.parrot.org/app/projects/process_add_report/2';
     %PLA{'smolder_credentials'} := 'parrot-autobot:qa_rocks';
