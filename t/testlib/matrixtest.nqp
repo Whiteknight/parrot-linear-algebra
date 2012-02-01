@@ -3,6 +3,7 @@
 
 class Pla::MatrixTest is Pla::MatrixTestBase {
 
+    # Helper function used when we descend into inline PIR
     sub equal($a, $b, $r) {
         my $assert := Rosella::construct(Rosella::Test::Asserter);
         $assert.equal($a, $b, $r);
@@ -296,7 +297,6 @@ class Pla::MatrixTest is Pla::MatrixTestBase {
         $!assert.HasMethod($m, "convert_to_complex_matrix");
         $!assert.HasMethod($m, "convert_to_pmc_matrix");
     }
-
 
     method test_negative_array() {
         my $m := $!context.factory.defaultmatrix2x2();

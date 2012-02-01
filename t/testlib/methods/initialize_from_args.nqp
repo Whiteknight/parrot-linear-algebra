@@ -30,6 +30,4 @@ class Pla::Methods::InitializeFromArgs is Pla::MatrixTestBase {
                                       $!context.factory.fancyvalue(2), $!context.factory.fancyvalue(3));
         $!assert.equal($n, $m, "cannot initialize from args undersized");
     }
-
-
 }

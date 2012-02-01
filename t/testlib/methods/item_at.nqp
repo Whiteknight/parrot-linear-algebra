@@ -94,6 +94,4 @@ class Pla::Methods::ItemAt is Pla::MatrixTestBase {
             $m.item_at(0, 0, $!context.factory.fancyvalue(0));
         });
     }
-
-
 }

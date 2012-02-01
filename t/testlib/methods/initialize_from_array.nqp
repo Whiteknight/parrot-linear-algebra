@@ -33,5 +33,4 @@ class Pla::Methods::InitializeFromArray is Pla::MatrixTestBase {
         $n.initialize_from_array(1, 1, $a);
         $!assert.equal($n, $m, "cannot initialize from array undersized");
     }
-
 }

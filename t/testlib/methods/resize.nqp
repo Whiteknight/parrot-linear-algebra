@@ -20,5 +20,4 @@ class Pla::Methods::Resize is Pla::MatrixTestBase {
         $m.resize(-1, -1);
         $!assert.Size($m, 0, 0);
     }
-
 }

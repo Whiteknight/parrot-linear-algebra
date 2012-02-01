@@ -66,9 +66,59 @@ module Pla::MatrixTestBase {
         $context.set_data("factory_pmc", Pla::MatrixFactory::PMCMatrix2D.new);
         $context.set_data("factory_number", Pla::MatrixFactory::NumMatrix2D.new);
         my $asserter := Rosella::construct(Pla::MatrixAsserter);
+        Rosella::Test::add_matcher("matrix", Pla::MatrixTestMatcher.new);
         Rosella::Test::test($type, :context($context), :asserter($asserter));
     }
 }
 
 class Pla::MatrixTestBase { }
 
+class Pla::MatrixTestMatcher is Rosella::Test::Matcher {
+    method expect_match($a, $b) {
+        my $a_rows := pir::getattribute__PPS($a, "rows");
+        my $a_cols := pir::getattribute__PPS($a, "cols");
+        my $b_rows := pir::getattribute__PPS($b, "rows");
+        my $b_cols := pir::getattribute__PPS($b, "cols");
+        if ($a_rows != $b_rows || $a_cols != $b_cols) {
+            return Rosella::construct(Rosella::Test::FailureResult, "Matrix dimensions [$a_rows, $a_cols] does not equal [$b_rows, $b_cols]");
+        }
+        my $i := 0;
+        while $i < $a_rows {
+            my $j := 0;
+            while $j < $a_cols {
+                my $val_a := $a{$!context.factory.key($i, $j)};
+                my $val_b := $b{$!context.factory.key($i, $j)};
+                if ($val_a != $val_b) {
+                    Rosella::construct(Rosella::Test::FailureResult, "Value at [$i, $j] does not match");
+                }
+            }
+        }
+        Rosella::construct(Rosella::Test::SuccessResult);
+    }
+
+    method expect_no_match($a, $b) {
+        my $a_rows := pir::getattribute__PPS($a, "rows");
+        my $a_cols := pir::getattribute__PPS($a, "cols");
+        my $b_rows := pir::getattribute__PPS($b, "rows");
+        my $b_cols := pir::getattribute__PPS($b, "cols");
+        if ($a_rows != $b_rows || $a_cols != $b_cols) {
+            return Rosella::construct(Rosella::Test::SuccessResult);
+        }
+        my $i := 0;
+        while $i < $a_rows {
+            my $j := 0;
+            while $j < $a_cols {
+                my $val_a := $a{$!context.factory.key($i, $j)};
+                my $val_b := $b{$!context.factory.key($i, $j)};
+                if ($val_a != $val_b) {
+                    Rosella::construct(Rosella::Test::SuccessResult);
+                }
+            }
+        }
+        Rosella::construct(Rosella::Test::FailureResult, "Matrices match (and shouldn't)");
+    }
+
+    method can_match($a, $b) {
+        return pir::does__ips($a, "matrix") && pir::does__ips($b, "matrix");
+    }
+}
