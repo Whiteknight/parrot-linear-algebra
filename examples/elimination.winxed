@@ -1,0 +1,119 @@
+const int PRINT_DEBUG_STUFF = 0;
+
+function main[main](var args)
+{
+    say("Matrix A:");
+    var A = new 'NumMatrix2D';
+    A.initialize_from_args(3, 3,
+                           1.0, 2.0, 3.0,
+                           4.0, 5.0, 6.0,
+                           7.0, 8.0, 9.0);
+    say(A);
+
+    var B = clone(A);
+    gaussian_elimination(A);
+    say("Row Eschelon Form:");
+    say(A);
+
+    gauss_jordan_elimination(B);
+    say("Reduced Row Eschelon Form:");
+    say(B);
+}
+
+function gaussian_elimination(var A)
+{
+    int i = 0;
+    int j = 0;
+    int m = A.rows;
+    int n = A.cols;
+    while (i < m && j < n) {
+        int maxi = i;
+        int k = i + 1;
+        while (k < m) {
+            if (A[k, j] > A[maxi, j])
+                maxi = k;
+            k++;
+        }
+        if (A[maxi, j] != 0) {
+            A.row_swap(maxi, i);
+            debug(A, "row %d <-> row %d", maxi, i);
+
+            float scale = A[i, j];
+            float i_scale = 1.0 / scale;
+
+            A.row_scale(i, i_scale);
+            debug(A, "row %d / %f (%f)", i, scale, i_scale);
+
+            int u = i + 1;
+            while (u < m) {
+                float gain_u = A[u, j];
+                A.row_combine(i, u, -gain_u);
+                debug(A, "%f * row %d -> row %d", -gain_u, i, u);
+
+                u++;
+            }
+            i++;
+        }
+        j++;
+    }
+}
+
+function gauss_jordan_elimination(var A)
+{
+    int i = 0;
+    int j = 0;
+    int m = A.rows;
+    int n = A.cols;
+    while (i < m && j < n) {
+        int maxi = i;
+        int k = i + 1;
+        while (k < m) {
+            if (A[k, j] > A[maxi, j])
+                maxi = k;
+            k++;
+        }
+        if (A[maxi, j] != 0) {
+            A.row_swap(maxi, i);
+            debug(A, "row %d <-> row %d", maxi, i);
+
+            float scale = A[i, j];
+            float iscale = 1.0 / scale;
+            A.row_scale(i, iscale);
+            debug(A, "row %d / %f (%f)", i, scale, iscale);
+
+            int u = i + 1;
+            while (u < m) {
+                float gain_u = A[u, j];
+                A.row_combine(i, u, -gain_u);
+                debug(A, "%f * row %d -> row %d", -gain_u, i, u);
+
+                u++;
+            }
+            u = i - 1;
+            while (u >= 0) {
+                int gain_u = A[u, j];
+                A.row_combine(i, u, -gain_u);
+                debug(A, "%f * row %d -> row %d", -gain_u, i, u);
+
+                u--;
+            }
+            i++;
+        }
+        j++;
+    }
+}
+
+
+
+function debug(var matrix, string msg, var args [slurpy])
+{
+    if (PRINT_DEBUG_STUFF) {
+        say(sprintf(msg, args));
+        say(matrix);
+    }
+}
+
+function __onload[load,init,anon]()
+{
+    var pla = loadlib("linalg_group");
+}
