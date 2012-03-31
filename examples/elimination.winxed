@@ -34,7 +34,7 @@ function gaussian_elimination(var A)
                 maxi = k;
             k++;
         }
-        if (A[maxi, j] != 0) {
+        if (A[maxi, j] != 0.0) {
             A.row_swap(maxi, i);
             debug(A, "row %d <-> row %d", maxi, i);
 
@@ -72,7 +72,7 @@ function gauss_jordan_elimination(var A)
                 maxi = k;
             k++;
         }
-        if (A[maxi, j] != 0) {
+        if (A[maxi, j] != 0.0) {
             A.row_swap(maxi, i);
             debug(A, "row %d <-> row %d", maxi, i);
 
