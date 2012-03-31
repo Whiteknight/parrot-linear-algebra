@@ -1,8 +1,8 @@
-parrot-linear-algebra
+# parrot-linear-algebra
 
 A linear algebra library package for the Parrot Virtual Machine
 
-== PROJECT GOALS ==
+## Project Goals
 
 The goals of the Parrot-Linear-Algebra (PLA) project are to develop a good,
 high-performance linear algebra toolset for use with the Parrot Virtual
@@ -13,7 +13,7 @@ to the BLAS and LAPACK libraries for high-performance operations.
 In addition to these core goals, PLA may also provide a series of ancillary
 tools that are similar in implementation or purpose to its core utilities.
 
-== STATUS ==
+## Status
 
 PLA is being actively developed. It has core PMC types that build, a build
 and installation system, and a growing test suite.
@@ -22,32 +22,35 @@ PLA currently provides these PMC types:
 
 * NumMatrix2D
 
-    A 2-D matrix containing floating point values.
+A 2-D matrix containing floating point values.
 
 * PMCMatrix2D
 
-    A 2-D matrix containing PMC pointers
+A 2-D matrix containing PMC pointers
 
 * ComplexMatrix2D
 
-    A 2-D matrix containing Complex values, optimized to store complex values
-    directly instead of using an array of Parrot's Complex PMC type.
+A 2-D matrix containing Complex values, optimized to store complex values
+directly instead of using an array of Parrot's Complex PMC type.
 
 * CharMatrix2D (Testing)
 
-    A 2-D character matrix that doubles as an array of strings with
-    fixed-row-length storage.
+A 2-D character matrix that doubles as an array of strings with
+fixed-row-length storage.
 
-PLA does not yet offer matrix or tensor types with more than two dimensions.
+PLA does not yet offer matrix or tensor types with more than two dimensions. It
+might never offer higher-dimensional types because BLAS and LAPACK do not use
+them.
 
-== DEPENDENCIES ==
+## Dependencies
 
 PLA has several dependencies. To help manage dependencies, you may want
-to install Plumage
+to install **Plumage**.
 
 https://github.com/parrot/plumage
 
-This is not a dependency, just a convenience.
+This is not a dependency, just a convenience. Plumage may be installed with
+Parrot automatically.
 
 Each PLA release will target different versions of the various dependencies.
 See the file RELEASES for information about individual releases and their
@@ -55,39 +58,34 @@ dependencies.
 
 Here are a list of dependencies for PLA:
 
-* Parrot 3.0.0 (Or later)
+* Parrot (3.0 or higher)
 
     PLA is an extension for Parrot and requires Parrot to build and run.
-    Releases of PLA will target supported releases of Parrot. Supported
-    releases are typically X.0, X.3, X.6, X.9. Releases for Parrot can be
-    retrieved from
 
-        http://www.parrot.org
+    http://www.parrot.org
 
-    Development between releases will typically target the latest supported
-    release, though it may begin to target more recent development releases in
-    anticipation of the next supported release.
+    PLA may provide specific release packages targetting specific versions or
+    version ranges of Parrot. The development version of PLA will always try to
+    build against the current development version of Parrot.
 
-    PLA expects a built and installed Parrot. For more information about the
-    installation process
+    PLA expects Parrot to be built and installed on your system. It is not intended
+    to run against a development repository.
 
 * CBLAS or ATLAS
 
-    PLA depends on either CBLAS or ATLAS. The BLAS library is written in
-    Fortran, so C language bindings are all translations of the Fortran
-    interface. Unfortunately there is not a good, standard way of translating
-    the Fortran source to C API bindings, so not all libraries that provide a
-    C API for BLAS will have an interface compatible with PLA. We are working
-    to be more accepting of small differences in various interfaces, but this
-    work is moving slowly.
+    PLA depends on either BLAS, CBLAS or ATLAS. The BLAS library is written in
+    Fortran, CBLAS is a translation of BLAS to the C language. Unfortunately
+    there is not a good, standard way of translating the Fortran source to C
+    API bindings, so not all libraries that provide a C API for BLAS will have
+    an interface compatible with PLA. We are working to be more accepting of
+    small differences in various interfaces, but this work is moving slowly.
 
-    PLA may eventually support direct linkage to the BLAS library, instead of
-    requiring a C language implementation (CBLAS or ATLAS). This is not
-    supported yet but is on the roadmap.
+    PLA should be able to use BLAS, CBLAS and ATLAS, depending on variations in
+    OS, packaging and installation paths. You may need to modify the search
+    logic in `setup.nqp` to find the library on your system.
 
-    We recommend the ATLAS library for current development and testing work.
-    On Ubuntu or other Debian-based distros, you can type this incantation to
-    get it automatically:
+    To get the ATLAS library on an Ubuntu or Debian-based system you can use
+    this command:
 
         sudo apt-get install libatlas3-base
         sudo apt-get install libatlas-base-dev
@@ -103,6 +101,8 @@ Here are a list of dependencies for PLA:
 
         http://math-atlas.sourceforge.net/
 
+    Other versions of BLAS and CBLAS can be installed in other ways.
+
 * LAPACK
 
     LAPACK is a library of linear algebra routines which rely heavily on the
@@ -114,18 +114,12 @@ Here are a list of dependencies for PLA:
     LAPACK bindings are currently in development, and are not required to
     build or run PLA.
 
-* Parrot-Test
+* Rosella
 
-    Parrot-Test is a testing framework library for the Parrot Virtual Machine.
-    It provides a number of testing tools to be used by other projects. PLA
-    currently uses Parrot-Test to implement its unit testing suite. You can
-    build and install PLA without Parrot-Test, but you will need the framework
-    to run the test suite. The test suite helps to verify that PLA is
-    operating correctly on your platform.
-
-    You can obtain Parrot-Test from it's source code repository on Github:
-
-        http://github.com/Whiteknight/parrot-test
+    Rosella is a collection of libraries for Parrot. Rosella is used to
+    implement the unit test suite and test harness for PLA, and is used for
+    some additional features. Install Rosella if you want to run the unit tests
+    or build the additional features.
 
 * Other
 
@@ -137,7 +131,7 @@ Here are a list of dependencies for PLA:
     absolutely needs to be used, there may be a way to specify that, but no
     documentation about the process exists.
 
-== BUILDING ==
+## Building
 
 To get, build, test, and install Parrot-Linear-Algebra, follow these steps
 (on Linux) once all the prerequisites have been prepared:
@@ -148,11 +142,11 @@ To get, build, test, and install Parrot-Linear-Algebra, follow these steps
     parrot-nqp setup.nqp test
     parrot-nqp setup.nqp install
 
-Testing only works if you have Parrot-Test installed on your system. To
+Testing only works if you have Rosella installed on your system. To
 install, you may need root privileges on your system. There is currently no
 known way to build or deploy PLA on Windows.
 
-== DIRECTORY STRUCTURE ==
+## Directory Structure
 
     + /
         + dynext/      : Location for generated libraries
@@ -169,7 +163,7 @@ known way to build or deploy PLA on Windows.
             + pmc/     : Tests for various PMC types
             + testlib/ : Common test library
 
-== CREDITS ==
+## Credits
 
 Original versions were developed as part of the Matrixy project by Blairuk.
 Some parts of the test suite were provided by Austin Hastings.
