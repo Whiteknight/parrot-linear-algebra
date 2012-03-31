@@ -4,11 +4,11 @@ A linear algebra library package for the Parrot Virtual Machine
 
 ## Project Goals
 
-The goals of the Parrot-Linear-Algebra (PLA) project are to develop a good,
+The goals of the Parrot-Linear-Algebra (**PLA**) project are to develop a good,
 high-performance linear algebra toolset for use with the Parrot Virtual
 Machine and programs which run on top of Parrot. In pursuit of these goals,
 high-performance PMC matrix types will be developed, along with interfaces
-to the BLAS and LAPACK libraries for high-performance operations.
+to the **BLAS** and **LAPACK** libraries for high-performance operations.
 
 In addition to these core goals, PLA may also provide a series of ancillary
 tools that are similar in implementation or purpose to its core utilities.
@@ -16,9 +16,8 @@ tools that are similar in implementation or purpose to its core utilities.
 ## Status
 
 PLA is being actively developed. It has core PMC types that build, a build
-and installation system, and a growing test suite.
-
-PLA currently provides these PMC types:
+and installation system, and a growing test suite. PLA currently provides these
+PMC types:
 
 * NumMatrix2D
 
@@ -58,7 +57,7 @@ dependencies.
 
 Here are a list of dependencies for PLA:
 
-* Parrot (3.0 or higher)
+* **Parrot** (3.0 or higher)
 
     PLA is an extension for Parrot and requires Parrot to build and run.
 
@@ -71,7 +70,7 @@ Here are a list of dependencies for PLA:
     PLA expects Parrot to be built and installed on your system. It is not intended
     to run against a development repository.
 
-* CBLAS or ATLAS
+* **BLAS**, **CBLAS** or **ATLAS**
 
     PLA depends on either BLAS, CBLAS or ATLAS. The BLAS library is written in
     Fortran, CBLAS is a translation of BLAS to the C language. Unfortunately
@@ -103,7 +102,7 @@ Here are a list of dependencies for PLA:
 
     Other versions of BLAS and CBLAS can be installed in other ways.
 
-* LAPACK
+* **LAPACK**
 
     LAPACK is a library of linear algebra routines which rely heavily on the
     local BLAS implementation. For more information about LAPACK, see the
@@ -114,7 +113,7 @@ Here are a list of dependencies for PLA:
     LAPACK bindings are currently in development, and are not required to
     build or run PLA.
 
-* Rosella
+* **Rosella**
 
     Rosella is a collection of libraries for Parrot. Rosella is used to
     implement the unit test suite and test harness for PLA, and is used for
@@ -168,5 +167,3 @@ known way to build or deploy PLA on Windows.
 Original versions were developed as part of the Matrixy project by Blairuk.
 Some parts of the test suite were provided by Austin Hastings.
 See the file CREDITS for updated information about contributors.
-
-
