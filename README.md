@@ -22,21 +22,21 @@ PLA currently provides these PMC types:
 
 * NumMatrix2D
 
-A 2-D matrix containing floating point values.
+    A 2-D matrix containing floating point values.
 
 * PMCMatrix2D
 
-A 2-D matrix containing PMC pointers
+    A 2-D matrix containing PMC pointers
 
 * ComplexMatrix2D
 
-A 2-D matrix containing Complex values, optimized to store complex values
-directly instead of using an array of Parrot's Complex PMC type.
+    A 2-D matrix containing Complex values, optimized to store complex values
+    directly instead of using an array of Parrot's Complex PMC type.
 
 * CharMatrix2D (Testing)
 
-A 2-D character matrix that doubles as an array of strings with
-fixed-row-length storage.
+    A 2-D character matrix that doubles as an array of strings with
+    fixed-row-length storage.
 
 PLA does not yet offer matrix or tensor types with more than two dimensions. It
 might never offer higher-dimensional types because BLAS and LAPACK do not use
