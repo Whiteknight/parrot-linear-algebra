@@ -45,7 +45,7 @@ PLA does not yet offer matrix or tensor types with more than two dimensions.
 PLA has several dependencies. To help manage dependencies, you may want
 to install Plumage
 
-http://gitorious.org/parrot-plumage
+https://github.com/parrot/plumage
 
 This is not a dependency, just a convenience.
 
