@@ -124,6 +124,8 @@ sub find_blas(%PLA) {
 sub find_blas_linux(%PLA) {
     my $found_blas := 0;
     my %searches;
+    #%searches{'openblas-base/libopenblas
+    %searches{'libatlas.so'} := ['-latlas', '-D_PLA_HAVE_ATLAS', 1];
     %searches{'libblas-3.so'} := ['-lblas-3', '-D_PLA_HAVE_BLAS', 0];
     %searches{'libblas.so'} := ['-lblas', '-D_PLA_HAVE_ATLAS', 1];
     %searches{'atlas/libcblas.so'} := ['-L/usr/lib/atlas -lcblas', '-D_PLA_HAVE_ATLAS', 1];

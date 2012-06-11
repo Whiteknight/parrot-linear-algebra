@@ -283,6 +283,23 @@ Sets the character value at coordinates rows,cols
         return 0;
     }
 
+/*
+
+=item * get_pointer
+
+Get a pointer to the underlying storage array in memory.
+
+WARNING: This array may be resized or relocated at any time. It is not a good
+idea to store a reference to this pointer, or to use it in any but the most
+controlled and careful situations.
+
+=cut
+
+*/
+
+    VTABLE void *get_pointer() {
+        return PARROT_CHARMATRIX2D(SELF)->storage;
+    }
 
 /*
 
